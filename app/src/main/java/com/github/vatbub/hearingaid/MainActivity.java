@@ -1,12 +1,12 @@
 package com.github.vatbub.hearingaid;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,12 +14,29 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ToggleButton;
 
-import com.rey.material.widget.SnackBar;
-
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback {
+
+    private MediaStreamer mediaStreamer;
+
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        updateStreamingState();
+    }
+
+    @SuppressWarnings("RedundantIfStatement")
+    private boolean allPermissionsGranted() {
+        if (ActivityCompat.checkSelfPermission(findViewById(R.id.content).getContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
+            return false;
+        if (ActivityCompat.checkSelfPermission(findViewById(R.id.content).getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            return false;
+        if (ActivityCompat.checkSelfPermission(findViewById(R.id.content).getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            return false;
+
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +49,11 @@ public class MainActivity extends AppCompatActivity
         toggleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println(((ToggleButton)v).isChecked());
-                // Snackbar.make(findViewById(R.id.content), "Test", 3000).show();
-                SnackBar.make(findViewById(R.id.content).getContext()).text(Boolean.toString(((ToggleButton)v).isChecked())).duration(3000).show();
+                if (!allPermissionsGranted()) {
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                } else {
+                    updateStreamingState();
+                }
             }
         });
 
@@ -46,6 +65,16 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void updateStreamingState() {
+        if (((ToggleButton) findViewById(R.id.mainToggleButton)).isChecked()) {
+            Snackbar.make(findViewById(R.id.content), "Started streaming", 3000).show();
+            setMediaStreamer(MediaStreamer.startStreaming());
+        } else {
+            Snackbar.make(findViewById(R.id.content), "Stopped streaming", 3000).show();
+            mediaStreamer.stopStreaming();
+        }
     }
 
     @Override
@@ -98,5 +127,13 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public MediaStreamer getMediaStreamer() {
+        return mediaStreamer;
+    }
+
+    public void setMediaStreamer(MediaStreamer mediaStreamer) {
+        this.mediaStreamer = mediaStreamer;
     }
 }
