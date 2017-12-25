@@ -2,12 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.github.vatbub.hearingaid.fragments.PrivacyFragment">
+    tools:context="com.github.vatbub.hearingaid.fragments.AboutFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/fragment_privacy_text" />
+        android:text="@string/fragment_about_text" />
 
 </FrameLayout>

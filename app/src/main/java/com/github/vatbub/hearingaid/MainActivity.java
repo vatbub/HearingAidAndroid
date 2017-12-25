@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.github.vatbub.hearingaid.fragments.AboutFragment;
 import com.github.vatbub.hearingaid.fragments.PrivacyFragment;
 import com.github.vatbub.hearingaid.fragments.StreamingFragment;
 
@@ -88,6 +89,8 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_privacy) {
             openFragment("privacyFragment", new PrivacyFragment(), getString(R.string.fragment_privacy_titile));
+        } else if (id == R.id.nav_about){
+            openFragment("aboutFragment", new AboutFragment(), getString(R.string.fragment_about_title));
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
