@@ -21,7 +21,8 @@ import com.github.vatbub.hearingaid.fragments.StreamingFragment;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private Fragment currentFragment;
+    private final static String CURRENT_FRAGMENT_TAG_KEY = "currentFragmentTag";
+    private String currentFragmentTag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +43,9 @@ public class MainActivity extends AppCompatActivity
         if (savedInstanceState == null) {
             navigationView.setCheckedItem(R.id.nav_streaming);
             openFragment("streamingFragment", new StreamingFragment(), getString(R.string.fragment_streaming_titile));
+        } else {
+            currentFragmentTag = savedInstanceState.getString(CURRENT_FRAGMENT_TAG_KEY);
+            System.out.println(currentFragmentTag);
         }
     }
 
@@ -70,6 +74,12 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(CURRENT_FRAGMENT_TAG_KEY, currentFragmentTag);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -115,8 +125,8 @@ public class MainActivity extends AppCompatActivity
             fragmentToUse = initialFragmentInstance;
 
         final FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        if (currentFragment != null)
-            fragmentTransaction.hide(currentFragment);
+        if (currentFragmentTag != null && getFragmentManager().findFragmentByTag(currentFragmentTag) != null)
+            fragmentTransaction.hide(getFragmentManager().findFragmentByTag(currentFragmentTag));
 
         if (fragmentFound)
             fragmentTransaction.show(fragmentToUse);
@@ -125,7 +135,7 @@ public class MainActivity extends AppCompatActivity
 
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
-        currentFragment = fragmentToUse;
+        currentFragmentTag = tag;
 
         setTitle(title);
     }
