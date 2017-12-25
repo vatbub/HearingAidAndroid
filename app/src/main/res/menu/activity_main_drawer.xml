@@ -21,7 +21,6 @@
             android:icon="@drawable/ic_menu_manage"
             android:title="Tools" />
     </group>
-
     <item android:title="Communicate">
         <menu>
             <item
@@ -32,6 +31,18 @@
                 android:id="@+id/nav_send"
                 android:icon="@drawable/ic_menu_send"
                 android:title="Send" />
+        </menu>
+    </item>
+    <item android:title="@string/nav_legal_stuff">
+        <menu>
+            <item
+                android:id="@+id/nav_privacy"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/nav_privacy" />
+            <item
+                android:id="@+id/nav_about"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/nav_about" />
         </menu>
     </item>
 

@@ -6,4 +6,7 @@
     <string name="action_settings">Einstellungen</string>
     <string name="mainToggleButton_on">Ein</string>
     <string name="mainToggleButton_off">Aus</string>
+    <string name="nav_privacy">Datenschutz</string>
+    <string name="nav_about">Impressum</string>
+    <string name="nav_legal_stuff">Legales</string>
 </resources>
