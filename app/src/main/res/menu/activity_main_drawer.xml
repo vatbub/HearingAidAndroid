@@ -21,27 +21,27 @@
             android:icon="@drawable/ic_menu_manage"
             android:title="Tools" />
     </group>
-    <item android:title="Communicate">
+    <item android:title="@string/nav_communicate">
         <menu>
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:title="@string/nav_share" />
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/nav_feedback"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:title="@string/nav_feedback" />
         </menu>
     </item>
     <item android:title="@string/nav_legal_stuff">
         <menu>
             <item
                 android:id="@+id/nav_privacy"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/ic_menu_paragraph"
                 android:title="@string/nav_privacy" />
             <item
                 android:id="@+id/nav_about"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/ic_menu_info"
                 android:title="@string/nav_about" />
         </menu>
     </item>
