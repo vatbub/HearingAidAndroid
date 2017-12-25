@@ -38,8 +38,11 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        navigationView.setCheckedItem(R.id.nav_streaming);
-        openFragment("streamingFragment", new StreamingFragment(), getString(R.string.fragment_streaming_titile));
+
+        if (savedInstanceState == null) {
+            navigationView.setCheckedItem(R.id.nav_streaming);
+            openFragment("streamingFragment", new StreamingFragment(), getString(R.string.fragment_streaming_titile));
+        }
     }
 
     @Override
@@ -89,7 +92,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_privacy) {
             openFragment("privacyFragment", new PrivacyFragment(), getString(R.string.fragment_privacy_titile));
-        } else if (id == R.id.nav_about){
+        } else if (id == R.id.nav_about) {
             openFragment("aboutFragment", new AboutFragment(), getString(R.string.fragment_about_title));
         }
 
