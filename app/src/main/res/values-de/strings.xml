@@ -12,4 +12,7 @@
     <string name="nav_share">Teilen</string>
     <string name="nav_feedback">Feedback</string>
     <string name="nav_communicate">Kommunizieren</string>
+    <string name="fragment_privacy_titile">Datenschutz</string>
+    <string name="fragment_streaming_titile">Hörgerät</string>
+    <string name="nav_streaming">Start</string>
 </resources>

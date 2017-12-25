@@ -5,9 +5,9 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
+            android:id="@+id/nav_streaming"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:title="@string/nav_streaming" />
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"
@@ -20,6 +20,14 @@
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
             android:title="Tools" />
+        <item
+            android:id="@+id/nav_privacy"
+            android:icon="@drawable/ic_menu_paragraph"
+            android:title="@string/nav_privacy" />
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_menu_info"
+            android:title="@string/nav_about" />
     </group>
     <item android:title="@string/nav_communicate">
         <menu>
@@ -31,18 +39,6 @@
                 android:id="@+id/nav_feedback"
                 android:icon="@drawable/ic_menu_send"
                 android:title="@string/nav_feedback" />
-        </menu>
-    </item>
-    <item android:title="@string/nav_legal_stuff">
-        <menu>
-            <item
-                android:id="@+id/nav_privacy"
-                android:icon="@drawable/ic_menu_paragraph"
-                android:title="@string/nav_privacy" />
-            <item
-                android:id="@+id/nav_about"
-                android:icon="@drawable/ic_menu_info"
-                android:title="@string/nav_about" />
         </menu>
     </item>
 

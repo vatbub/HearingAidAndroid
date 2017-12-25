@@ -1,11 +1,10 @@
 package com.github.vatbub.hearingaid;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -14,29 +13,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ToggleButton;
+
+import com.github.vatbub.hearingaid.fragments.PrivacyFragment;
+import com.github.vatbub.hearingaid.fragments.StreamingFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private MediaStreamer mediaStreamer;
-
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        updateStreamingState();
-    }
-
-    @SuppressWarnings("RedundantIfStatement")
-    private boolean allPermissionsGranted() {
-        if (ActivityCompat.checkSelfPermission(findViewById(R.id.content).getContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
-            return false;
-        if (ActivityCompat.checkSelfPermission(findViewById(R.id.content).getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-            return false;
-        if (ActivityCompat.checkSelfPermission(findViewById(R.id.content).getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-            return false;
-
-        return true;
-    }
+    private Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,18 +28,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        ToggleButton toggleButton = findViewById(R.id.mainToggleButton);
-        toggleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!allPermissionsGranted()) {
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-                } else {
-                    updateStreamingState();
-                }
-            }
-        });
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -65,16 +37,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-    }
-
-    private void updateStreamingState() {
-        if (((ToggleButton) findViewById(R.id.mainToggleButton)).isChecked()) {
-            Snackbar.make(findViewById(R.id.content), "Started streaming", 3000).show();
-            setMediaStreamer(MediaStreamer.startStreaming());
-        } else {
-            Snackbar.make(findViewById(R.id.content), "Stopped streaming", 3000).show();
-            mediaStreamer.stopStreaming();
-        }
+        navigationView.setCheckedItem(R.id.nav_streaming);
+        openFragment("streamingFragment", new StreamingFragment(), getString(R.string.fragment_streaming_titile));
     }
 
     @Override
@@ -110,8 +74,8 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
+        if (id == R.id.nav_streaming) {
+            openFragment("streamingFragment", new StreamingFragment(), getString(R.string.fragment_streaming_titile));
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -120,8 +84,10 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_feedback) {
 
+        } else if (id == R.id.nav_privacy) {
+            openFragment("privacyFragment", new PrivacyFragment(), getString(R.string.fragment_privacy_titile));
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -129,11 +95,32 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public MediaStreamer getMediaStreamer() {
-        return mediaStreamer;
-    }
+    private void openFragment(String tag, Fragment initialFragmentInstance, String title) {
+        // Insert the fragment by replacing any existing fragment
+        /*FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.content, initialFragmentInstance)
+                .commit();
+*/
 
-    public void setMediaStreamer(MediaStreamer mediaStreamer) {
-        this.mediaStreamer = mediaStreamer;
+        Fragment fragmentToUse = getFragmentManager().findFragmentByTag(tag);
+        boolean fragmentFound = fragmentToUse != null;
+        if (!fragmentFound)
+            fragmentToUse = initialFragmentInstance;
+
+        final FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        if (currentFragment != null)
+            fragmentTransaction.hide(currentFragment);
+
+        if (fragmentFound)
+            fragmentTransaction.show(fragmentToUse);
+        else
+            fragmentTransaction.add(R.id.content, fragmentToUse, tag);
+
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+        currentFragment = fragmentToUse;
+
+        setTitle(title);
     }
 }

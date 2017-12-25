@@ -13,4 +13,12 @@
     <string name="nav_share">Share</string>
     <string name="nav_feedback">Feedback</string>
     <string name="nav_communicate">Communicate</string>
+    <string name="fragment_privacy_titile">Privacy</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="fragment_streaming_titile">Hearing Aid</string>
+    <string name="nav_streaming">Main</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

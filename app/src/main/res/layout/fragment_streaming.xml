@@ -1,0 +1,19 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.github.vatbub.hearingaid.fragments.StreamingFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <ToggleButton
+        android:id="@+id/mainToggleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ToggleButton"
+        android:textOff="@string/mainToggleButton_off"
+        android:textOn="@string/mainToggleButton_on"
+        tools:layout_editor_absoluteX="148dp"
+        tools:layout_editor_absoluteY="231dp" />
+</FrameLayout>
