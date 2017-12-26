@@ -18,7 +18,6 @@ import com.github.vatbub.hearingaid.MediaStreamer;
 import com.github.vatbub.hearingaid.R;
 
 public class StreamingFragment extends Fragment {
-    private MediaStreamer mediaStreamer;
     private View createdView;
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -32,24 +31,11 @@ public class StreamingFragment extends Fragment {
     private void updateStreamingState() {
         if (isStreamingEnabled()) {
             Snackbar.make(findViewById(R.id.fragment_content), "Started streaming", 3000).show();
-            setMediaStreamer(MediaStreamer.startStreaming());
+            MediaStreamer.startStreaming();
         } else {
             Snackbar.make(findViewById(R.id.fragment_content), "Stopped streaming", 3000).show();
-            stopStreaming();
+            MediaStreamer.stopStreaming();
         }
-    }
-
-    private void stopStreaming() {
-        mediaStreamer.stopStreaming();
-        setMediaStreamer(null);
-    }
-
-    public MediaStreamer getMediaStreamer() {
-        return mediaStreamer;
-    }
-
-    public void setMediaStreamer(MediaStreamer mediaStreamer) {
-        this.mediaStreamer = mediaStreamer;
     }
 
     @SuppressWarnings("RedundantIfStatement")

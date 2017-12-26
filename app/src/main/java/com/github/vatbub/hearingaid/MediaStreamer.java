@@ -8,28 +8,43 @@ import android.media.MediaRecorder;
 import android.util.Log;
 
 public class MediaStreamer extends Thread {
+    private static MediaStreamer instance;
+
     private boolean streaming;
     private int sampleRate;
 
-    public boolean isStreaming() {
+    private boolean internalIsStreaming() {
         return streaming;
     }
 
-    public static MediaStreamer startStreaming(){
-        return startStreaming(11025);
+    public static void startStreaming(){
+        startStreaming(11025);
     }
 
-    public static MediaStreamer startStreaming(int sampleRate){
-        MediaStreamer res = new MediaStreamer(sampleRate);
-        res.start();
-        return res;
+    public static void startStreaming(int sampleRate){
+        if (isStreaming())
+            throw new IllegalStateException("Already streaming");
+        instance = new MediaStreamer(sampleRate);
+        instance.start();
+    }
+
+    public static void stopStreaming(){
+        if (!isStreaming())
+            throw new IllegalStateException("Not streaming");
+
+        instance.internalStopStreaming();
+        instance = null;
+    }
+
+    public static boolean isStreaming(){
+        return instance!=null;
     }
 
     private MediaStreamer(int sampleRate){
         this.sampleRate = sampleRate;
     }
 
-    public void stopStreaming(){
+    private void internalStopStreaming(){
         streaming = false;
     }
 
@@ -64,7 +79,7 @@ public class MediaStreamer extends Thread {
         audioRecord.startRecording();
         audioTrack.play();
 
-        while (isStreaming()) {
+        while (internalIsStreaming()) {
             audioRecord.read(buffer, 0, actualBufferSize);
             audioTrack.write(buffer, 0, buffer.length);
         }

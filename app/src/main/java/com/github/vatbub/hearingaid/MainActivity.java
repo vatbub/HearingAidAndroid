@@ -42,10 +42,11 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState == null) {
             navigationView.setCheckedItem(R.id.nav_streaming);
-            openFragment("streamingFragment", new StreamingFragment(), getString(R.string.fragment_streaming_titile));
+            openFragment("streamingFragment", new StreamingFragment());
         } else {
             currentFragmentTag = savedInstanceState.getString(CURRENT_FRAGMENT_TAG_KEY);
-            System.out.println(currentFragmentTag);
+            updateSelectedItem(currentFragmentTag);
+            updateTitle(currentFragmentTag);
         }
     }
 
@@ -55,6 +56,9 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
+            String fragmentTagAboutToBeOpened = getFragmentManager().getBackStackEntryAt(0).getName();
+            updateTitle(fragmentTagAboutToBeOpened);
+            updateSelectedItem(fragmentTagAboutToBeOpened);
             super.onBackPressed();
         }
     }
@@ -89,7 +93,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_streaming) {
-            openFragment("streamingFragment", new StreamingFragment(), getString(R.string.fragment_streaming_titile));
+            openFragment("streamingFragment", new StreamingFragment());
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -101,9 +105,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_feedback) {
 
         } else if (id == R.id.nav_privacy) {
-            openFragment("privacyFragment", new PrivacyFragment(), getString(R.string.fragment_privacy_titile));
+            openFragment("privacyFragment", new PrivacyFragment());
         } else if (id == R.id.nav_about) {
-            openFragment("aboutFragment", new AboutFragment(), getString(R.string.fragment_about_title));
+            openFragment("aboutFragment", new AboutFragment());
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -111,7 +115,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void openFragment(String tag, Fragment initialFragmentInstance, String title) {
+    private void openFragment(String tag, Fragment initialFragmentInstance) {
         // Insert the fragment by replacing any existing fragment
         /*FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
@@ -133,10 +137,39 @@ public class MainActivity extends AppCompatActivity
         else
             fragmentTransaction.add(R.id.content, fragmentToUse, tag);
 
-        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.addToBackStack(tag);
         fragmentTransaction.commit();
         currentFragmentTag = tag;
 
-        setTitle(title);
+        updateTitle(tag);
+    }
+
+    private void updateTitle(String fragmentTag) {
+        switch (fragmentTag) {
+            case "streamingFragment":
+                setTitle(getString(R.string.fragment_streaming_titile));
+                break;
+            case "privacyFragment":
+                setTitle(getString(R.string.fragment_privacy_titile));
+                break;
+            case "aboutFragment":
+                setTitle(getString(R.string.fragment_about_title));
+                break;
+        }
+    }
+
+    private void updateSelectedItem(String fragmentTag) {
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        switch (fragmentTag) {
+            case "streamingFragment":
+                navigationView.setCheckedItem(R.id.nav_streaming);
+                break;
+            case "privacyFragment":
+                navigationView.setCheckedItem(R.id.nav_privacy);
+                break;
+            case "aboutFragment":
+                navigationView.setCheckedItem(R.id.nav_about);
+                break;
+        }
     }
 }
