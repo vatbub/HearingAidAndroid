@@ -22,6 +22,7 @@ android:
     - m2repository-com-android-support-constraint-constraint-layout-1.0.2
 script:
   - chmod +x ./gradlew
+  - cp ci.local.properties local.properties
   - ./gradlew build connectedCheck
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
