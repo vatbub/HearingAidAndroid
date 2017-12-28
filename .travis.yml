@@ -21,7 +21,8 @@ android:
     - m2repository-com-android-support-constraint-constraint-layout-solver-1.0.2
     - m2repository-com-android-support-constraint-constraint-layout-1.0.2
 script:
-  - chmod +x ./gradlew build connectedCheck
+  - chmod +x ./gradlew
+  - ./gradlew build connectedCheck
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
