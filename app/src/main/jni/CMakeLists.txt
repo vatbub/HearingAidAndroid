@@ -5,12 +5,6 @@ set(
 	CACHE STRING ""
 )
 
-if("${CMAKE_HOST_SYSTEM}" MATCHES ".*Windows.*")
-  set(SEP "\\\\")
-else() # e.g. Linux
-  set(SEP "/")
-endif()
-
 message(${ANDROID_ABI})
 
 file(GLOB CPP_FILES "*.cpp")

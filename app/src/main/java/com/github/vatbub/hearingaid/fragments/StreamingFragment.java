@@ -2,7 +2,9 @@ package com.github.vatbub.hearingaid.fragments;
 
 import android.Manifest;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -54,9 +56,22 @@ public class StreamingFragment extends Fragment {
         // Required empty public constructor
     }
 
+    static {
+        System.loadLibrary("SuperpoweredExample");
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Get the device's sample rate and buffer size to enable low-latency Android audio output, if available.
+        String samplerateString = null, buffersizeString = null;
+        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        assert audioManager != null;
+        samplerateString = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
+        buffersizeString = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
+        if (samplerateString == null) samplerateString = "44100";
+        if (buffersizeString == null) buffersizeString = "512";
     }
 
     @Override
