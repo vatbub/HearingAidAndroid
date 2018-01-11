@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ToggleButton;
 
-import com.github.vatbub.hearingaid.MediaStreamer;
 import com.github.vatbub.hearingaid.R;
 
 public class StreamingFragment extends Fragment {
@@ -31,13 +30,15 @@ public class StreamingFragment extends Fragment {
     }
 
     private void updateStreamingState() {
+        initSuperpoweredIfNotInitialized();
         if (isStreamingEnabled()) {
             Snackbar.make(findViewById(R.id.fragment_content), "Started streaming", 3000).show();
-            MediaStreamer.startStreaming();
+            // MediaStreamer.startStreaming();
         } else {
             Snackbar.make(findViewById(R.id.fragment_content), "Stopped streaming", 3000).show();
-            MediaStreamer.stopStreaming();
+            // MediaStreamer.stopStreaming();
         }
+        onPlayPause(isStreamingEnabled());
     }
 
     @SuppressWarnings("RedundantIfStatement")
@@ -56,22 +57,9 @@ public class StreamingFragment extends Fragment {
         // Required empty public constructor
     }
 
-    static {
-        System.loadLibrary("SuperpoweredExample");
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Get the device's sample rate and buffer size to enable low-latency Android audio output, if available.
-        String samplerateString = null, buffersizeString = null;
-        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
-        assert audioManager != null;
-        samplerateString = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
-        buffersizeString = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
-        if (samplerateString == null) samplerateString = "44100";
-        if (buffersizeString == null) buffersizeString = "512";
     }
 
     @Override
@@ -99,5 +87,36 @@ public class StreamingFragment extends Fragment {
 
     private <T extends View> T findViewById(@IdRes int id) {
         return createdView.findViewById(id);
+    }
+
+    private boolean superpoweredInitialized = false;
+
+    /**
+     * Initializes the superpowered sdk and associated c++ code.
+     * No-op if already initialized.
+     */
+    private void initSuperpoweredIfNotInitialized(){
+        if (superpoweredInitialized)
+            return;
+
+        // Get the device's sample rate and buffer size to enable low-latency Android audio io, if available.
+        String samplerateString = null, buffersizeString = null;
+        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        assert audioManager != null;
+        samplerateString = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
+        buffersizeString = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
+        if (samplerateString == null) samplerateString = "44100";
+        if (buffersizeString == null) buffersizeString = "512";
+
+        HearingAidAudioProcessor(Integer.parseInt(samplerateString), Integer.parseInt(buffersizeString));
+
+        superpoweredInitialized = true;
+    }
+
+    private native void HearingAidAudioProcessor(int samplerate, int buffersize);
+    private native void onPlayPause(boolean play);
+
+    static {
+        System.loadLibrary("HearingAidAudioProcessor");
     }
 }
