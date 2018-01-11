@@ -21,6 +21,7 @@ import com.github.vatbub.hearingaid.R;
 public class StreamingFragment extends Fragment {
     private View createdView;
 
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         updateStreamingState();
     }
@@ -77,14 +78,14 @@ public class StreamingFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (!allPermissionsGranted()) {
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                    requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
                 } else {
                     updateStreamingState();
                 }
             }
         });
-    }
 
+    }
     private <T extends View> T findViewById(@IdRes int id) {
         return createdView.findViewById(id);
     }
