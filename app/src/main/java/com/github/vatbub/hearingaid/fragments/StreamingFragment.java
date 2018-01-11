@@ -19,7 +19,18 @@ import android.widget.ToggleButton;
 import com.github.vatbub.hearingaid.R;
 
 public class StreamingFragment extends Fragment {
+    private static final String SUPERPOWERED_INITIALIZED_BUNDLE_KEY = "superpoweredInitialized";
+
+    static {
+        System.loadLibrary("HearingAidAudioProcessor");
+    }
+
     private View createdView;
+    private boolean superpoweredInitialized = false;
+
+    public StreamingFragment() {
+        // Required empty public constructor
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -50,13 +61,18 @@ public class StreamingFragment extends Fragment {
         return true;
     }
 
-    public StreamingFragment() {
-        // Required empty public constructor
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null)
+            superpoweredInitialized = savedInstanceState.getBoolean(SUPERPOWERED_INITIALIZED_BUNDLE_KEY);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SUPERPOWERED_INITIALIZED_BUNDLE_KEY, superpoweredInitialized);
     }
 
     @Override
@@ -82,17 +98,16 @@ public class StreamingFragment extends Fragment {
         });
 
     }
+
     private <T extends View> T findViewById(@IdRes int id) {
         return createdView.findViewById(id);
     }
-
-    private boolean superpoweredInitialized = false;
 
     /**
      * Initializes the superpowered sdk and associated c++ code.
      * No-op if already initialized.
      */
-    private void initSuperpoweredIfNotInitialized(){
+    private void initSuperpoweredIfNotInitialized() {
         if (superpoweredInitialized)
             return;
 
@@ -111,9 +126,6 @@ public class StreamingFragment extends Fragment {
     }
 
     private native void HearingAidAudioProcessor(int samplerate, int buffersize);
-    private native void onPlayPause(boolean play);
 
-    static {
-        System.loadLibrary("HearingAidAudioProcessor");
-    }
+    private native void onPlayPause(boolean play);
 }
