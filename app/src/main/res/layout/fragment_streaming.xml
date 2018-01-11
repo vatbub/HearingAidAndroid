@@ -1,19 +1,29 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.github.vatbub.hearingaid.fragments.StreamingFragment">
 
-    <!-- TODO: Update blank fragment layout -->
 
-    <ToggleButton
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/mainToggleButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ToggleButton"
-        android:textOff="@string/mainToggleButton_off"
-        android:textOn="@string/mainToggleButton_on"
-        tools:layout_editor_absoluteX="148dp"
-        tools:layout_editor_absoluteY="231dp" />
-</FrameLayout>
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:clickable="true"
+        android:defaultFocusHighlightEnabled="false"
+        android:focusable="true"
+        android:src="@drawable/ic_audiotrack_light"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:focusable="auto" tools:targetApi="o"/>
+
+</android.support.constraint.ConstraintLayout>

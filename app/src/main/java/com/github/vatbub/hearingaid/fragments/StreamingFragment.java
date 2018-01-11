@@ -14,12 +14,13 @@ import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ToggleButton;
 
 import com.github.vatbub.hearingaid.R;
 
 public class StreamingFragment extends Fragment {
     private static final String SUPERPOWERED_INITIALIZED_BUNDLE_KEY = "superpoweredInitialized";
+    private static final String IS_STREAMING_BUNDLE_KEY = "isStreaming";
+    private boolean isStreaming;
 
     static {
         System.loadLibrary("HearingAidAudioProcessor");
@@ -38,7 +39,7 @@ public class StreamingFragment extends Fragment {
     }
 
     public boolean isStreamingEnabled() {
-        return ((ToggleButton) findViewById(R.id.mainToggleButton)).isChecked();
+        return isStreaming;
     }
 
     private void updateStreamingState() {
@@ -63,14 +64,17 @@ public class StreamingFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null)
+        if (savedInstanceState != null) {
             superpoweredInitialized = savedInstanceState.getBoolean(SUPERPOWERED_INITIALIZED_BUNDLE_KEY);
+            setStreaming(savedInstanceState.getBoolean(IS_STREAMING_BUNDLE_KEY));
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(SUPERPOWERED_INITIALIZED_BUNDLE_KEY, superpoweredInitialized);
+        outState.putBoolean(IS_STREAMING_BUNDLE_KEY, isStreamingEnabled());
     }
 
     @Override
@@ -87,6 +91,7 @@ public class StreamingFragment extends Fragment {
         findViewById(R.id.mainToggleButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setStreaming(!isStreamingEnabled());
                 if (!allPermissionsGranted()) {
                     requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 1);
                 } else {
@@ -126,4 +131,8 @@ public class StreamingFragment extends Fragment {
     private native void HearingAidAudioProcessor(int samplerate, int buffersize);
 
     private native void onPlayPause(boolean play);
+
+    public void setStreaming(boolean streaming) {
+        isStreaming = streaming;
+    }
 }
