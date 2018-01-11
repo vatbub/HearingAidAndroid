@@ -46,10 +46,6 @@ public class StreamingFragment extends Fragment {
     private boolean allPermissionsGranted() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
             return false;
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-            return false;
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-            return false;
 
         return true;
     }
@@ -78,7 +74,7 @@ public class StreamingFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (!allPermissionsGranted()) {
-                    requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                    requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 1);
                 } else {
                     updateStreamingState();
                 }
