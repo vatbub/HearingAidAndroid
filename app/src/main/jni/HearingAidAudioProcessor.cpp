@@ -20,7 +20,7 @@ HearingAidAudioProcessor::HearingAidAudioProcessor(unsigned int samplerate,
     audioSystem = new SuperpoweredAndroidAudioIO(samplerate, buffersize, true, true,
                                                  audioProcessing, this,
                                                  SL_ANDROID_RECORDING_PRESET_VOICE_COMMUNICATION,
-                                                 SL_ANDROID_STREAM_MEDIA, buffersize * 2);
+                                                 SL_ANDROID_STREAM_MEDIA, 0);
     silence = true;
 }
 
