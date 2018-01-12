@@ -46,9 +46,9 @@ public class StreamingFragment extends Fragment {
     private void updateStreamingState() {
         initSuperpoweredIfNotInitialized();
         if (isStreamingEnabled()) {
-            Snackbar.make(findViewById(R.id.fragment_content), "Started streaming", 3000).show();
+            Snackbar.make(findViewById(R.id.fragment_content), R.string.fragment_streaming_snackbar_start_streaming, 3000).show();
         } else {
-            Snackbar.make(findViewById(R.id.fragment_content), "Stopped streaming", 3000).show();
+            Snackbar.make(findViewById(R.id.fragment_content), R.string.fragment_streaming_snackbar_stop_streaming, 3000).show();
         }
         onPlayPause(isStreamingEnabled());
     }

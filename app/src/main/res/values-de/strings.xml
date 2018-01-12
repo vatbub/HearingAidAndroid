@@ -4,8 +4,6 @@
     <string name="navigation_drawer_open">Sidebar öffnen</string>
     <string name="navigation_drawer_close">Sidebar schließen</string>
     <string name="action_settings">Einstellungen</string>
-    <string name="mainToggleButton_on">Ein</string>
-    <string name="mainToggleButton_off">Aus</string>
     <string name="nav_privacy">Datenschutz</string>
     <string name="nav_about">Impressum</string>
     <string name="nav_legal_stuff">Legales</string>
@@ -18,4 +16,6 @@
     <string name="fragment_about_title">Impressum</string>
     <string name="fragment_about_text">Impressumstext, Lizenzen, bla und blub [WIP]</string>
     <string name="fragment_privacy_text">Datenschutz wird völlig überbewertet.</string>
+    <string name="fragment_streaming_snackbar_start_streaming">Hörgerät eingeschaltet</string>
+    <string name="fragment_streaming_snackbar_stop_streaming">Hörgerät ausgeschaltet</string>
 </resources>
