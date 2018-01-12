@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -56,10 +57,16 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            String fragmentTagAboutToBeOpened = getFragmentManager().getBackStackEntryAt(0).getName();
-            updateTitle(fragmentTagAboutToBeOpened);
-            updateSelectedItem(fragmentTagAboutToBeOpened);
-            super.onBackPressed();
+            try {
+                String fragmentTagAboutToBeOpened = getFragmentManager().getBackStackEntryAt(getFragmentManager().getBackStackEntryCount() - 2).getName();
+                Log.d(getClass().getName(), "Navigating back to fragment: " + fragmentTagAboutToBeOpened);
+                updateTitle(fragmentTagAboutToBeOpened);
+                updateSelectedItem(fragmentTagAboutToBeOpened);
+                super.onBackPressed();
+                currentFragmentTag = fragmentTagAboutToBeOpened;
+            } catch (ArrayIndexOutOfBoundsException e) {
+                Log.e(getClass().getName(), "onBackPressed: Unable to get the fragment about to be navigated to as there is no fragment in the back stack anymore", e);
+            }
         }
     }
 
@@ -123,6 +130,7 @@ public class MainActivity extends AppCompatActivity
                 .commit();
 */
 
+        Log.d(getClass().getName(), "Opening fragment: " + tag);
         Fragment fragmentToUse = getFragmentManager().findFragmentByTag(tag);
         boolean fragmentFound = fragmentToUse != null;
         if (!fragmentFound)
