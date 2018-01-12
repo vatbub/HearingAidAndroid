@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.vatbub.hearingaid.R;
+import com.ohoussein.playpause.PlayPauseView;
 
 public class StreamingFragment extends Fragment {
     private static final String SUPERPOWERED_INITIALIZED_BUNDLE_KEY = "superpoweredInitialized";
@@ -92,6 +93,7 @@ public class StreamingFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 setStreaming(!isStreamingEnabled());
+                ((PlayPauseView) v).change(!isStreamingEnabled());
                 if (!allPermissionsGranted()) {
                     requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 1);
                 } else {

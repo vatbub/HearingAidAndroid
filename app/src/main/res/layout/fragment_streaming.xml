@@ -7,23 +7,25 @@
     tools:context="com.github.vatbub.hearingaid.fragments.StreamingFragment">
 
 
-    <android.support.design.widget.FloatingActionButton
+    <com.ohoussein.playpause.PlayPauseView
         android:id="@+id/mainToggleButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/play_pause_button_size"
+        android:layout_height="@dimen/play_pause_button_size"
+        android:layout_centerInParent="true"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:clickable="true"
-        android:defaultFocusHighlightEnabled="false"
+        android:elevation="4dp"
         android:focusable="true"
-        android:src="@drawable/ic_audiotrack_light"
-        app:fabSize="normal"
+
+        android:foreground="?android:selectableItemBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:focusable="auto" tools:targetApi="o"/>
+        app:pause_bg="@color/colorAccent"
+        app:play_bg="@color/colorPrimary" />
 
 </android.support.constraint.ConstraintLayout>
