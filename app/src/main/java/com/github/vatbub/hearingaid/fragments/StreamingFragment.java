@@ -18,15 +18,17 @@ import android.view.ViewGroup;
 import com.github.vatbub.hearingaid.R;
 import com.ohoussein.playpause.PlayPauseView;
 
+import static android.content.pm.PackageManager.PERMISSION_DENIED;
+
 public class StreamingFragment extends Fragment {
     private static final String SUPERPOWERED_INITIALIZED_BUNDLE_KEY = "superpoweredInitialized";
     private static final String IS_STREAMING_BUNDLE_KEY = "isStreaming";
-    private boolean isStreaming;
 
     static {
         System.loadLibrary("HearingAidAudioProcessor");
     }
 
+    private boolean isStreaming;
     private View createdView;
     private boolean superpoweredInitialized = false;
 
@@ -36,6 +38,12 @@ public class StreamingFragment extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (permissions.length == 0 || grantResults.length == 0 || grantResults[0] == PERMISSION_DENIED) {
+            setStreaming(false);
+            ((PlayPauseView) findViewById(R.id.mainToggleButton)).change(!isStreamingEnabled());
+            return;
+        }
+
         updateStreamingState();
     }
 
