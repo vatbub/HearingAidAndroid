@@ -18,4 +18,5 @@
     <string name="fragment_privacy_text">Datenschutz wird völlig überbewertet.</string>
     <string name="fragment_streaming_snackbar_start_streaming">Hörgerät eingeschaltet</string>
     <string name="fragment_streaming_snackbar_stop_streaming">Hörgerät ausgeschaltet</string>
+    <string name="app_icon_content_description">App Icon</string>
 </resources>

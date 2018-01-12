@@ -23,4 +23,5 @@
     <string name="fragment_privacy_text">We give a fuck about privacy. (Just a bad joke while we work on our privacy statement ;) )</string>
     <string name="fragment_streaming_snackbar_start_streaming">Started streaming</string>
     <string name="fragment_streaming_snackbar_stop_streaming">Stopped streaming</string>
+    <string name="app_icon_content_description">app icon</string>
 </resources>
