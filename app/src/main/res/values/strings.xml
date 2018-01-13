@@ -24,5 +24,9 @@
     <string name="fragment_streaming_snackbar_start_streaming">Started streaming</string>
     <string name="fragment_streaming_snackbar_stop_streaming">Stopped streaming</string>
     <string name="app_icon_content_description">app icon</string>
-    <string name="fragment_streaming_delay_message">Your device does NOT support low latency streaming. You might experience latencies of up to 50 ms.</string>
+    <string name="fragment_streaming_latency_message">Your device does NOT support low latency streaming. You might experience audio lag of %1$s 45 ms.</string>
+    <string name="fragment_streaming_latency_learn_more_button">Learn more</string>
+    <string name="fragment_streaming_latency_dont_show_again_button">Don\'t show again</string>
+    <string name="fragment_streaming_more_than">more than</string>
+    <string name="fragment_streaming_up_to">up to</string>
 </resources>

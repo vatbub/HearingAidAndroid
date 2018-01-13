@@ -13,12 +13,13 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-		
-		ndk {
-            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64' // these platforms cover 99% percent of all Android devices
+
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+            // these platforms cover 99% percent of all Android devices
         }
-		
-		externalNativeBuild {
+
+        externalNativeBuild {
             cmake {
                 arguments '-DANDROID_PLATFORM=android-16', '-DANDROID_TOOLCHAIN=clang', '-DANDROID_ARM_NEON=TRUE', '-DANDROID_STL=gnustl_static', "-DPATH_TO_SUPERPOWERED:STRING=${superpowered_sdk_path}"
                 cFlags '-O3', '-fsigned-char' // full optimization, char data type is signed
@@ -26,8 +27,8 @@ android {
             }
         }
     }
-	
-	sourceSets {
+
+    sourceSets {
         main {
             jniLibs.srcDirs = ['src/main/jni']
         }
@@ -38,7 +39,7 @@ android {
             path 'src/main/jni/CMakeLists.txt'
         }
     }
-	
+
     buildTypes {
         release {
             minifyEnabled false
@@ -53,6 +54,7 @@ dependencies {
     implementation 'com.android.support:design:27.0.2'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.google.firebase:firebase-crash:11.8.0'
+    implementation 'com.google.firebase:firebase-config:11.8.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'

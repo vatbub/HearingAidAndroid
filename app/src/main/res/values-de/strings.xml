@@ -19,5 +19,9 @@
     <string name="fragment_streaming_snackbar_start_streaming">Hörgerät eingeschaltet</string>
     <string name="fragment_streaming_snackbar_stop_streaming">Hörgerät ausgeschaltet</string>
     <string name="app_icon_content_description">App Icon</string>
-    <string name="fragment_streaming_delay_message">Ihr Gerät unterstütz KEIN Streaming mit niedriger Latenz. Es kann daher zu Latenzen von bis zu 50 ms kommen.</string>
+    <string name="fragment_streaming_latency_message">Ihr Gerät unterstütz KEIN Streaming mit niedriger Verzögerung. Es kann daher zu Tonverzögerungen von %1$s 45 ms kommen.</string>
+    <string name="fragment_streaming_latency_learn_more_button">Mehr Info</string>
+    <string name="fragment_streaming_latency_dont_show_again_button">Nicht mehr anzeigen</string>
+    <string name="fragment_streaming_more_than">mehr als</string>
+    <string name="fragment_streaming_up_to">bis zu</string>
 </resources>

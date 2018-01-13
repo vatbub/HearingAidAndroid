@@ -49,7 +49,10 @@ public class MainActivity extends AppCompatActivity
             updateSelectedItem(currentFragmentTag);
             updateTitle(currentFragmentTag);
         }
+
+        RemoteConfig.initConfig();
     }
+
 
     @Override
     public void onBackPressed() {
