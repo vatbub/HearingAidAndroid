@@ -7,25 +7,55 @@
     tools:context="com.github.vatbub.hearingaid.fragments.StreamingFragment">
 
 
-    <com.ohoussein.playpause.PlayPauseView
-        android:id="@+id/mainToggleButton"
-        android:layout_width="@dimen/play_pause_button_size"
-        android:layout_height="@dimen/play_pause_button_size"
-        android:layout_centerInParent="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:clickable="true"
-        android:elevation="4dp"
-        android:focusable="true"
-
-        android:foreground="?android:selectableItemBackground"
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/streming_nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:pause_bg="@color/colorAccent"
-        app:play_bg="@color/colorPrimary" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical">
+
+            <com.ohoussein.playpause.PlayPauseView
+                android:id="@+id/mainToggleButton"
+                android:layout_width="@dimen/play_pause_button_size"
+                android:layout_height="@dimen/play_pause_button_size"
+                android:layout_gravity="center"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:clickable="true"
+
+                android:elevation="4dp"
+                android:focusable="true"
+                android:foreground="?android:selectableItemBackground"
+                app:layout_constraintBottom_toTopOf="@+id/recyclerView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:pause_bg="@color/colorAccent"
+                app:play_bg="@color/colorPrimary" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:nestedScrollingEnabled="false"
+                android:scrollbars="none"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
 
 </android.support.constraint.ConstraintLayout>
