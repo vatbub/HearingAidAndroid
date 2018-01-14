@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity
             sendIntent.putExtra(Intent.EXTRA_TEXT,
                     getString(R.string.share_message, FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.PLAY_STORE_URL)));
             sendIntent.setType("text/plain");
-            startActivity(sendIntent);
+            startActivity(Intent.createChooser(sendIntent, getString(R.string.share_screen_title)));
         } else if (id == R.id.nav_feedback) {
 
         } else if (id == R.id.nav_privacy) {

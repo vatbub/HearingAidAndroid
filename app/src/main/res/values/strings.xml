@@ -31,4 +31,5 @@
     <string name="fragment_streaming_up_to">up to</string>
     <string name="fragment_streaming_motd_read_more">Read more</string>
     <string name="share_message">With this app, I was able to hear again: %1$s</string>
+    <string name="share_screen_title">Share this application with your friends</string>
 </resources>

@@ -26,4 +26,5 @@
     <string name="fragment_streaming_up_to">bis zu</string>
     <string name="fragment_streaming_motd_read_more">Weiterlesen</string>
     <string name="share_message">Mit dieser App konnte ich wieder hören: %1$s</string>
+    <string name="share_screen_title">Teile diese App mit deinen Freunden</string>
 </resources>
