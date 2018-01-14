@@ -103,7 +103,7 @@ public class BottomSheetQueue extends LinkedList<BottomSheetQueue.BottomSheetBeh
         }
         setCurrentBottomSheet(removeFirst());
 
-        final List<BottomSheetBehavior.BottomSheetCallback> callbacks = new ArrayList<>();
+        final BottomSheetCallbackList callbacks = new BottomSheetCallbackList();
 
         BottomSheetBehavior.BottomSheetCallback queueCallback = new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -111,7 +111,7 @@ public class BottomSheetQueue extends LinkedList<BottomSheetQueue.BottomSheetBeh
                 if (newState == BottomSheetBehavior.STATE_HIDDEN) {
                     setCurrentBottomSheet(null);
                     if (callbacks.contains(this))
-                        callbacks.remove(this);
+                        callbacks.queueForRemoval(this);
                     showNextSheetIfApplicable();
                 }
             }
@@ -134,17 +134,17 @@ public class BottomSheetQueue extends LinkedList<BottomSheetQueue.BottomSheetBeh
     public static class BottomSheetBehaviourWrapper {
         private BottomSheetBehavior bottomSheetBehavior;
         private int stateToUseForExpansion;
-        private List<BottomSheetBehavior.BottomSheetCallback> additionalCallbacks;
+        private BottomSheetCallbackList additionalCallbacks;
 
         public BottomSheetBehaviourWrapper(BottomSheetBehavior bottomSheetBehavior) {
             this(bottomSheetBehavior, BottomSheetBehavior.STATE_EXPANDED);
         }
 
         public BottomSheetBehaviourWrapper(BottomSheetBehavior bottomSheetBehavior, int stateToUseForExpansion) {
-            this(bottomSheetBehavior, stateToUseForExpansion, new ArrayList<BottomSheetBehavior.BottomSheetCallback>());
+            this(bottomSheetBehavior, stateToUseForExpansion, new BottomSheetCallbackList());
         }
 
-        public BottomSheetBehaviourWrapper(BottomSheetBehavior bottomSheetBehavior, int stateToUseForExpansion, List<BottomSheetBehavior.BottomSheetCallback> additionalCallbacks) {
+        public BottomSheetBehaviourWrapper(BottomSheetBehavior bottomSheetBehavior, int stateToUseForExpansion, BottomSheetCallbackList additionalCallbacks) {
             setBottomSheetBehavior(bottomSheetBehavior);
             setStateToUseForExpansion(stateToUseForExpansion);
             setAdditionalCallbacks(additionalCallbacks);
@@ -166,12 +166,47 @@ public class BottomSheetQueue extends LinkedList<BottomSheetQueue.BottomSheetBeh
             this.stateToUseForExpansion = stateToUseForExpansion;
         }
 
-        public List<BottomSheetBehavior.BottomSheetCallback> getAdditionalCallbacks() {
+        public BottomSheetCallbackList getAdditionalCallbacks() {
             return additionalCallbacks;
         }
 
-        public void setAdditionalCallbacks(List<BottomSheetBehavior.BottomSheetCallback> additionalCallbacks) {
+        public void setAdditionalCallbacks(BottomSheetCallbackList additionalCallbacks) {
             this.additionalCallbacks = additionalCallbacks;
+        }
+    }
+
+    public static class BottomSheetCallbackList extends ArrayList<BottomSheetBehavior.BottomSheetCallback> {
+        private volatile List<BottomSheetBehavior.BottomSheetCallback> callbacksToBeRemoved;
+
+        public BottomSheetCallbackList(int initialCapacity) {
+            super(initialCapacity);
+        }
+
+        public BottomSheetCallbackList() {
+        }
+
+        public BottomSheetCallbackList(@NonNull Collection<? extends BottomSheetBehavior.BottomSheetCallback> c) {
+            super(c);
+        }
+
+        public void queueForRemoval(BottomSheetBehavior.BottomSheetCallback callbackToBeRemoved) {
+            getCallbacksToBeRemoved().add(callbackToBeRemoved);
+        }
+
+        public void removeQueuedCallbacks() {
+            synchronized (this) {
+                while (!getCallbacksToBeRemoved().isEmpty()) {
+                    this.remove(getCallbacksToBeRemoved().remove(0));
+                }
+            }
+        }
+
+        private List<BottomSheetBehavior.BottomSheetCallback> getCallbacksToBeRemoved(){
+            if (callbacksToBeRemoved==null){
+                callbacksToBeRemoved = new ArrayList<>();
+            }
+
+            return callbacksToBeRemoved;
         }
     }
 
@@ -179,14 +214,14 @@ public class BottomSheetQueue extends LinkedList<BottomSheetQueue.BottomSheetBeh
      * Allows a {@code BottomSheetBehaviour} to have multiple callbacks.
      */
     private class BottomSheetCallbackWrapper extends BottomSheetBehavior.BottomSheetCallback {
-        private List<BottomSheetBehavior.BottomSheetCallback> callbacks;
+        private BottomSheetCallbackList callbacks;
 
         /**
          * Creates a wrapper for the specified callbacks.
          *
          * @param callbacks The callbacks that will be called in order.
          */
-        public BottomSheetCallbackWrapper(List<BottomSheetBehavior.BottomSheetCallback> callbacks) {
+        public BottomSheetCallbackWrapper(BottomSheetCallbackList callbacks) {
             setCallbacks(callbacks);
         }
 
@@ -195,6 +230,7 @@ public class BottomSheetQueue extends LinkedList<BottomSheetQueue.BottomSheetBeh
             for (BottomSheetBehavior.BottomSheetCallback callback : getCallbacks()) {
                 callback.onStateChanged(bottomSheet, newState);
             }
+            callbacks.removeQueuedCallbacks();
         }
 
         @Override
@@ -202,13 +238,14 @@ public class BottomSheetQueue extends LinkedList<BottomSheetQueue.BottomSheetBeh
             for (BottomSheetBehavior.BottomSheetCallback callback : getCallbacks()) {
                 callback.onSlide(bottomSheet, slideOffset);
             }
+            callbacks.removeQueuedCallbacks();
         }
 
-        public List<BottomSheetBehavior.BottomSheetCallback> getCallbacks() {
+        public BottomSheetCallbackList getCallbacks() {
             return callbacks;
         }
 
-        public void setCallbacks(List<BottomSheetBehavior.BottomSheetCallback> callbacks) {
+        public void setCallbacks(BottomSheetCallbackList callbacks) {
             this.callbacks = callbacks;
         }
     }

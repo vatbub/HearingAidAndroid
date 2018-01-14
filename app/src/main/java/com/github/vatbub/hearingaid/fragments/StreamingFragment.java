@@ -35,8 +35,6 @@ import com.rometools.rome.io.FeedException;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 
@@ -275,7 +273,7 @@ public class StreamingFragment extends Fragment {
                             }
                         });
 
-                        List<BottomSheetBehavior.BottomSheetCallback> additionalCallbacks = new ArrayList<>();
+                        BottomSheetQueue.BottomSheetCallbackList additionalCallbacks = new BottomSheetQueue.BottomSheetCallbackList();
                         additionalCallbacks.add(new BottomSheetBehavior.BottomSheetCallback() {
                             @Override
                             public void onStateChanged(@NonNull View bottomSheet, int newState) {
