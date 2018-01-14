@@ -174,7 +174,6 @@ public class StreamingFragment extends Fragment {
         findViewById(R.id.mainToggleButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mLatencyBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 setStreaming(!isStreamingEnabled());
                 ((PlayPauseView) v).change(!isStreamingEnabled());
                 if (!allPermissionsGranted()) {

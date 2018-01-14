@@ -103,26 +103,30 @@ public class BottomSheetQueue extends LinkedList<BottomSheetQueue.BottomSheetBeh
         }
         setCurrentBottomSheet(removeFirst());
 
-        getCurrentBottomSheet().getBottomSheetBehavior().setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        final List<BottomSheetBehavior.BottomSheetCallback> callbacks = new ArrayList<>();
+
+        BottomSheetBehavior.BottomSheetCallback queueCallback = new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                for(BottomSheetBehavior.BottomSheetCallback callback:getCurrentBottomSheet().getAdditionalCallbacks()){
-                    callback.onStateChanged(bottomSheet, newState);
-                }
-
                 if (newState == BottomSheetBehavior.STATE_HIDDEN) {
                     setCurrentBottomSheet(null);
+                    if (callbacks.contains(this))
+                        callbacks.remove(this);
                     showNextSheetIfApplicable();
                 }
             }
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                for(BottomSheetBehavior.BottomSheetCallback callback:getCurrentBottomSheet().getAdditionalCallbacks()){
-                    callback.onSlide(bottomSheet, slideOffset);
-                }
+
             }
-        });
+        };
+
+        callbacks.add(queueCallback);
+        if (getCurrentBottomSheet().getAdditionalCallbacks() != null)
+            callbacks.addAll(getCurrentBottomSheet().getAdditionalCallbacks());
+
+        getCurrentBottomSheet().getBottomSheetBehavior().setBottomSheetCallback(new BottomSheetCallbackWrapper(callbacks));
 
         getCurrentBottomSheet().getBottomSheetBehavior().setState(getCurrentBottomSheet().getStateToUseForExpansion());
     }
@@ -168,6 +172,44 @@ public class BottomSheetQueue extends LinkedList<BottomSheetQueue.BottomSheetBeh
 
         public void setAdditionalCallbacks(List<BottomSheetBehavior.BottomSheetCallback> additionalCallbacks) {
             this.additionalCallbacks = additionalCallbacks;
+        }
+    }
+
+    /**
+     * Allows a {@code BottomSheetBehaviour} to have multiple callbacks.
+     */
+    private class BottomSheetCallbackWrapper extends BottomSheetBehavior.BottomSheetCallback {
+        private List<BottomSheetBehavior.BottomSheetCallback> callbacks;
+
+        /**
+         * Creates a wrapper for the specified callbacks.
+         *
+         * @param callbacks The callbacks that will be called in order.
+         */
+        public BottomSheetCallbackWrapper(List<BottomSheetBehavior.BottomSheetCallback> callbacks) {
+            setCallbacks(callbacks);
+        }
+
+        @Override
+        public void onStateChanged(@NonNull View bottomSheet, int newState) {
+            for (BottomSheetBehavior.BottomSheetCallback callback : getCallbacks()) {
+                callback.onStateChanged(bottomSheet, newState);
+            }
+        }
+
+        @Override
+        public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            for (BottomSheetBehavior.BottomSheetCallback callback : getCallbacks()) {
+                callback.onSlide(bottomSheet, slideOffset);
+            }
+        }
+
+        public List<BottomSheetBehavior.BottomSheetCallback> getCallbacks() {
+            return callbacks;
+        }
+
+        public void setCallbacks(List<BottomSheetBehavior.BottomSheetCallback> callbacks) {
+            this.callbacks = callbacks;
         }
     }
 }
