@@ -1,17 +1,33 @@
+import org.ajoberstar.grgit.Grgit
+
 apply plugin: 'com.android.application'
 
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 def superpowered_sdk_path = properties.getProperty('superpowered.dir')
 
+ext {
+    // Open the Git repository in the current directory.
+    git = Grgit.open(dir: file('..'))
+
+    // Get commit id of HEAD.
+    GIT_COMMIT_COUNT = git.log(includes:['HEAD']).size()
+    // Alternative is using abbreviatedId of head() method.
+    // revision = git.head().abbreviatedId
+}
+
 android {
+    signingConfigs {
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.github.vatbub.hearingaid"
         minSdkVersion 24
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        versionCode GIT_COMMIT_COUNT
+        println('Version code is: ' + GIT_COMMIT_COUNT)
+        versionName "1.0." + new Date().format('yyyy_MM_dd_HHmm')
+        println('Version name is: ' + versionName)
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         ndk {
@@ -27,33 +43,34 @@ android {
             }
         }
     }
-
     lintOptions {
         disable 'InvalidPackage'
     }
-
     sourceSets {
         main {
             jniLibs.srcDirs = ['src/main/jni']
         }
     }
-
     externalNativeBuild {
         cmake {
             path 'src/main/jni/CMakeLists.txt'
         }
     }
-
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            versionNameSuffix '-release'
+        }
+        debug {
+            jniDebuggable true
+            versionNameSuffix '-debug'
         }
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.0.2'
     implementation 'com.android.support:design:27.0.2'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
