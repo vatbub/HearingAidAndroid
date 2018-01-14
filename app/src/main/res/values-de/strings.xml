@@ -24,4 +24,5 @@
     <string name="fragment_streaming_latency_dont_show_again_button">Nicht mehr anzeigen</string>
     <string name="fragment_streaming_more_than">mehr als</string>
     <string name="fragment_streaming_up_to">bis zu</string>
+    <string name="fragment_streaming_motd_read_more">Weiterlesen</string>
 </resources>

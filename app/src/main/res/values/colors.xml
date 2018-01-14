@@ -3,4 +3,5 @@
     <color name="colorPrimary">#f57f17</color>
     <color name="colorPrimaryDark">#f57f17</color>
     <color name="colorAccent">#e65100</color>
+    <color name="motdBackground">#01000000</color>
 </resources>
