@@ -2,6 +2,7 @@ package com.github.vatbub.hearingaid;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -18,6 +19,7 @@ import android.view.MenuItem;
 import com.github.vatbub.hearingaid.fragments.AboutFragment;
 import com.github.vatbub.hearingaid.fragments.PrivacyFragment;
 import com.github.vatbub.hearingaid.fragments.StreamingFragment;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback {
@@ -111,7 +113,12 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
-
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT,
+                    getString(R.string.share_message, FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.PLAY_STORE_URL)));
+            sendIntent.setType("text/plain");
+            startActivity(sendIntent);
         } else if (id == R.id.nav_feedback) {
 
         } else if (id == R.id.nav_privacy) {
