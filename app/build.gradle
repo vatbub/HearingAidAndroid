@@ -28,6 +28,10 @@ android {
         }
     }
 
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+
     sourceSets {
         main {
             jniLibs.srcDirs = ['src/main/jni']
