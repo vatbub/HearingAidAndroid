@@ -27,4 +27,12 @@
     <string name="fragment_streaming_motd_read_more">Weiterlesen</string>
     <string name="share_message">Mit dieser App konnte ich wieder hören: %1$s</string>
     <string name="share_screen_title">Teile diese App mit deinen Freunden</string>
+    <string name="intro_activity_label">Willkommen</string>
+    <string name="intro_slide_1_title">Willkommen...</string>
+    <string name="intro_slide_1_description">...bei Hörgerät. Der App, die Ihnen wieder das Hören ermöglicht!</string>
+    <string name="intro_slide_2_title">Wozu?</string>
+    <string name="intro_slide_2_description">Die App verwendet das Mikrofon in Ihrem Smartphone...</string>
+    <string name="intro_slide_3_description">...verstärkt es und spielt den Ton auf den Kopfhörern ab.</string>
+    <string name="intro_slide_4_title">Zu aller erst...</string>
+    <string name="intro_slide_4_description">Wir brauchen Ihre Zustimmung, um auf das Mikrofon zuzugreifen.</string>
 </resources>

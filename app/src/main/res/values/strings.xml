@@ -32,4 +32,12 @@
     <string name="fragment_streaming_motd_read_more">Read more</string>
     <string name="share_message">With this app, I was able to hear again: %1$s</string>
     <string name="share_screen_title">Share this application with your friends</string>
+    <string name="intro_activity_label">Welcome</string>
+    <string name="intro_slide_1_title">Welcome...</string>
+    <string name="intro_slide_1_description">...to HearingAid. The app that makes you hear again!</string>
+    <string name="intro_slide_2_title">What it does</string>
+    <string name="intro_slide_2_description">HearingAid will take the mic of your smartphone...</string>
+    <string name="intro_slide_3_description">...amplify it and send it to your ear using headphones.</string>
+    <string name="intro_slide_4_title">First things first</string>
+    <string name="intro_slide_4_description">We need your permission to access the mic.</string>
 </resources>
