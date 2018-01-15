@@ -70,6 +70,20 @@ public class StreamingFragment extends Fragment {
         updateStreamingState();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (superpoweredInitialized)
+            onForeground();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (superpoweredInitialized)
+            onBackground();
+    }
+
     public boolean isStreamingEnabled() {
         return isStreaming;
     }
@@ -232,6 +246,10 @@ public class StreamingFragment extends Fragment {
 
     private native void onPlayPause(boolean play);
 
+    private native void onBackground();
+
+    private native void onForeground();
+
     public void setStreaming(boolean streaming) {
         isStreaming = streaming;
     }
@@ -277,7 +295,7 @@ public class StreamingFragment extends Fragment {
                         additionalCallbacks.add(new BottomSheetBehavior.BottomSheetCallback() {
                             @Override
                             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                                if (newState == BottomSheetBehavior.STATE_HIDDEN){
+                                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
                                     try {
                                         motd.markAsRead();
                                     } catch (IOException | ClassNotFoundException e) {

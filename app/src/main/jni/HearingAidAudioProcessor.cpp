@@ -28,23 +28,24 @@ audioProcessing(void *clientdata, short int *audioIO, int numberOfSamples, int s
 
 HearingAidAudioProcessor::HearingAidAudioProcessor(unsigned int samplerate,
                                                    unsigned int buffersize) {
-    frequencyDomain = new SuperpoweredFrequencyDomain(FFT_LOG_SIZE); // This will do the main "magic".
-    stepSize = frequencyDomain->fftSize / 4; // The default overlap ratio is 4:1, so we will receive this amount of samples from the frequency domain in one step.
+    frequencyDomain = new SuperpoweredFrequencyDomain(
+            FFT_LOG_SIZE); // This will do the main "magic".
+    stepSize = frequencyDomain->fftSize /
+               4; // The default overlap ratio is 4:1, so we will receive this amount of samples from the frequency domain in one step.
 
     // Frequency domain data goes into these buffers:
-    magnitudeLeft = (float *)malloc(frequencyDomain->fftSize * sizeof(float));
-    magnitudeRight = (float *)malloc(frequencyDomain->fftSize * sizeof(float));
-    phaseLeft = (float *)malloc(frequencyDomain->fftSize * sizeof(float));
-    phaseRight = (float *)malloc(frequencyDomain->fftSize * sizeof(float));
+    magnitudeLeft = (float *) malloc(frequencyDomain->fftSize * sizeof(float));
+    magnitudeRight = (float *) malloc(frequencyDomain->fftSize * sizeof(float));
+    phaseLeft = (float *) malloc(frequencyDomain->fftSize * sizeof(float));
+    phaseRight = (float *) malloc(frequencyDomain->fftSize * sizeof(float));
 
     // Time domain result goes into a FIFO (first-in, first-out) buffer
     fifoOutputFirstSample = fifoOutputLastSample = 0;
-    fifoCapacity = stepSize * 100; // Let's make the fifo's size 100 times more than the step size, so we save memory bandwidth.
-    fifoOutput = (float *)malloc(fifoCapacity * sizeof(float) * 2 + 128);
+    fifoCapacity = stepSize *
+                   100; // Let's make the fifo's size 100 times more than the step size, so we save memory bandwidth.
+    fifoOutput = (float *) malloc(fifoCapacity * sizeof(float) * 2 + 128);
 
-    inputBufferFloat = (float *)malloc(buffersize * sizeof(float) * 2 + 128);
-
-    SuperpoweredCPU::setSustainedPerformanceMode(true);
+    inputBufferFloat = (float *) malloc(buffersize * sizeof(float) * 2 + 128);
 
     audioSystem = new SuperpoweredAndroidAudioIO(samplerate, buffersize, true, true,
                                                  audioProcessing, this,
@@ -70,8 +71,8 @@ bool HearingAidAudioProcessor::process(short int *output, unsigned int numberOfS
         // You can work with frequency domain data from this point.
 
         // This is just a quick example: we remove the magnitude of the first 20 bins, meaning total bass cut between 0-430 Hz.
-        memset(magnitudeLeft, 0, 80);
-        memset(magnitudeRight, 0, 80);
+        // memset(magnitudeLeft, 0, 80);
+        // memset(magnitudeRight, 0, 80);
 
         // We are done working with frequency domain data. Let's go back to the time domain.
 
@@ -121,10 +122,12 @@ void HearingAidAudioProcessor::onBackground() {
 }
 
 void HearingAidAudioProcessor::start() {
+    SuperpoweredCPU::setSustainedPerformanceMode(true);
     audioSystem->start();
 }
 
 void HearingAidAudioProcessor::stop() {
+    SuperpoweredCPU::setSustainedPerformanceMode(false);
     audioSystem->stop();
 }
 
@@ -141,4 +144,18 @@ Java_com_github_vatbub_hearingaid_fragments_StreamingFragment_HearingAidAudioPro
 extern "C" JNIEXPORT void Java_com_github_vatbub_hearingaid_fragments_StreamingFragment_onPlayPause(
         JNIEnv *__unused javaEnvironment, jobject __unused obj, jboolean play) {
     jniInstance->onPlayPause(play);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_github_vatbub_hearingaid_fragments_StreamingFragment_onBackground(JNIEnv *env,
+                                                                           jobject instance) {
+    jniInstance->onBackground();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_github_vatbub_hearingaid_fragments_StreamingFragment_onForeground(JNIEnv *env,
+                                                                           jobject instance) {
+    jniInstance->onForeground();
 }
