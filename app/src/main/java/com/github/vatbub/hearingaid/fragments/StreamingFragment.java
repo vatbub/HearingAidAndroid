@@ -73,7 +73,7 @@ public class StreamingFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (superpoweredInitialized)
+        if (superpoweredInitialized&& isStreamingEnabled())
             onForeground();
     }
 
