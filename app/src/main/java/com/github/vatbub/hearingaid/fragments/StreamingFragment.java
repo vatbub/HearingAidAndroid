@@ -335,6 +335,9 @@ public class StreamingFragment extends CustomFragment {
     }
 
     public void notifyEQEnabledSettingChanged() {
+        if (!superpoweredInitialized)
+            return;
+
         SharedPreferences prefs = getActivity().getSharedPreferences(SETTINGS_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         eqEnabled(prefs.getBoolean(EQ_ENABLED_PREF_KEY, EQ_ENABLED_DEFAULT_SETTING));
     }
