@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 
 import com.github.vatbub.hearingaid.R;
 
-public class PrivacyFragment extends Fragment {
+public class PrivacyFragment extends CustomFragment {
 
     public PrivacyFragment() {
         // Required empty public constructor

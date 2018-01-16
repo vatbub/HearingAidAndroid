@@ -1,0 +1,245 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:grid="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.github.vatbub.hearingaid.fragments.SettingsFragment">
+
+    <android.support.v7.widget.GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="6dp"
+        app:columnCount="6">
+
+        <Switch
+            android:id="@+id/eq_on_off_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/fragment_settings_use_equalizer"
+            app:layout_column="0"
+            app:layout_columnSpan="6"
+            app:layout_row="0" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/fragment_settings_equalizer_explanation"
+            app:layout_column="0"
+            app:layout_columnSpan="6"
+            app:layout_row="1" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:text="@string/fragment_settings_equalizer_title"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
+
+        <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            app:layout_column="0"
+            app:layout_columnSpan="1"
+            app:layout_row="3"
+            grid:layout_columnWeight="1"
+            grid:layout_gravity="fill"
+            grid:layout_rowWeight="1">
+
+            <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
+                android:id="@+id/eq_channel_1"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:max="100"
+                android:progress="0"
+                android:splitTrack="false"
+                app:seekBarRotation="CW270" /> <!-- Rotation: CW90 or CW270 -->
+        </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
+
+        <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            app:layout_column="1"
+            app:layout_columnSpan="1"
+            app:layout_row="3"
+            grid:layout_columnWeight="1"
+            grid:layout_gravity="fill"
+            grid:layout_rowWeight="1">
+
+            <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
+                android:id="@+id/eq_channel_2"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:max="100"
+                android:progress="0"
+                android:splitTrack="false"
+                app:seekBarRotation="CW270" /> <!-- Rotation: CW90 or CW270 -->
+        </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
+
+        <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            app:layout_column="2"
+            app:layout_columnSpan="1"
+            app:layout_row="3"
+            grid:layout_columnWeight="1"
+            grid:layout_gravity="fill"
+            grid:layout_rowWeight="1">
+
+            <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
+                android:id="@+id/eq_channel_3"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:max="100"
+                android:progress="0"
+                android:splitTrack="false"
+                app:seekBarRotation="CW270" /> <!-- Rotation: CW90 or CW270 -->
+        </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
+
+        <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            app:layout_column="3"
+            app:layout_columnSpan="1"
+            app:layout_row="3"
+            grid:layout_columnWeight="1"
+            grid:layout_gravity="fill"
+            grid:layout_rowWeight="1">
+
+            <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
+                android:id="@+id/eq_channel_4"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:max="100"
+                android:progress="0"
+                android:splitTrack="false"
+                app:seekBarRotation="CW270" /> <!-- Rotation: CW90 or CW270 -->
+        </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
+
+        <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            app:layout_column="4"
+            app:layout_columnSpan="1"
+            app:layout_row="3"
+            grid:layout_columnWeight="1"
+            grid:layout_gravity="fill"
+            grid:layout_rowWeight="1">
+
+            <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
+                android:id="@+id/eq_channel_5"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:max="100"
+                android:progress="0"
+                android:splitTrack="false"
+                app:seekBarRotation="CW270" /> <!-- Rotation: CW90 or CW270 -->
+        </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
+
+        <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            app:layout_column="5"
+            app:layout_columnSpan="1"
+            app:layout_row="3"
+            grid:layout_columnWeight="1"
+            grid:layout_gravity="fill"
+            grid:layout_rowWeight="1">
+
+            <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
+                android:id="@+id/eq_channel_6"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:max="100"
+                android:progress="0"
+                android:splitTrack="false"
+                app:seekBarRotation="CW270" />
+
+            <!-- Rotation: CW90 or CW270 -->
+        </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
+
+        <TextView
+            android:id="@+id/text_view_bin_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_column="0"
+            app:layout_columnSpan="1"
+            app:layout_row="4"
+            grid:layout_columnWeight="1"
+            grid:layout_gravity="fill"
+            grid:layout_rowWeight="1"
+            android:text="TextView" />
+        <TextView
+            android:id="@+id/text_view_bin_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_column="1"
+            app:layout_columnSpan="1"
+            app:layout_row="4"
+            grid:layout_columnWeight="1"
+            grid:layout_gravity="fill"
+            grid:layout_rowWeight="1"
+            android:text="TextView" />
+        <TextView
+            android:id="@+id/text_view_bin_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_column="2"
+            app:layout_columnSpan="1"
+            app:layout_row="4"
+            grid:layout_columnWeight="1"
+            grid:layout_gravity="fill"
+            grid:layout_rowWeight="1"
+            android:text="TextView" />
+        <TextView
+            android:id="@+id/text_view_bin_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_column="3"
+            app:layout_columnSpan="1"
+            app:layout_row="4"
+            grid:layout_columnWeight="1"
+            grid:layout_gravity="fill"
+            grid:layout_rowWeight="1"
+            android:text="TextView" />
+        <TextView
+            android:id="@+id/text_view_bin_5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_column="4"
+            app:layout_columnSpan="1"
+            app:layout_row="4"
+            grid:layout_columnWeight="1"
+            grid:layout_gravity="fill"
+            grid:layout_rowWeight="1"
+            android:text="TextView" />
+        <TextView
+            android:id="@+id/text_view_bin_6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_column="5"
+            app:layout_columnSpan="1"
+            app:layout_row="4"
+            grid:layout_columnWeight="1"
+            grid:layout_gravity="fill"
+            grid:layout_rowWeight="1"
+            android:text="TextView" />
+
+        <Button
+            android:id="@+id/button2"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/fragment_settings_perform_equalizer_setup"
+            app:layout_column="0"
+            app:layout_columnSpan="6"
+            app:layout_row="5" />
+
+    </android.support.v7.widget.GridLayout>
+</ScrollView>

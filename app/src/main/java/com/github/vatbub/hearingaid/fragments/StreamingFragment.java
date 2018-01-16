@@ -1,7 +1,6 @@
 package com.github.vatbub.hearingaid.fragments;
 
 import android.Manifest;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
@@ -37,8 +35,11 @@ import java.io.IOException;
 import java.net.URL;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
+import static com.github.vatbub.hearingaid.fragments.SettingsFragment.EQ_ENABLED_DEFAULT_SETTING;
+import static com.github.vatbub.hearingaid.fragments.SettingsFragment.EQ_ENABLED_PREF_KEY;
+import static com.github.vatbub.hearingaid.fragments.SettingsFragment.SETTINGS_SHARED_PREFERENCES_NAME;
 
-public class StreamingFragment extends Fragment {
+public class StreamingFragment extends CustomFragment {
     private static final String SUPERPOWERED_INITIALIZED_BUNDLE_KEY = "superpoweredInitialized";
     private static final String IS_STREAMING_BUNDLE_KEY = "isStreaming";
     private static final String SHARED_PREFERENCES_FILE_NAME = "com.github.vatbub.hearingaid.fragments.StreamingFragment.Preferences";
@@ -49,10 +50,10 @@ public class StreamingFragment extends Fragment {
     }
 
     private boolean isStreaming;
-    private View createdView;
     private boolean superpoweredInitialized = false;
     private BottomSheetBehavior mLatencyBottomSheetBehavior;
     private BottomSheetBehavior mMOTDBottomSheetBehavior;
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private BottomSheetQueue bottomSheetBehaviourQueue;
 
     public StreamingFragment() {
@@ -73,7 +74,7 @@ public class StreamingFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (superpoweredInitialized&& isStreamingEnabled())
+        if (superpoweredInitialized && isStreamingEnabled())
             onForeground();
     }
 
@@ -134,7 +135,7 @@ public class StreamingFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        createdView = view;
+        super.onViewCreated(view, savedInstanceState);
 
         initButtonHandlers();
 
@@ -176,10 +177,6 @@ public class StreamingFragment extends Fragment {
             ((TextView) findViewById(R.id.tv_low_latency)).setText(getString(R.string.fragment_streaming_latency_message, comparisonString));
             bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mLatencyBottomSheetBehavior));
         }
-    }
-
-    private <T extends View> T findViewById(@IdRes int id) {
-        return createdView.findViewById(id);
     }
 
     public void initButtonHandlers() {
@@ -229,7 +226,7 @@ public class StreamingFragment extends Fragment {
             return;
 
         // Get the device's sample rate and buffer size to enable low-latency Android audio io, if available.
-        String samplerateString = null, buffersizeString = null;
+        String samplerateString, buffersizeString;
         AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
         assert audioManager != null;
         samplerateString = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
@@ -238,6 +235,8 @@ public class StreamingFragment extends Fragment {
         if (buffersizeString == null) buffersizeString = "512";
 
         HearingAidAudioProcessor(Integer.parseInt(samplerateString), Integer.parseInt(buffersizeString));
+
+        notifyEQEnabledSettingChanged();
 
         superpoweredInitialized = true;
     }
@@ -249,6 +248,8 @@ public class StreamingFragment extends Fragment {
     private native void onBackground();
 
     private native void onForeground();
+
+    private native void eqEnabled(boolean eqEnabled);
 
     public void setStreaming(boolean streaming) {
         isStreaming = streaming;
@@ -331,5 +332,10 @@ public class StreamingFragment extends Fragment {
         });
         motdThread.setName("motdThread");
         motdThread.start();
+    }
+
+    public void notifyEQEnabledSettingChanged() {
+        SharedPreferences prefs = getActivity().getSharedPreferences(SETTINGS_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        eqEnabled(prefs.getBoolean(EQ_ENABLED_PREF_KEY, EQ_ENABLED_DEFAULT_SETTING));
     }
 }

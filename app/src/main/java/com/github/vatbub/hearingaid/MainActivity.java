@@ -20,6 +20,7 @@ import android.view.MenuItem;
 
 import com.github.vatbub.hearingaid.fragments.AboutFragment;
 import com.github.vatbub.hearingaid.fragments.PrivacyFragment;
+import com.github.vatbub.hearingaid.fragments.SettingsFragment;
 import com.github.vatbub.hearingaid.fragments.StreamingFragment;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
@@ -150,8 +151,8 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_slideshow) {
 
-        } else if (id == R.id.nav_manage) {
-
+        } else if (id == R.id.nav_settings) {
+            openFragment("settingsFragment", new SettingsFragment());
         } else if (id == R.id.nav_share) {
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);

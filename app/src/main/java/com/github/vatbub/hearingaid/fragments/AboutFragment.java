@@ -12,7 +12,7 @@ import com.github.vatbub.hearingaid.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AboutFragment extends Fragment {
+public class AboutFragment extends CustomFragment {
 
 
     public AboutFragment() {

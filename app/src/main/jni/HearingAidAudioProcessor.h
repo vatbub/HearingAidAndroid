@@ -15,6 +15,7 @@ public:
 
     bool process(short int *output, unsigned int numberOfSamples);
     void onPlayPause(bool play);
+    void enableEQ(bool eqEnabled);
 
     /*
  @brief Call this in the main activity's onResume() method.
@@ -39,6 +40,7 @@ public:
 
 private:
     SuperpoweredAndroidAudioIO *audioSystem;
+    bool eqEnabled;
 };
 
 

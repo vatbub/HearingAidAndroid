@@ -60,6 +60,10 @@ HearingAidAudioProcessor::~HearingAidAudioProcessor() {
 }
 
 bool HearingAidAudioProcessor::process(short int *output, unsigned int numberOfSamples) {
+    // return if eq is disabled
+    if (!eqEnabled)
+        return true;
+
     SuperpoweredShortIntToFloat(output, inputBufferFloat,
                                 numberOfSamples); // Converting the 16-bit integer samples to 32-bit floating point.
     frequencyDomain->addInput(inputBufferFloat,
@@ -102,8 +106,6 @@ bool HearingAidAudioProcessor::process(short int *output, unsigned int numberOfS
         fifoOutputFirstSample += numberOfSamples;
         return true;
     } else return false;
-
-    // return !silence;
 }
 
 void HearingAidAudioProcessor::onPlayPause(bool play) {
@@ -129,6 +131,10 @@ void HearingAidAudioProcessor::start() {
 void HearingAidAudioProcessor::stop() {
     SuperpoweredCPU::setSustainedPerformanceMode(false);
     audioSystem->stop();
+}
+
+void HearingAidAudioProcessor::enableEQ(bool eqEnabled) {
+this->eqEnabled = eqEnabled;
 }
 
 extern "C" JNIEXPORT void
@@ -158,4 +164,9 @@ JNIEXPORT void JNICALL
 Java_com_github_vatbub_hearingaid_fragments_StreamingFragment_onForeground(JNIEnv *env,
                                                                            jobject instance) {
     jniInstance->onForeground();
+}
+
+extern "C" JNIEXPORT void Java_com_github_vatbub_hearingaid_fragments_StreamingFragment_eqEnabled(
+        JNIEnv *__unused javaEnvironment, jobject __unused obj, jboolean eqEnabled) {
+    jniInstance->enableEQ(eqEnabled);
 }

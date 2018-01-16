@@ -35,4 +35,9 @@
     <string name="intro_slide_3_description">...verstärkt es und spielt den Ton auf den Kopfhörern ab.</string>
     <string name="intro_slide_4_title">Zu aller erst...</string>
     <string name="intro_slide_4_description">Wir brauchen Ihre Zustimmung, um auf das Mikrofon zuzugreifen.</string>
+    <string name="fragment_settings_use_equalizer">Equalizer benutzen</string>
+    <string name="fragment_settings_equalizer_explanation">Schalten Sie den Equalizer aus, wenn auf Ihrem Gerät starke Audioverzögerungen auftreten. Wenn Sie den Equalizer einschalten, können Sie den Klang jedoch an Ihren Hörverlust anpassen.</string>
+    <string name="fragment_settings_equalizer_title">Equalizer</string>
+    <string name="nav_settings">Einstellungen</string>
+    <string name="fragment_settings_perform_equalizer_setup">Hörtest neustarten</string>
 </resources>
