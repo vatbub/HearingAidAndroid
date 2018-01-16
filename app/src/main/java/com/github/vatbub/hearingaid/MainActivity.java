@@ -75,7 +75,8 @@ public class MainActivity extends AppCompatActivity
                     final Intent i = new Intent(MainActivity.this, IntroActivity.class);
 
                     runOnUiThread(new Runnable() {
-                        @Override public void run() {
+                        @Override
+                        public void run() {
                             startActivity(i);
                         }
                     });

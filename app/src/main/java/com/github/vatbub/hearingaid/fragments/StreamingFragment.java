@@ -20,12 +20,12 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.common.view.motd.PlatformIndependentMOTD;
 import com.github.vatbub.hearingaid.AndroidMOTDFileOutputStreamProvider;
 import com.github.vatbub.hearingaid.BottomSheetQueue;
 import com.github.vatbub.hearingaid.R;
 import com.github.vatbub.hearingaid.RemoteConfig;
-import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.ohoussein.playpause.PlayPauseView;
 import com.rometools.rome.feed.synd.SyndContent;
@@ -300,7 +300,8 @@ public class StreamingFragment extends CustomFragment {
                                     try {
                                         motd.markAsRead();
                                     } catch (IOException | ClassNotFoundException e) {
-                                        FirebaseCrash.report(e);
+                                        // FirebaseCrash.report(e);
+                                        Crashlytics.logException(e);
                                     }
                                 }
                             }
@@ -326,7 +327,8 @@ public class StreamingFragment extends CustomFragment {
                         bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mMOTDBottomSheetBehavior, BottomSheetBehavior.STATE_COLLAPSED, additionalCallbacks));
                     }
                 } catch (IllegalArgumentException | FeedException | IOException | ClassNotFoundException e) {
-                    FirebaseCrash.report(e);
+                    // FirebaseCrash.report(e);
+                    Crashlytics.logException(e);
                 }
             }
         });

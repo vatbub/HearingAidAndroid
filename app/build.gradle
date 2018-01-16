@@ -1,6 +1,7 @@
 import org.ajoberstar.grgit.Grgit
 
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
@@ -75,7 +76,11 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.0.2'
     implementation 'com.android.support:design:27.0.2'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation 'com.google.firebase:firebase-crash:11.8.0'
+    // implementation 'com.google.firebase:firebase-crash:11.8.0'
+    compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+        transitive = true
+    }
+    compile 'com.google.firebase:firebase-core:11.8.0'
     implementation 'com.google.firebase:firebase-config:11.8.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
