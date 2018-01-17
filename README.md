@@ -39,15 +39,19 @@ All we know for sure is that incremental builds should be faster than the initia
 
 **TL;DR** Use the gradle daemon if possible, incremental builds will be faster
 
-# App icon
+# Copyright
+## App icon
 <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
 
-# Intro graphics
+## Intro graphics
 - Welcome ribbon: <a href='https://www.freepik.com/free-vector/welcome-ribbon_764883.htm'>Designed by Freepik</a>
 - Smartphone: <a href='https://www.freepik.com/free-vector/iphone-comparation-vector_753683.htm'>Designed by Freepik</a>
 - Microphone icon: <a href='https://www.freepik.com/free-vector/microphone-icons-pack_759393.htm'>Designed by Freepik</a>
 - Headphones: <a href='https://www.freepik.com/free-vector/music-studio-equipment_934908.htm'>Designed by Freepik</a>
 - Thumb up: <a href='https://www.freepik.com/free-vector/decorative-thumb-up-in-flat-design_1091175.htm'>Designed by Freepik</a>
+
+## Other icons
+- Notification icon: <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
 
 # License
 This application is published under the Apache License v2 (see the license file). It utilizes the [Superpowered Audio Sdk](http://superpowered.com/) whose license can be found [here](http://superpowered.com/license).

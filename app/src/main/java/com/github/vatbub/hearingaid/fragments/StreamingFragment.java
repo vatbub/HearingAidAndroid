@@ -1,6 +1,9 @@
 package com.github.vatbub.hearingaid.fragments;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,6 +16,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,11 +48,13 @@ public class StreamingFragment extends CustomFragment {
     private static final String IS_STREAMING_BUNDLE_KEY = "isStreaming";
     private static final String SHARED_PREFERENCES_FILE_NAME = "com.github.vatbub.hearingaid.fragments.StreamingFragment.Preferences";
     private static final String NEVER_SHOW_LOW_LATENCY_MESSAGE_AGAIN_PREF_KEY = "doNotShowLowLatencyMessage";
+    private static final String NOTIFICATION_SHOWN_KEY = "notificationShownKey";
 
     static {
         System.loadLibrary("HearingAidAudioProcessor");
     }
 
+    private boolean notificationShown;
     private boolean isStreaming;
     private boolean superpoweredInitialized = false;
     private BottomSheetBehavior mLatencyBottomSheetBehavior;
@@ -114,9 +120,45 @@ public class StreamingFragment extends CustomFragment {
         if (savedInstanceState != null) {
             superpoweredInitialized = savedInstanceState.getBoolean(SUPERPOWERED_INITIALIZED_BUNDLE_KEY);
             setStreaming(savedInstanceState.getBoolean(IS_STREAMING_BUNDLE_KEY));
+            notificationShown = savedInstanceState.getBoolean(NOTIFICATION_SHOWN_KEY);
         }
 
         bottomSheetBehaviourQueue = new BottomSheetQueue();
+    }
+
+    private void showPlayPauseNotification() {
+        if (notificationShown)
+            return;
+
+        String channelId = "hearingAidPlayPauseNotificationChannel";
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+            String channelName = getString(R.string.fragment_streaming_playpause_notification_channel_name);
+            String channelDescription = getString(R.string.fragment_streaming_playpause_notification_channel_description);
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+
+            NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, importance);
+            notificationChannel.setDescription(channelDescription);
+            notificationChannel.enableVibration(false);
+            assert notificationManager != null;
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getActivity(), channelId)
+                .setSmallIcon(R.drawable.notification_icon)
+                .setContentTitle(getString(R.string.app_name));
+
+        if (isStreamingEnabled())
+            notificationBuilder.setContentText(getString(R.string.fragment_streaming_playpause_notification_content_running));
+        else
+            notificationBuilder.setContentText(getString(R.string.fragment_streaming_playpause_notification_content_not_running));
+
+        notificationBuilder.setContentIntent(PendingIntent.getActivity(getActivity(), 0, getActivity().getIntent(), PendingIntent.FLAG_CANCEL_CURRENT));
+
+        if (isStreamingEnabled())
+            // TODO Add play pause action to the intent
+            notificationBuilder.addAction(R.drawable.notification_icon, getString(R.string.fragment_streaming_playpause_notification_pause_action_name), PendingIntent.getActivity(getActivity(), 0, getActivity().getIntent(), PendingIntent.FLAG_CANCEL_CURRENT));
     }
 
     @Override
@@ -124,6 +166,7 @@ public class StreamingFragment extends CustomFragment {
         super.onSaveInstanceState(outState);
         outState.putBoolean(SUPERPOWERED_INITIALIZED_BUNDLE_KEY, superpoweredInitialized);
         outState.putBoolean(IS_STREAMING_BUNDLE_KEY, isStreamingEnabled());
+        outState.putBoolean(NOTIFICATION_SHOWN_KEY, notificationShown);
     }
 
     @Override

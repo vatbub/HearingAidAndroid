@@ -40,4 +40,11 @@
     <string name="fragment_settings_equalizer_title">Equalizer</string>
     <string name="nav_settings">Einstellungen</string>
     <string name="fragment_settings_perform_equalizer_setup">Hörtest neustarten</string>
+    <string name="fragment_streaming_playpause_notification_channel_name">Hörgerät Benachrichtigungen</string>
+    <string name="fragment_streaming_playpause_notification_channel_description">Beinhaltet die Benachrichtigung, dass das Hörgerät gerade läuft.</string>
+    <string name="fragment_streaming_playpause_notification_content_running">Das Hörgerät ist eingeschaltet</string>
+    <string name="fragment_streaming_playpause_notification_content_not_running">Das Hörgerät ist ausgeschaltet</string>
+    <string name="fragment_streaming_playpause_notification_play_action_name">Start</string>
+    <string name="fragment_streaming_playpause_notification_pause_action_name">Pause</string>
+    <string name="fragment_streaming_playpause_notification_hide_action_name">Ausblenden</string>
 </resources>

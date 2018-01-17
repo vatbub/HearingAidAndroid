@@ -45,6 +45,13 @@
     <string name="fragment_settings_equalizer_title">Equalizer</string>
     <string name="nav_settings">Settings</string>
     <string name="fragment_settings_perform_equalizer_setup">Restart hearing test</string>
+    <string name="fragment_streaming_playpause_notification_channel_name">HearingAid Notifications</string>
+    <string name="fragment_streaming_playpause_notification_channel_description">Contains the notification that the HearingAid is running.</string>
+    <string name="fragment_streaming_playpause_notification_content_running">HearingAid is running</string>
+    <string name="fragment_streaming_playpause_notification_content_not_running">HearingAid is switched off</string>
+    <string name="fragment_streaming_playpause_notification_play_action_name">Start</string>
+    <string name="fragment_streaming_playpause_notification_pause_action_name">Pause</string>
+    <string name="fragment_streaming_playpause_notification_hide_action_name">Hide</string>
 
     <!-- TODO: Remove or change this placeholder text -->
 </resources>
