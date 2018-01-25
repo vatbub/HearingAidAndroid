@@ -327,13 +327,15 @@ public class StreamingFragment extends CustomFragment {
                         }
 
                         final String finalContent = content.toString();
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                WebView motdView = findViewById(R.id.motd_web_view);
-                                motdView.loadData(finalContent, "text/html", "UTF-8");
-                            }
-                        });
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    WebView motdView = findViewById(R.id.motd_web_view);
+                                    motdView.loadData(finalContent, "text/html", "UTF-8");
+                                }
+                            });
+                        }
 
                         BottomSheetQueue.BottomSheetCallbackList additionalCallbacks = new BottomSheetQueue.BottomSheetCallbackList();
                         additionalCallbacks.add(new BottomSheetBehavior.BottomSheetCallback() {
