@@ -9,9 +9,10 @@
     <android.support.v7.widget.GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:paddingTop="6dp"
+        android:layout_marginBottom="6dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="6dp"
         app:columnCount="6">
 
         <Switch
@@ -167,68 +168,79 @@
             android:id="@+id/text_view_bin_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:tag="text_view_bin_1"
+            android:text="TextView"
             app:layout_column="0"
             app:layout_columnSpan="1"
             app:layout_row="4"
             grid:layout_columnWeight="1"
             grid:layout_gravity="fill"
-            grid:layout_rowWeight="1"
-            android:text="TextView" />
+            grid:layout_rowWeight="1" />
+
         <TextView
             android:id="@+id/text_view_bin_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:tag="text_view_bin_2"
+            android:text="TextView"
             app:layout_column="1"
             app:layout_columnSpan="1"
             app:layout_row="4"
             grid:layout_columnWeight="1"
             grid:layout_gravity="fill"
-            grid:layout_rowWeight="1"
-            android:text="TextView" />
+            grid:layout_rowWeight="1" />
+
         <TextView
             android:id="@+id/text_view_bin_3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:tag="text_view_bin_3"
+            android:text="TextView"
             app:layout_column="2"
             app:layout_columnSpan="1"
             app:layout_row="4"
             grid:layout_columnWeight="1"
             grid:layout_gravity="fill"
-            grid:layout_rowWeight="1"
-            android:text="TextView" />
+            grid:layout_rowWeight="1" />
+
         <TextView
             android:id="@+id/text_view_bin_4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:tag="text_view_bin_4"
+            android:text="TextView"
             app:layout_column="3"
             app:layout_columnSpan="1"
             app:layout_row="4"
             grid:layout_columnWeight="1"
             grid:layout_gravity="fill"
-            grid:layout_rowWeight="1"
-            android:text="TextView" />
+            grid:layout_rowWeight="1" />
+
         <TextView
             android:id="@+id/text_view_bin_5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:tag="text_view_bin_5"
+            android:text="TextView"
             app:layout_column="4"
             app:layout_columnSpan="1"
             app:layout_row="4"
             grid:layout_columnWeight="1"
             grid:layout_gravity="fill"
-            grid:layout_rowWeight="1"
-            android:text="TextView" />
+            grid:layout_rowWeight="1" />
+
         <TextView
             android:id="@+id/text_view_bin_6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:tag="text_view_bin_6"
+            android:text="TextView"
             app:layout_column="5"
             app:layout_columnSpan="1"
             app:layout_row="4"
             grid:layout_columnWeight="1"
             grid:layout_gravity="fill"
-            grid:layout_rowWeight="1"
-            android:text="TextView" />
+            grid:layout_rowWeight="1" />
 
         <Button
             android:id="@+id/button2"

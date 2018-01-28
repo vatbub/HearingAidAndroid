@@ -52,6 +52,10 @@
     <string name="fragment_streaming_playpause_notification_play_action_name">Start</string>
     <string name="fragment_streaming_playpause_notification_pause_action_name">Pause</string>
     <string name="fragment_streaming_playpause_notification_hide_action_name">Hide</string>
+    <string name="fragment_settings_Hz">Hz</string>
+    <string name="fragment_settings_kHz">kHz</string>
+    <string name="fragment_settings_MHz">MHz</string>
+    <string name="fragment_settings_frequency_bin_pattern">{lowerBinFrequency} - {higherBinFrequency}</string>
 
     <!-- TODO: Remove or change this placeholder text -->
 </resources>
