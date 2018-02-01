@@ -15,7 +15,7 @@
     <string name="nav_streaming">Start</string>
     <string name="fragment_about_title">Impressum</string>
     <string name="fragment_about_text">Impressumstext, Lizenzen, bla und blub [WIP]</string>
-    <string name="fragment_privacy_text">Datenschutz wird völlig überbewertet.</string>
+    <string name="fragment_privacy_text">Datenschutzerklärung wird geladen...</string>
     <string name="fragment_streaming_snackbar_start_streaming">Hörgerät eingeschaltet</string>
     <string name="fragment_streaming_snackbar_stop_streaming">Hörgerät ausgeschaltet</string>
     <string name="app_icon_content_description">App Icon</string>

@@ -91,6 +91,7 @@ dependencies {
     compile 'com.github.apl-devs:appintro:v4.2.2'
     compile 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.7.2'
     implementation 'com.android.support:gridlayout-v7:27.0.2'
+    compile 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.1'
 }
 
 
