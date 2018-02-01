@@ -70,27 +70,28 @@ public class SettingsFragment extends CustomFragment {
         double lowerFreq = FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.MIN_EQ_FREQUENCY);
         double higherFreq = FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.MAX_EQ_FREQUENCY);
         double hzPerChannel = (higherFreq - lowerFreq) / numberOfChannels;
-        int[] textViewIds = {R.id.text_view_bin_1, R.id.text_view_bin_2, R.id.text_view_bin_3, R.id.text_view_bin_4, R.id.text_view_bin_5, R.id.text_view_bin_6};
+        final int[] textViewIds = {R.id.text_view_bin_1, R.id.text_view_bin_2, R.id.text_view_bin_3, R.id.text_view_bin_4, R.id.text_view_bin_5, R.id.text_view_bin_6};
 
         for (int channel = 1; channel <= numberOfChannels; channel++) {
-            double lowerBinFreq = lowerFreq + (channel - 1) * hzPerChannel;
-            double higherBinFreq = lowerFreq + channel * hzPerChannel;
-            System.out.println(lowerBinFreq);
-            System.out.println(higherBinFreq);
-            System.out.println(getString(R.string.fragment_settings_frequency_bin_pattern).replace("{lowerBinFrequency}", getStringForFrequency(lowerBinFreq)).replace("{higherBinFrequency}", getStringForFrequency(higherBinFreq)));
+            double meanBinFreq = lowerFreq + (channel - 0.5) * hzPerChannel;
+            // double higherBinFreq = lowerFreq + channel * hzPerChannel;
 
-            ((TextView) findViewById(textViewIds[channel - 1])).setText(getString(R.string.fragment_settings_frequency_bin_pattern).replace("{lowerBinFrequency}", getStringForFrequency(lowerBinFreq)).replace("{higherBinFrequency}", getStringForFrequency(higherBinFreq)));
+            String textToShow;
+
+            textToShow = getString(R.string.fragment_settings_frequency_bin_pattern_abbreviated).replace("{abbreviatedFrequency}", getStringForFrequency(meanBinFreq));
+
+            ((TextView) findViewById(textViewIds[channel - 1])).setText(textToShow);
         }
     }
 
-    private String getStringForFrequency(double frequency){
+    private String getStringForFrequency(double frequency) {
         int mhzFactor = 1000000;
         int khzFactor = 1000;
-        if (frequency>=mhzFactor){
-            return Long.toString(Math.round(frequency/mhzFactor)) + " " + getString(R.string.fragment_settings_MHz);
-        }else if(frequency>=khzFactor){
-            return Long.toString(Math.round(frequency/khzFactor)) + " " + getString(R.string.fragment_settings_kHz);
-        }else{
+        if (frequency >= mhzFactor) {
+            return Long.toString(Math.round(frequency / mhzFactor)) + " " + getString(R.string.fragment_settings_MHz);
+        } else if (frequency >= khzFactor) {
+            return Long.toString(Math.round(frequency / khzFactor)) + " " + getString(R.string.fragment_settings_kHz);
+        } else {
             return Long.toString(Math.round(frequency)) + " " + getString(R.string.fragment_settings_Hz);
         }
     }
