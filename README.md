@@ -4,9 +4,11 @@ This application aims to do one simple task: Record the microphone sound, amplif
 ## Download
 Hang on, we've just started. But once the app is in a publishable state, it will be published to the google play store. But for now, you need to clone the repo and build it for yourself in Android Studio.
 
+Our CI publishes the latest development build [here](https://s3.eu-central-1.amazonaws.com/vatbubhearingaidapksandreports/apk/debug/app-debug.apk).
+
 ## Features
 - [x] Stream the amplified mic sound to the headphones
-- [x] Stream in realtime (~10 ms delay)
+- [x] Stream in realtime (~10 ms delay, on supported devices)
 - [ ] Apply an equalizer to match personal hearing loss
 - [ ] Easy setup wizard
 
