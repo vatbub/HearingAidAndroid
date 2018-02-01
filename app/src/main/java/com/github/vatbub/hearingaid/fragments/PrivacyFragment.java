@@ -47,11 +47,9 @@ public class PrivacyFragment extends CustomFragment {
             List<String> lines = readLines(input);
             StringBuilder markdown = new StringBuilder();
             for (String line : lines) {
-                markdown.append(line);
+                markdown.append(line).append("\n");
             }
 
-            // ((TextView) findViewById(R.id.fragment_privacy_text_view)).setText(Markwon.markdown(getContext(), markdown.toString()));
-            // ((MarkdownView) findViewById(R.id.fragment_privacy_markdown_view)).loadMarkdown(markdown.toString(), "file:///android_asset/markdown.css");
             String html = new Markdown4jProcessor().process(markdown.toString());
             ((WebView) findViewById(R.id.fragment_privacy_markdown_view)).loadData(html, "text/html", "UTF-8");
         } catch (IOException e) {
