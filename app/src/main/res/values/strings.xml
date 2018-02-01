@@ -56,6 +56,7 @@
     <string name="fragment_settings_kHz">kHz</string>
     <string name="fragment_settings_MHz">MHz</string>
     <string name="fragment_settings_frequency_bin_pattern_abbreviated">{abbreviatedFrequency}</string>
+    <string name="fragment_settings_title">Settings</string>
 
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

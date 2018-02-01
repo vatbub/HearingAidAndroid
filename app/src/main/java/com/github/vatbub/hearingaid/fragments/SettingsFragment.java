@@ -76,9 +76,7 @@ public class SettingsFragment extends CustomFragment {
             double meanBinFreq = lowerFreq + (channel - 0.5) * hzPerChannel;
             // double higherBinFreq = lowerFreq + channel * hzPerChannel;
 
-            String textToShow;
-
-            textToShow = getString(R.string.fragment_settings_frequency_bin_pattern_abbreviated).replace("{abbreviatedFrequency}", getStringForFrequency(meanBinFreq));
+            String textToShow = getString(R.string.fragment_settings_frequency_bin_pattern_abbreviated).replace("{abbreviatedFrequency}", getStringForFrequency(meanBinFreq));
 
             ((TextView) findViewById(textViewIds[channel - 1])).setText(textToShow);
         }

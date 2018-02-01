@@ -215,6 +215,8 @@ public class MainActivity extends AppCompatActivity
             case "aboutFragment":
                 setTitle(getString(R.string.fragment_about_title));
                 break;
+            case "settingsFragment":
+                setTitle(getString(R.string.fragment_settings_title));
         }
     }
 
@@ -230,6 +232,8 @@ public class MainActivity extends AppCompatActivity
             case "aboutFragment":
                 navigationView.setCheckedItem(R.id.nav_about);
                 break;
+            case "settingsFragment":
+                navigationView.setCheckedItem(R.id.nav_settings);
         }
     }
 }
