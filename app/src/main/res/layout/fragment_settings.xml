@@ -9,10 +9,10 @@
     <android.support.v7.widget.GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="6dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="6dp"
+        android:paddingBottom="6dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="6dp"
         app:columnCount="1">
 
         <Switch
@@ -278,6 +278,12 @@
             android:text="@string/fragment_settings_perform_equalizer_setup"
             app:layout_column="0"
             app:layout_row="5" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            app:layout_column="0"
+            app:layout_row="6" />
 
     </android.support.v7.widget.GridLayout>
 </ScrollView>
