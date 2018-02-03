@@ -1,8 +1,8 @@
-# Mikrofonnutzung und Audioverarbeitung
+# Microphone usage and audio processing
 
 We use the microphone of your phone to record surrounding sounds and play them back through your headphones. The recording is never saved. It is thus technically impossible to access the audio after the app has been used. Furthermore, no audio data is transmitted to our servers nor to any other third party. All audio processing is done on your device.
 
-# Absturzberichte
+# Crash reports
 
 For the purpose of troubleshooting, information about app crashes is transmitted to our servers using Firebase Crashlytics. The following information is transmitted to us anonymously in case of a crash:
 - app version
