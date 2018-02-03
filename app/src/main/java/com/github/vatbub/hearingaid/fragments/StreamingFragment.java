@@ -28,6 +28,7 @@ import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.common.view.motd.PlatformIndependentMOTD;
 import com.github.vatbub.hearingaid.AndroidMOTDFileOutputStreamProvider;
 import com.github.vatbub.hearingaid.BottomSheetQueue;
+import com.github.vatbub.hearingaid.ProfileManager;
 import com.github.vatbub.hearingaid.R;
 import com.github.vatbub.hearingaid.RemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -39,9 +40,6 @@ import java.io.IOException;
 import java.net.URL;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
-import static com.github.vatbub.hearingaid.fragments.SettingsFragment.EQ_ENABLED_DEFAULT_SETTING;
-import static com.github.vatbub.hearingaid.fragments.SettingsFragment.EQ_ENABLED_PREF_KEY;
-import static com.github.vatbub.hearingaid.fragments.SettingsFragment.SETTINGS_SHARED_PREFERENCES_NAME;
 
 public class StreamingFragment extends CustomFragment {
     private static final String SUPERPOWERED_INITIALIZED_BUNDLE_KEY = "superpoweredInitialized";
@@ -385,7 +383,6 @@ public class StreamingFragment extends CustomFragment {
         if (!superpoweredInitialized)
             return;
 
-        SharedPreferences prefs = getActivity().getSharedPreferences(SETTINGS_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        eqEnabled(prefs.getBoolean(EQ_ENABLED_PREF_KEY, EQ_ENABLED_DEFAULT_SETTING));
+        eqEnabled(ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile().isEqEnabled());
     }
 }

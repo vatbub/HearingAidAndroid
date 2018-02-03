@@ -11,6 +11,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.github.vatbub.hearingaid.ProfileManager;
 import com.github.vatbub.hearingaid.R;
 import com.github.vatbub.hearingaid.RemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -54,10 +55,7 @@ public class SettingsFragment extends CustomFragment {
         eqSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                SharedPreferences prefs = getActivity().getSharedPreferences(SETTINGS_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putBoolean(EQ_ENABLED_PREF_KEY, checked);
-                editor.apply();
+                ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile().setEqEnabled(checked);
 
                 StreamingFragment streamingFragment = (StreamingFragment) getActivity().getFragmentManager().findFragmentByTag("streamingFragment");
                 if (streamingFragment != null)

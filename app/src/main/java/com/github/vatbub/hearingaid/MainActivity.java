@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Spinner;
 
 import com.github.vatbub.hearingaid.fragments.AboutFragment;
 import com.github.vatbub.hearingaid.fragments.PrivacyFragment;
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
     private final static String CURRENT_FRAGMENT_TAG_KEY = "currentFragmentTag";
+    private final static String CURRENT_PROFILE_KEY = "currentProfile";
     private String currentFragmentTag;
 
     @Override
@@ -53,6 +55,9 @@ public class MainActivity extends AppCompatActivity
             currentFragmentTag = savedInstanceState.getString(CURRENT_FRAGMENT_TAG_KEY);
             updateSelectedItem(currentFragmentTag);
             updateTitle(currentFragmentTag);
+            String currentlyActiveProfileName = savedInstanceState.getString(CURRENT_PROFILE_KEY);
+            if (currentlyActiveProfileName!=null)
+                ProfileManager.getInstance(this).applyProfile(currentlyActiveProfileName);
         }
 
         RemoteConfig.initConfig();
@@ -95,8 +100,14 @@ public class MainActivity extends AppCompatActivity
 
         // Start the thread
         t.start();
+
+        initNavHeaderSpinner();
     }
 
+    private void initNavHeaderSpinner(){
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        Spinner profileSelector = navigationView.getHeaderView(0).findViewById(R.id.nav_header_profile_selector);
+    }
 
     @Override
     public void onBackPressed() {
@@ -138,6 +149,7 @@ public class MainActivity extends AppCompatActivity
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(CURRENT_FRAGMENT_TAG_KEY, currentFragmentTag);
+        outState.putString(CURRENT_PROFILE_KEY, ProfileManager.resetInstance(this));
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
