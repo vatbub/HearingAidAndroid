@@ -27,6 +27,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 public class SettingsFragment extends CustomFragment implements ProfileManager.ActiveProfileChangeListener, AdapterView.OnItemSelectedListener {
     public static final int numberOfChannels = 6;
+    private ArrayAdapter<ProfileManager.Profile> profileAdapter;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -197,18 +198,14 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
             return;
 
         Spinner profileSelector = findViewById(R.id.fragment_settings_profile_selector);
-        int position = getProfileAdapter().getPosition(newProfile);
+        int position = ProfileManager.getInstance(getActivity()).getPosition(newProfile);
         profileSelector.setSelection(position);
-        updateEqSwitch(newProfile);
+        updateEqSwitch();
     }
 
     private void updateEqSwitch() {
-        updateEqSwitch(ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile());
-    }
-
-    private void updateEqSwitch(ProfileManager.Profile profile) {
         Switch eqSwitch = findViewById(R.id.eq_on_off_switch);
-        eqSwitch.setChecked(profile.isEqEnabled());
+        eqSwitch.setChecked(ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile().isEqEnabled());
     }
 
     @Override
@@ -221,8 +218,6 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
     public void onNothingSelected(AdapterView<?> adapterView) {
         System.out.println("Nothing selected");
     }
-
-    private ArrayAdapter<ProfileManager.Profile> profileAdapter;
 
     public ArrayAdapter<ProfileManager.Profile> getProfileAdapter() {
         if (profileAdapter == null) {

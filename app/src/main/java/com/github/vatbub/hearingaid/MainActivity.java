@@ -290,7 +290,7 @@ public class MainActivity extends AppCompatActivity
             return;
 
         Spinner profileSelector = findViewById(R.id.nav_header_profile_selector);
-        int position = getProfileAdapter().getPosition(newProfile);
+        int position = ProfileManager.getInstance(this).getPosition(newProfile);
         profileSelector.setSelection(position);
     }
 

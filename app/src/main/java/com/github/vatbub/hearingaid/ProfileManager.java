@@ -29,9 +29,8 @@ public class ProfileManager {
     public static final String LOWER_HEARING_THRESHOLD_PREF_KEY = "lowerHearingThreshold";
     public static final String HIGHER_HEARING_THRESHOLD_PREF_KEY = "higherHearingThreshold";
     public static final boolean EQ_ENABLED_DEFAULT_SETTING = true;
-
-    private List<ActiveProfileChangeListener> changeListeners = new ArrayList<>();
     private static Map<Activity, ProfileManager> instances;
+    private List<ActiveProfileChangeListener> changeListeners = new ArrayList<>();
     private Activity callingActivity;
     private Profile currentlyActiveProfile;
 
@@ -48,10 +47,6 @@ public class ProfileManager {
         List<String> res = new ArrayList<>();
         res.add(PROFILE_NAMES_DELIMITER);
         return res;
-    }
-
-    public List<ActiveProfileChangeListener> getChangeListeners() {
-        return changeListeners;
     }
 
     public static ProfileManager getInstance(Activity callingActivity) {
@@ -72,6 +67,10 @@ public class ProfileManager {
 
         instances.remove(callingActivity);
         return res;
+    }
+
+    public List<ActiveProfileChangeListener> getChangeListeners() {
+        return changeListeners;
     }
 
     public Profile getCurrentlyActiveProfile() {
@@ -98,17 +97,18 @@ public class ProfileManager {
         applyProfile(new Profile(profileName, true));
     }
 
-    public void applyProfile(@Nullable Profile profile) {
-        if (getCurrentlyActiveProfile() != null)
-            getCurrentlyActiveProfile().setActive(false);
+    public void applyProfile(@Nullable Profile profileToBeApplied) {
+        Profile previousProfile = getCurrentlyActiveProfile();
+        if (previousProfile != null)
+            previousProfile.setActive(false);
 
-        for(ActiveProfileChangeListener changeListener:getChangeListeners()){
-            changeListener.onChanged(getCurrentlyActiveProfile(), profile);
+        setCurrentlyActiveProfile(profileToBeApplied);
+        if (profileToBeApplied != null)
+            profileToBeApplied.setActive(true);
+
+        for (ActiveProfileChangeListener changeListener : getChangeListeners()) {
+            changeListener.onChanged(previousProfile, profileToBeApplied);
         }
-
-        setCurrentlyActiveProfile(profile);
-        if (profile != null)
-            profile.setActive(true);
     }
 
     public Profile createProfile(String profileName) {
@@ -162,8 +162,17 @@ public class ProfileManager {
         return getCallingActivity().getSharedPreferences(SETTINGS_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
 
-    public interface ActiveProfileChangeListener{
-        void onChanged (@Nullable Profile oldProfile,@Nullable Profile newProfile);
+    public int getPosition(Profile profile){
+        List<Profile> profiles = listProfiles();
+        for(int i=0; i<profiles.size(); i++){
+            if (profiles.get(i).equals(profile))
+                return i;
+        }
+        return -1;
+    }
+
+    public interface ActiveProfileChangeListener {
+        void onChanged(@Nullable Profile oldProfile, @Nullable Profile newProfile);
     }
 
     public class Profile {
@@ -339,6 +348,11 @@ public class ProfileManager {
                 if (streamingFragment != null)
                     streamingFragment.notifyEQEnabledSettingChanged();
             }
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof Profile && ((Profile) obj).getProfileName().equalsIgnoreCase(this.getProfileName());
         }
 
         @Override
