@@ -129,7 +129,10 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
         builder.setPositiveButton(getString(R.string.fragment_settings_rename_profile_ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile().setProfileName(input.getText().toString());
+                ProfileManager.Profile currentProfile = ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile();
+                currentProfile.setProfileName(input.getText().toString());
+                ((MainActivity) getActivity()).initProfileAdapter();
+                initProfileAdapter();
             }
         });
         builder.setNegativeButton(getString(R.string.fragment_settings_rename_profile_cancel), new DialogInterface.OnClickListener() {

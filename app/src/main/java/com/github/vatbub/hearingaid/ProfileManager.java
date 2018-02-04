@@ -112,6 +112,8 @@ public class ProfileManager {
     }
 
     public Profile createProfile(String profileName) {
+        // TODO: Check for uniqueness
+        // TODO: CHeck for illegal characters
         return new Profile(profileName);
     }
 
@@ -132,8 +134,9 @@ public class ProfileManager {
         this.callingActivity = callingActivity;
     }
 
-    private void saveProfile(Profile profile) {
+    private void saveProfile(Profile profile, String oldProfileName) {
         List<String> profileNames = getProfileNames();
+        profileNames.remove(oldProfileName);
         if (!profileNames.contains(profile.getProfileName()))
             profileNames.add(profile.getProfileName());
 
@@ -322,8 +325,9 @@ public class ProfileManager {
         }
 
         public void setProfileName(String profileName) {
+            String oldProfileName = this.profileName;
             this.profileName = profileName;
-            saveProfile(this);
+            saveProfile(this, oldProfileName);
         }
 
         /**

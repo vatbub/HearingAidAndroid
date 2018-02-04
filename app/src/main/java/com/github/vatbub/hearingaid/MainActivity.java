@@ -279,7 +279,7 @@ public class MainActivity extends AppCompatActivity
         return profileAdapter;
     }
 
-    private void initProfileAdapter() {
+    public void initProfileAdapter() {
         getProfileAdapter().clear();
         getProfileAdapter().addAll(ProfileManager.getInstance(this).listProfiles());
     }
