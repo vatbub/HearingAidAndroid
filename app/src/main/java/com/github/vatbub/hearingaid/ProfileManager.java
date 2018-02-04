@@ -110,8 +110,6 @@ public class ProfileManager {
     }
 
     public Profile createProfile(String profileName) {
-        // TODO: Check for uniqueness
-        // TODO: CHeck for illegal characters
         return new Profile(profileName);
     }
 
@@ -133,6 +131,7 @@ public class ProfileManager {
     }
 
     private void saveProfile(Profile profile, String oldProfileName) {
+        // TODO: Use abstract id number for unique identification of profiles instead of their name (eliminates the need of unique names and allows all characters in the name)
         List<String> profileNames = getProfileNames();
         if (!profileNames.contains(profile.getProfileName())) {
             if (profileNames.contains(oldProfileName)) {
