@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -54,7 +55,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
         initButtonHandlers();
         initFrequencyLabelsAndSeekbars();
         Spinner profileSelector = findViewById(R.id.fragment_settings_profile_selector);
-        profileSelector.setAdapter(((MainActivity) getActivity()).getProfileAdapter());
+        profileSelector.setAdapter(getProfileAdapter());
         profileSelector.setOnItemSelectedListener(this);
     }
 
@@ -98,6 +99,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
             public void onClick(DialogInterface dialog, int which) {
                 ProfileManager.Profile createdProfile = ProfileManager.getInstance(getActivity()).createProfile(input.getText().toString());
                 ((MainActivity) getActivity()).getProfileAdapter().add(createdProfile);
+                getProfileAdapter().add(createdProfile);
                 ProfileManager.getInstance(getActivity()).applyProfile(createdProfile);
             }
         });
@@ -143,6 +145,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
         ProfileManager.Profile currentProfile = ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile();
         ProfileManager.getInstance(getActivity()).deleteProfile(currentProfile);
         ((MainActivity) getActivity()).getProfileAdapter().remove(currentProfile);
+        getProfileAdapter().remove(currentProfile);
         ProfileManager.getInstance(getActivity()).applyProfile(ProfileManager.getInstance(getActivity()).listProfiles().get(0));
     }
 
@@ -194,7 +197,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
             return;
 
         Spinner profileSelector = findViewById(R.id.fragment_settings_profile_selector);
-        int position = ((MainActivity) getActivity()).getProfileAdapter().getPosition(newProfile);
+        int position = getProfileAdapter().getPosition(newProfile);
         profileSelector.setSelection(position);
         updateEqSwitch(newProfile);
     }
@@ -217,5 +220,21 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
         System.out.println("Nothing selected");
+    }
+
+    private ArrayAdapter<ProfileManager.Profile> profileAdapter;
+
+    public ArrayAdapter<ProfileManager.Profile> getProfileAdapter() {
+        if (profileAdapter == null) {
+            profileAdapter = new ArrayAdapter<>(getContext(), R.layout.simple_spinner_item_black);
+            profileAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+            initProfileAdapter();
+        }
+        return profileAdapter;
+    }
+
+    private void initProfileAdapter() {
+        getProfileAdapter().clear();
+        getProfileAdapter().addAll(ProfileManager.getInstance(getActivity()).listProfiles());
     }
 }
