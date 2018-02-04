@@ -30,6 +30,7 @@ public class ProfileManager {
     public static final String HIGHER_HEARING_THRESHOLD_PREF_KEY = "higherHearingThreshold";
     public static final boolean EQ_ENABLED_DEFAULT_SETTING = true;
 
+    private List<ActiveProfileChangeListener> changeListeners = new ArrayList<>();
     private static Map<Activity, ProfileManager> instances;
     private Activity callingActivity;
     private Profile currentlyActiveProfile;
@@ -47,6 +48,10 @@ public class ProfileManager {
         List<String> res = new ArrayList<>();
         res.add(PROFILE_NAMES_DELIMITER);
         return res;
+    }
+
+    public List<ActiveProfileChangeListener> getChangeListeners() {
+        return changeListeners;
     }
 
     public static ProfileManager getInstance(Activity callingActivity) {
@@ -93,12 +98,17 @@ public class ProfileManager {
         applyProfile(new Profile(profileName, true));
     }
 
-    public void applyProfile(Profile profile) {
+    public void applyProfile(@Nullable Profile profile) {
         if (getCurrentlyActiveProfile() != null)
             getCurrentlyActiveProfile().setActive(false);
 
+        for(ActiveProfileChangeListener changeListener:getChangeListeners()){
+            changeListener.onChanged(getCurrentlyActiveProfile(), profile);
+        }
+
         setCurrentlyActiveProfile(profile);
-        profile.setActive(true);
+        if (profile != null)
+            profile.setActive(true);
     }
 
     public Profile createProfile(String profileName) {
@@ -106,6 +116,8 @@ public class ProfileManager {
     }
 
     public void deleteProfile(Profile profile) {
+        if (profile.isActive())
+            applyProfile((Profile) null);
         profile.delete();
         List<String> profileNames = getProfileNames();
         profileNames.remove(profile.getProfileName());
@@ -130,6 +142,8 @@ public class ProfileManager {
 
     private List<String> getProfileNames() {
         String profileNames = getPrefs().getString(PROFILE_NAMES_PREF_KEY, "");
+        if (profileNames.isEmpty())
+            return new ArrayList<>();
         return new ArrayList<>(Arrays.asList(profileNames.split(PROFILE_NAMES_DELIMITER)));
     }
 
@@ -146,6 +160,10 @@ public class ProfileManager {
 
     private SharedPreferences getPrefs() {
         return getCallingActivity().getSharedPreferences(SETTINGS_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+    }
+
+    public interface ActiveProfileChangeListener{
+        void onChanged (@Nullable Profile oldProfile,@Nullable Profile newProfile);
     }
 
     public class Profile {
@@ -316,11 +334,16 @@ public class ProfileManager {
         private void setActive(boolean active) {
             this.active = active;
 
-            if (active){
+            if (active) {
                 StreamingFragment streamingFragment = (StreamingFragment) getCallingActivity().getFragmentManager().findFragmentByTag("streamingFragment");
                 if (streamingFragment != null)
                     streamingFragment.notifyEQEnabledSettingChanged();
             }
+        }
+
+        @Override
+        public String toString() {
+            return getProfileName();
         }
 
         public class EQSettingsList extends ArrayList<Float> {

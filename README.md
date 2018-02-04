@@ -54,6 +54,7 @@ All we know for sure is that incremental builds should be faster than the initia
 
 ## Other icons
 - Notification icon: <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+- Add icon in the settings: <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
 
 # License
 This application is published under the Apache License v2 (see the license file). It utilizes the [Superpowered Audio Sdk](http://superpowered.com/) whose license can be found [here](http://superpowered.com/license).

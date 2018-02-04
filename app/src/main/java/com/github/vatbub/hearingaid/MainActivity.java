@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
@@ -17,6 +18,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import com.github.vatbub.hearingaid.fragments.AboutFragment;
@@ -25,12 +29,15 @@ import com.github.vatbub.hearingaid.fragments.SettingsFragment;
 import com.github.vatbub.hearingaid.fragments.StreamingFragment;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback {
+        implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback, ProfileManager.ActiveProfileChangeListener, AdapterView.OnItemSelectedListener {
 
     private final static String CURRENT_FRAGMENT_TAG_KEY = "currentFragmentTag";
     private final static String CURRENT_PROFILE_KEY = "currentProfile";
     private String currentFragmentTag;
+    private ArrayAdapter<ProfileManager.Profile> profileAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +63,7 @@ public class MainActivity extends AppCompatActivity
             updateSelectedItem(currentFragmentTag);
             updateTitle(currentFragmentTag);
             String currentlyActiveProfileName = savedInstanceState.getString(CURRENT_PROFILE_KEY);
-            if (currentlyActiveProfileName!=null)
+            if (currentlyActiveProfileName != null)
                 ProfileManager.getInstance(this).applyProfile(currentlyActiveProfileName);
         }
 
@@ -101,12 +108,26 @@ public class MainActivity extends AppCompatActivity
         // Start the thread
         t.start();
 
+        if (ProfileManager.getInstance(this).getCurrentlyActiveProfile() == null) {
+            List<ProfileManager.Profile> profiles = ProfileManager.getInstance(this).listProfiles();
+            ProfileManager.Profile profileToApply;
+            if (profiles.isEmpty())
+                profileToApply = ProfileManager.getInstance(this).createProfile("dummyProfile");
+            else
+                profileToApply = profiles.get(0);
+
+            ProfileManager.getInstance(this).applyProfile(profileToApply);
+        }
+
         initNavHeaderSpinner();
     }
 
-    private void initNavHeaderSpinner(){
+    private void initNavHeaderSpinner() {
         NavigationView navigationView = findViewById(R.id.nav_view);
         Spinner profileSelector = navigationView.getHeaderView(0).findViewById(R.id.nav_header_profile_selector);
+        profileSelector.setAdapter(getProfileAdapter());
+        ProfileManager.getInstance(this).getChangeListeners().add(this);
+        profileSelector.setOnItemSelectedListener(this);
     }
 
     @Override
@@ -247,5 +268,40 @@ public class MainActivity extends AppCompatActivity
             case "settingsFragment":
                 navigationView.setCheckedItem(R.id.nav_settings);
         }
+    }
+
+    public ArrayAdapter<ProfileManager.Profile> getProfileAdapter() {
+        if (profileAdapter == null) {
+            profileAdapter = new ArrayAdapter<>(this, R.layout.simple_spinner_item);
+            profileAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+            initProfileAdapter();
+        }
+        return profileAdapter;
+    }
+
+    public void initProfileAdapter() {
+        getProfileAdapter().clear();
+        getProfileAdapter().addAll(ProfileManager.getInstance(this).listProfiles());
+    }
+
+    @Override
+    public void onChanged(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
+        if (newProfile==null)
+            return;
+
+        Spinner profileSelector = findViewById(R.id.nav_header_profile_selector);
+        int position = getProfileAdapter().getPosition(newProfile);
+        profileSelector.setSelection(position);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
+        ProfileManager.Profile selectedProfile = (ProfileManager.Profile) adapterView.getItemAtPosition(pos);
+        ProfileManager.getInstance(this).applyProfile(selectedProfile);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+        System.out.println("Nothing selected");
     }
 }

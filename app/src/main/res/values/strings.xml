@@ -57,6 +57,12 @@
     <string name="fragment_settings_MHz">MHz</string>
     <string name="fragment_settings_frequency_bin_pattern_abbreviated">{abbreviatedFrequency}</string>
     <string name="fragment_settings_title">Settings</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="fragment_settings_current_profile_title">Current profile</string>
+    <string name="fragment_settings_current_profile_rename">Rename</string>
+    <string name="fragment_settings_current_profile_remove">Remove</string>
+    <string name="fragment_settings_current_profile_add">Add</string>
+    <string name="fragment_settings_add_profile_ok">Add</string>
+    <string name="fragment_settings_add_profile_cancel">Cancel</string>
+    <string name="fragment_settings_rename_profile_ok">Rename</string>
+    <string name="fragment_settings_rename_profile_cancel">Cancel</string>
 </resources>
