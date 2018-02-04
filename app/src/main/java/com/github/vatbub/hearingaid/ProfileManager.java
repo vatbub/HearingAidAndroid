@@ -326,7 +326,22 @@ public class ProfileManager {
 
         public void setProfileName(String profileName) {
             String oldProfileName = this.profileName;
+
+            // transfer all data from the old name to the new one
+            EQSettingsList eqSettings = getModifiableEQSettings();
+            boolean eqEnabled = isEqEnabled();
+            float lowerHearingThreshold = getLowerHearingThreshold();
+            float higherHearingThreshold = getHigherHearingThreshold();
+
+            delete();
+
             this.profileName = profileName;
+
+            setEQSettings(eqSettings);
+            setEqEnabled(eqEnabled);
+            setLowerHearingThreshold(lowerHearingThreshold);
+            setHigherHearingThreshold(higherHearingThreshold);
+
             saveProfile(this, oldProfileName);
         }
 
