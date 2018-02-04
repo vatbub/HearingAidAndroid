@@ -6,8 +6,6 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.github.vatbub.hearingaid.fragments.StreamingFragment;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -367,12 +365,6 @@ public class ProfileManager {
 
         private void setActive(boolean active) {
             this.active = active;
-
-            if (active) {
-                StreamingFragment streamingFragment = (StreamingFragment) getCallingActivity().getFragmentManager().findFragmentByTag("streamingFragment");
-                if (streamingFragment != null)
-                    streamingFragment.notifyEQEnabledSettingChanged();
-            }
         }
 
         @Override

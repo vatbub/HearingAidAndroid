@@ -41,7 +41,7 @@ import java.net.URL;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 
-public class StreamingFragment extends CustomFragment {
+public class StreamingFragment extends CustomFragment implements ProfileManager.ActiveProfileChangeListener {
     private static final String SUPERPOWERED_INITIALIZED_BUNDLE_KEY = "superpoweredInitialized";
     private static final String IS_STREAMING_BUNDLE_KEY = "isStreaming";
     private static final String SHARED_PREFERENCES_FILE_NAME = "com.github.vatbub.hearingaid.fragments.StreamingFragment.Preferences";
@@ -122,6 +122,7 @@ public class StreamingFragment extends CustomFragment {
         }
 
         bottomSheetBehaviourQueue = new BottomSheetQueue();
+        ProfileManager.getInstance(getActivity()).getChangeListeners().add(this);
     }
 
     private void showPlayPauseNotification() {
@@ -384,5 +385,10 @@ public class StreamingFragment extends CustomFragment {
             return;
 
         eqEnabled(ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile().isEqEnabled());
+    }
+
+    @Override
+    public void onChanged(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
+        notifyEQEnabledSettingChanged();
     }
 }
