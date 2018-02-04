@@ -136,9 +136,15 @@ public class ProfileManager {
 
     private void saveProfile(Profile profile, String oldProfileName) {
         List<String> profileNames = getProfileNames();
-        profileNames.remove(oldProfileName);
-        if (!profileNames.contains(profile.getProfileName()))
-            profileNames.add(profile.getProfileName());
+        if (!profileNames.contains(profile.getProfileName())) {
+            if (profileNames.contains(oldProfileName)) {
+                // replace the old one
+                int index = profileNames.indexOf(oldProfileName);
+                profileNames.set(index, profile.getProfileName());
+            } else {
+                profileNames.add(profile.getProfileName());
+            }
+        }
 
         setProfileNames(profileNames);
     }
@@ -165,9 +171,9 @@ public class ProfileManager {
         return getCallingActivity().getSharedPreferences(SETTINGS_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
 
-    public int getPosition(Profile profile){
+    public int getPosition(Profile profile) {
         List<Profile> profiles = listProfiles();
-        for(int i=0; i<profiles.size(); i++){
+        for (int i = 0; i < profiles.size(); i++) {
             if (profiles.get(i).equals(profile))
                 return i;
         }
