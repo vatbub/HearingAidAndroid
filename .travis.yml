@@ -21,18 +21,10 @@ before_install:
 - yes | sdkmanager "patcher;v4"
 - yes | sdkmanager "cmake;3.6.4111459"
 - yes | sdkmanager "lldb;3.0"
-- yes | sdkmanager "system-images;$ANDROID_TARGET;default;armeabi-v7a"
-- sdkmanager --list
-# Emulator Management: Create, Start and Wait
-before_script:
-  - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
-  - emulator -avd test -no-audio -no-window &
-  - android-wait-for-emulator
-  - adb shell input keyevent 82 &
 script:
 - chmod +x ./gradlew
 - cp ci.local.properties local.properties
-- "./gradlew clean lint createDebugCoverageReport build"
+- "./gradlew clean lint build"
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
 - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -41,12 +33,6 @@ cache:
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
   - "$HOME/.android/build-cache"
-env:
-  matrix:
-    - ANDROID_TARGET=android-24 ANDROID_ABI=default/armeabi-v7a
-    - ANDROID_TARGET=android-25 ANDROID_ABI=default/armeabi-v7a
-    - ANDROID_TARGET=android-26 ANDROID_ABI=default/armeabi-v7a
-    - ANDROID_TARGET=android-27 ANDROID_ABI=default/armeabi-v7a
 deploy:
   provider: s3
   access_key_id: AKIAIAHHLR45TBO47GDA
