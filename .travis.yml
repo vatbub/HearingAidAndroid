@@ -10,6 +10,10 @@ android:
   - build-tools-27.0.3
   - platform-tools
   - tools
+  - sys-img-armeabi-v7a-android-24
+  - sys-img-armeabi-v7a-android-25
+  - sys-img-armeabi-v7a-android-26
+  - sys-img-armeabi-v7a-android-27
   extras:
   - android-m2repository
   - google-m2repository
@@ -21,10 +25,16 @@ before_install:
 - yes | sdkmanager "patcher;v4"
 - yes | sdkmanager "cmake;3.6.4111459"
 - yes | sdkmanager "lldb;3.0"
+# Emulator Management: Create, Start and Wait
+before_script:
+  - echo no | android create avd --force -n test -t android-$ANDROID_EMULATOR_VERSION --abi armeabi-v7a
+  - emulator -avd test -no-audio -no-window &
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
 script:
 - chmod +x ./gradlew
 - cp ci.local.properties local.properties
-- "./gradlew lint build"
+- "./gradlew clean lint createDebugCoverageReport build"
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
 - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -33,12 +43,19 @@ cache:
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
   - "$HOME/.android/build-cache"
+env:
+  - ANDROID_EMULATOR_VERSION=24
+  - ANDROID_EMULATOR_VERSION=25
+  - ANDROID_EMULATOR_VERSION=26
+  - ANDROID_EMULATOR_VERSION=27
 deploy:
   provider: s3
   access_key_id: AKIAIAHHLR45TBO47GDA
   skip_cleanup: true
   bucket: vatbubhearingaidapksandreports
   region: eu-central-1
-  local_dir: app/build/outputs
+  local_dir:
+    - app/build/outputs
+    - app/build/reports
   secret_access_key:
     secure: ZH6uCEL1PEGjYDWyPzYVl01F0Z/H3HgRASDZrvHt2v418yVsBQ6XtCJ0EYvV8bPe6G6RRM4dMHmo6lBhFC1ZkfjMaMnNWHQM7oKbBHAJzrf29+kKNLF6qe+s4ZNNiYlUelmGoqTkOahlc9qL3LI2pj/XWmiqU5GeotS3f5L7dTjIT0NMs7P1RzxPPSWXsTVlLeYDhOS1s4bxcvMnHdR1DbINAoPv5dPTSEDVqGkz5eurY9e7nVlcB4X5DwUp7AlpfA68zmAcvHbdwkV4BwNRc/d8RJpMfkisGLDTD7RCtKDb++nd02rzA1xcFqy8NNhHEJseirp1PbnQAdubGibT911FhFWPfdHkNX2tyUmGdjUVe+pC6O4On4NIGbaEXG6G0PvDkVVLgW5UIW+XiwHOjKjmY0jZMVkVNjg8ixlf6+5ACM25RPdeCwBRT6X2kBrZSzOEiAxCo2Zn5P1Y8N3kujlxEcf9RRhyNf5D9S7ucCinj9ktpGnqbE9HyyOsgyoqRzTrBj1JIvbjQaTwpuRh3u9Y7UKjAHkHTER1UyVAzZmt+xVWiNuGgnd2YXsxfDusePCOYDLMVLdxco/rybBX+xvYwjByVpc5jZYZntm6ua6Sk5avIkLT+53qHZBt302ozjZqkLuTUmXRppDBA9PdFnvFidhjF1YJiD8sjFDMPOo=
