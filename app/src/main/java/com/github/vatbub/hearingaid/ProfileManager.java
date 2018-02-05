@@ -27,33 +27,22 @@ public class ProfileManager {
     public static final String LOWER_HEARING_THRESHOLD_PREF_KEY = "lowerHearingThreshold";
     public static final String HIGHER_HEARING_THRESHOLD_PREF_KEY = "higherHearingThreshold";
     public static final boolean EQ_ENABLED_DEFAULT_SETTING = true;
-    private static Map<Activity, ProfileManager> instances;
+    private static Map<Context, ProfileManager> instances;
     private List<ActiveProfileChangeListener> changeListeners = new ArrayList<>();
-    private Activity callingActivity;
+    private Context callingContext;
     private Profile currentlyActiveProfile;
 
-    private ProfileManager(Activity callingActivity) {
-        setCallingActivity(callingActivity);
+    private ProfileManager(Context callingContext) {
+        setCallingContext(callingContext);
     }
 
-    /**
-     * Returns a list of characters/strings that must not be used in profile names.
-     *
-     * @return A list of characters/strings that must not be used in profile names.
-     */
-    public static List<String> illegalCharacters() {
-        List<String> res = new ArrayList<>();
-        res.add(PROFILE_NAMES_DELIMITER);
-        return res;
-    }
-
-    public static ProfileManager getInstance(Activity callingActivity) {
+    public static ProfileManager getInstance(Context callingContext) {
         if (instances == null)
             instances = new HashMap<>();
-        if (!instances.containsKey(callingActivity))
-            instances.put(callingActivity, new ProfileManager(callingActivity));
+        if (!instances.containsKey(callingContext))
+            instances.put(callingContext, new ProfileManager(callingContext));
 
-        return instances.get(callingActivity);
+        return instances.get(callingContext);
     }
 
     public static int resetInstance(Activity callingActivity) {
@@ -110,19 +99,19 @@ public class ProfileManager {
 
     public void deleteProfile(Profile profile) {
         if (profile.isActive())
-            applyProfile((Profile) null);
+            applyProfile(null);
         profile.delete();
         List<Integer> ids = getIDs();
         ids.remove(profile.getId());
         setIDs(ids);
     }
 
-    public Activity getCallingActivity() {
-        return callingActivity;
+    public Context getCallingContext() {
+        return callingContext;
     }
 
-    private void setCallingActivity(Activity callingActivity) {
-        this.callingActivity = callingActivity;
+    private void setCallingContext(Context callingContext) {
+        this.callingContext = callingContext;
     }
 
     private void saveProfile(Profile profile) {
@@ -157,7 +146,7 @@ public class ProfileManager {
     }
 
     private SharedPreferences getPrefs() {
-        return getCallingActivity().getSharedPreferences(SETTINGS_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        return getCallingContext().getSharedPreferences(SETTINGS_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
 
     public int getPosition(Profile profile) {
