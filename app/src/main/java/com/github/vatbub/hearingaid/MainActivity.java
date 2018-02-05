@@ -1,7 +1,7 @@
 package com.github.vatbub.hearingaid;
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -216,14 +216,14 @@ public class MainActivity extends AppCompatActivity
 */
 
         Log.d(getClass().getName(), "Opening fragment: " + tag);
-        Fragment fragmentToUse = getFragmentManager().findFragmentByTag(tag);
+        Fragment fragmentToUse = getSupportFragmentManager().findFragmentByTag(tag);
         boolean fragmentFound = fragmentToUse != null;
         if (!fragmentFound)
             fragmentToUse = initialFragmentInstance;
 
-        final FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         if (currentFragmentTag != null && getFragmentManager().findFragmentByTag(currentFragmentTag) != null)
-            fragmentTransaction.hide(getFragmentManager().findFragmentByTag(currentFragmentTag));
+            fragmentTransaction.hide(getSupportFragmentManager().findFragmentByTag(currentFragmentTag));
 
         if (fragmentFound)
             fragmentTransaction.show(fragmentToUse);
@@ -286,7 +286,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onChanged(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
-        if (newProfile==null)
+        if (newProfile == null)
             return;
 
         Spinner profileSelector = findViewById(R.id.nav_header_profile_selector);

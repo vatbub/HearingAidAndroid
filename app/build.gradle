@@ -23,7 +23,7 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.github.vatbub.hearingaid"
-        minSdkVersion 24
+        minSdkVersion 21
         targetSdkVersion 27
         versionCode GIT_COMMIT_COUNT
         println('Version code is: ' + GIT_COMMIT_COUNT)

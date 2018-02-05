@@ -160,7 +160,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile().setEqEnabled(checked);
 
-                StreamingFragment streamingFragment = (StreamingFragment) getActivity().getFragmentManager().findFragmentByTag("streamingFragment");
+                StreamingFragment streamingFragment = (StreamingFragment) getActivity().getSupportFragmentManager().findFragmentByTag("streamingFragment");
                 if (streamingFragment != null)
                     streamingFragment.notifyEQEnabledSettingChanged();
             }

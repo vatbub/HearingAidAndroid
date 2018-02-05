@@ -105,7 +105,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
 
     @SuppressWarnings("RedundantIfStatement")
     private boolean allPermissionsGranted() {
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
             return false;
 
         return true;
