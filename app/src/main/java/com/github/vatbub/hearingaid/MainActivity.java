@@ -62,9 +62,9 @@ public class MainActivity extends AppCompatActivity
             currentFragmentTag = savedInstanceState.getString(CURRENT_FRAGMENT_TAG_KEY);
             updateSelectedItem(currentFragmentTag);
             updateTitle(currentFragmentTag);
-            String currentlyActiveProfileName = savedInstanceState.getString(CURRENT_PROFILE_KEY);
-            if (currentlyActiveProfileName != null)
-                ProfileManager.getInstance(this).applyProfile(currentlyActiveProfileName);
+            int currentlyActiveProfileId = savedInstanceState.getInt(CURRENT_PROFILE_KEY);
+            if (currentlyActiveProfileId != -1)
+                ProfileManager.getInstance(this).applyProfile(currentlyActiveProfileId);
         }
 
         RemoteConfig.initConfig();
@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(CURRENT_FRAGMENT_TAG_KEY, currentFragmentTag);
-        outState.putString(CURRENT_PROFILE_KEY, ProfileManager.resetInstance(this));
+        outState.putInt(CURRENT_PROFILE_KEY, ProfileManager.resetInstance(this));
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

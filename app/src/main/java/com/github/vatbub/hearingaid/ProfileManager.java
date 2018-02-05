@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,9 +19,10 @@ import java.util.Map;
 
 public class ProfileManager {
     public static final String SETTINGS_SHARED_PREFERENCES_NAME = "hearingAidSettings";
+    public static final String PROFILE_NAME_PREF_KEY = "profileName";
     public static final String EQ_ENABLED_PREF_KEY = "equalizerEnabled";
     public static final String EQ_SETTING_PREF_KEY = "eqSetting";
-    public static final String PROFILE_NAMES_PREF_KEY = "profileNames";
+    public static final String IDS_PREF_KEY = "profileNames";
     public static final String PROFILE_NAMES_DELIMITER = ";";
     public static final String LOWER_HEARING_THRESHOLD_PREF_KEY = "lowerHearingThreshold";
     public static final String HIGHER_HEARING_THRESHOLD_PREF_KEY = "higherHearingThreshold";
@@ -56,12 +56,11 @@ public class ProfileManager {
         return instances.get(callingActivity);
     }
 
-    @Nullable
-    public static String resetInstance(Activity callingActivity) {
-        String res = null;
+    public static int resetInstance(Activity callingActivity) {
+        int res = -1;
 
         if (getInstance(callingActivity).getCurrentlyActiveProfile() != null)
-            res = getInstance(callingActivity).getCurrentlyActiveProfile().getProfileName();
+            res = getInstance(callingActivity).getCurrentlyActiveProfile().getId();
 
         instances.remove(callingActivity);
         return res;
@@ -81,18 +80,14 @@ public class ProfileManager {
 
     public List<Profile> listProfiles() {
         List<Profile> res = new ArrayList<>();
-        for (String profileName : getProfileNames()) {
-            res.add(new Profile(profileName, true));
+        for (int id : getIDs()) {
+            res.add(new Profile(id));
         }
         return res;
     }
 
-    public void applyProfile(int index) {
-        applyProfile(listProfiles().get(index));
-    }
-
-    public void applyProfile(String profileName) {
-        applyProfile(new Profile(profileName, true));
+    public void applyProfile(int id) {
+        applyProfile(new Profile(id));
     }
 
     public void applyProfile(@Nullable Profile profileToBeApplied) {
@@ -117,9 +112,9 @@ public class ProfileManager {
         if (profile.isActive())
             applyProfile((Profile) null);
         profile.delete();
-        List<String> profileNames = getProfileNames();
-        profileNames.remove(profile.getProfileName());
-        setProfileNames(profileNames);
+        List<Integer> ids = getIDs();
+        ids.remove(profile.getId());
+        setIDs(ids);
     }
 
     public Activity getCallingActivity() {
@@ -130,38 +125,35 @@ public class ProfileManager {
         this.callingActivity = callingActivity;
     }
 
-    private void saveProfile(Profile profile, String oldProfileName) {
-        // TODO: Use abstract id number for unique identification of profiles instead of their name (eliminates the need of unique names and allows all characters in the name)
-        List<String> profileNames = getProfileNames();
-        if (!profileNames.contains(profile.getProfileName())) {
-            if (profileNames.contains(oldProfileName)) {
-                // replace the old one
-                int index = profileNames.indexOf(oldProfileName);
-                profileNames.set(index, profile.getProfileName());
-            } else {
-                profileNames.add(profile.getProfileName());
-            }
+    private void saveProfile(Profile profile) {
+        List<Integer> profileNames = getIDs();
+        if (!profileNames.contains(profile.getId())) {
+            profileNames.add(profile.getId());
         }
 
-        setProfileNames(profileNames);
+        setIDs(profileNames);
     }
 
-    private List<String> getProfileNames() {
-        String profileNames = getPrefs().getString(PROFILE_NAMES_PREF_KEY, "");
-        if (profileNames.isEmpty())
+    private List<Integer> getIDs() {
+        String ids = getPrefs().getString(IDS_PREF_KEY, "");
+        if (ids.isEmpty())
             return new ArrayList<>();
-        return new ArrayList<>(Arrays.asList(profileNames.split(PROFILE_NAMES_DELIMITER)));
+        List<Integer> res = new ArrayList<>();
+        for (String id : ids.split(PROFILE_NAMES_DELIMITER))
+            res.add(Integer.parseInt(id));
+
+        return res;
     }
 
-    private void setProfileNames(List<String> profileNames) {
-        StringBuilder profileNamesStringBuilder = new StringBuilder();
-        for (int i = 0; i < profileNames.size(); i++) {
-            profileNamesStringBuilder.append(profileNames.get(i));
-            if (i != profileNames.size() - 1)
-                profileNamesStringBuilder.append(PROFILE_NAMES_DELIMITER);
+    private void setIDs(List<Integer> ids) {
+        StringBuilder idsStringBuilder = new StringBuilder();
+        for (int i = 0; i < ids.size(); i++) {
+            idsStringBuilder.append(ids.get(i));
+            if (i != ids.size() - 1)
+                idsStringBuilder.append(PROFILE_NAMES_DELIMITER);
         }
 
-        getPrefs().edit().putString(PROFILE_NAMES_PREF_KEY, profileNamesStringBuilder.toString()).apply();
+        getPrefs().edit().putString(IDS_PREF_KEY, idsStringBuilder.toString()).apply();
     }
 
     private SharedPreferences getPrefs() {
@@ -177,32 +169,43 @@ public class ProfileManager {
         return -1;
     }
 
+    private int getNextProfileId() {
+        List<Integer> ids = getIDs();
+        if (ids.isEmpty())
+            return 1;
+
+        return Collections.max(ids) + 1;
+    }
+
     public interface ActiveProfileChangeListener {
         void onChanged(@Nullable Profile oldProfile, @Nullable Profile newProfile);
     }
 
     public class Profile {
-        private String profileName;
         private boolean active;
+        private int id;
 
+        /**
+         * Creates a new profile with the given name. For internal use only, for external use, see {@link #createProfile(String)}
+         *
+         * @param profileName The name of the profile to be created. Profile names may contain all characters and may duplicate themselves.
+         */
         private Profile(String profileName) {
-            this(profileName, false);
+            setId(getNextProfileId());
+            saveProfile(this);
+            setProfileName(profileName);
         }
 
         /**
-         * For internal use only.
-         * Same as {@link #Profile(String)} except if {@code skipSave} is set to {@code true}
+         * Reads the profile with the specified id from memory.
          *
-         * @param profileName The name of the profile
-         * @param skipSave    If set to {@code true}, the profile will not notify the profile manager about its creation.
-         *                    That is to prevent unnecessary save operations when the profile manager instantiates a new Profile image
-         *                    after reading it from the preferences.
+         * @param id The id of the profile to load.
          */
-        private Profile(String profileName, boolean skipSave) {
-            if (skipSave)
-                this.profileName = profileName;
-            else
-                setProfileName(profileName);
+        public Profile(int id) {
+            if (!getIDs().contains(id))
+                throw new IndexOutOfBoundsException();
+
+            setId(id);
         }
 
         public List<Float> getEQSettings() {
@@ -242,7 +245,7 @@ public class ProfileManager {
         }
 
         private String generateProfilePrefKey(String prefKey) {
-            return getProfileName() + "." + prefKey;
+            return getId() + "." + prefKey;
         }
 
         public void deleteAllEqSettings() {
@@ -324,28 +327,14 @@ public class ProfileManager {
         }
 
         public String getProfileName() {
-            return profileName;
+            return getPrefs().getString(generateProfilePrefKey(PROFILE_NAME_PREF_KEY), null);
         }
 
         public void setProfileName(String profileName) {
-            String oldProfileName = this.profileName;
-
-            // transfer all data from the old name to the new one
-            EQSettingsList eqSettings = getModifiableEQSettings();
-            boolean eqEnabled = isEqEnabled();
-            float lowerHearingThreshold = getLowerHearingThreshold();
-            float higherHearingThreshold = getHigherHearingThreshold();
-
-            delete();
-
-            this.profileName = profileName;
-
-            setEQSettings(eqSettings);
-            setEqEnabled(eqEnabled);
-            setLowerHearingThreshold(lowerHearingThreshold);
-            setHigherHearingThreshold(higherHearingThreshold);
-
-            saveProfile(this, oldProfileName);
+            SharedPreferences prefs = getPrefs();
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString(generateProfilePrefKey(PROFILE_NAME_PREF_KEY), profileName);
+            editor.apply();
         }
 
         /**
@@ -368,12 +357,20 @@ public class ProfileManager {
 
         @Override
         public boolean equals(Object obj) {
-            return obj instanceof Profile && ((Profile) obj).getProfileName().equalsIgnoreCase(this.getProfileName());
+            return obj instanceof Profile && ((Profile) obj).getId() == this.getId();
         }
 
         @Override
         public String toString() {
             return getProfileName();
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        private void setId(int id) {
+            this.id = id;
         }
 
         public class EQSettingsList extends ArrayList<Float> {
