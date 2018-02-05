@@ -22,7 +22,7 @@ public class ProfileManager {
     public static final String PROFILE_NAME_PREF_KEY = "profileName";
     public static final String EQ_ENABLED_PREF_KEY = "equalizerEnabled";
     public static final String EQ_SETTING_PREF_KEY = "eqSetting";
-    public static final String IDS_PREF_KEY = "profileNames";
+    public static final String IDS_PREF_KEY = "profileIDs";
     public static final String PROFILE_NAMES_DELIMITER = ";";
     public static final String LOWER_HEARING_THRESHOLD_PREF_KEY = "lowerHearingThreshold";
     public static final String HIGHER_HEARING_THRESHOLD_PREF_KEY = "higherHearingThreshold";
