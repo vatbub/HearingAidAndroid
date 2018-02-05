@@ -1,6 +1,5 @@
 package com.github.vatbub.hearingaid;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
@@ -81,12 +80,8 @@ public class ProfileManager {
 
     public void applyProfile(@Nullable Profile profileToBeApplied) {
         Profile previousProfile = getCurrentlyActiveProfile();
-        if (previousProfile != null)
-            previousProfile.setActive(false);
 
         setCurrentlyActiveProfile(profileToBeApplied);
-        if (profileToBeApplied != null)
-            profileToBeApplied.setActive(true);
 
         for (ActiveProfileChangeListener changeListener : getChangeListeners()) {
             changeListener.onChanged(previousProfile, profileToBeApplied);
@@ -102,7 +97,7 @@ public class ProfileManager {
             applyProfile(null);
         profile.delete();
         List<Integer> ids = getIDs();
-        ids.remove(profile.getId());
+        ids.remove((Integer) profile.getId());
         setIDs(ids);
     }
 
@@ -115,12 +110,12 @@ public class ProfileManager {
     }
 
     private void saveProfile(Profile profile) {
-        List<Integer> profileNames = getIDs();
-        if (!profileNames.contains(profile.getId())) {
-            profileNames.add(profile.getId());
+        List<Integer> profileIDs = getIDs();
+        if (!profileIDs.contains(profile.getId())) {
+            profileIDs.add(profile.getId());
         }
 
-        setIDs(profileNames);
+        setIDs(profileIDs);
     }
 
     private List<Integer> getIDs() {
@@ -171,7 +166,6 @@ public class ProfileManager {
     }
 
     public class Profile {
-        private boolean active;
         private int id;
 
         /**
@@ -337,11 +331,7 @@ public class ProfileManager {
         }
 
         public boolean isActive() {
-            return active;
-        }
-
-        private void setActive(boolean active) {
-            this.active = active;
+            return getCurrentlyActiveProfile() != null && getCurrentlyActiveProfile().equals(this);
         }
 
         @Override
