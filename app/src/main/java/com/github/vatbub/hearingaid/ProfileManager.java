@@ -45,7 +45,7 @@ public class ProfileManager {
         return instances.get(callingContext);
     }
 
-    public static int resetInstance(Activity callingActivity) {
+    public static int resetInstance(Context callingActivity) {
         int res = -1;
 
         if (getInstance(callingActivity).getCurrentlyActiveProfile() != null)
