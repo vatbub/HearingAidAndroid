@@ -22,6 +22,7 @@ before_install:
 - yes | sdkmanager "cmake;3.6.4111459"
 - yes | sdkmanager "lldb;3.0"
 - yes | sdkmanager "system-images;$ANDROID_TARGET;google_apis_playstore;x86"
+- sdkmanager --list
 # Emulator Management: Create, Start and Wait
 before_script:
   - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
