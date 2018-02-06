@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             try {
-                String fragmentTagAboutToBeOpened = getFragmentManager().getBackStackEntryAt(getFragmentManager().getBackStackEntryCount() - 2).getName();
+                String fragmentTagAboutToBeOpened = getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 2).getName();
                 Log.d(getClass().getName(), "Navigating back to fragment: " + fragmentTagAboutToBeOpened);
                 updateTitle(fragmentTagAboutToBeOpened);
                 updateSelectedItem(fragmentTagAboutToBeOpened);
@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity
 
     private void openFragment(String tag, Fragment initialFragmentInstance) {
         // Insert the fragment by replacing any existing fragment
-        /*FragmentManager fragmentManager = getFragmentManager();
+        /*FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.content, initialFragmentInstance)
                 .commit();
@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity
             fragmentToUse = initialFragmentInstance;
 
         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        if (currentFragmentTag != null && getFragmentManager().findFragmentByTag(currentFragmentTag) != null)
+        if (currentFragmentTag != null && getSupportFragmentManager().findFragmentByTag(currentFragmentTag) != null)
             fragmentTransaction.hide(getSupportFragmentManager().findFragmentByTag(currentFragmentTag));
 
         if (fragmentFound)
