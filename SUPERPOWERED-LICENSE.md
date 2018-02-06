@@ -1,4 +1,4 @@
-# Superpowered License
+# Spuerpowered License
 
 The following document details the Superpowered Audio SDK license agreement as of September 6, 2016.
 

@@ -10,7 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 /**
- * Provides the {@code FileOutputStream} fro the message of the day.
+ * Created by frede on 14.01.2018.
  */
 
 public class AndroidMOTDFileOutputStreamProvider implements MOTDFileOutputStreamProvider {

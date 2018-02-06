@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -105,12 +104,11 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
     }
 
     @SuppressWarnings("RedundantIfStatement")
-    private boolean anyPermissionMissing() {
-        //noinspection ConstantConditions
+    private boolean allPermissionsGranted() {
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
-            return true;
+            return false;
 
-        return false;
+        return true;
     }
 
     @Override
@@ -163,7 +161,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(SUPERPOWERED_INITIALIZED_BUNDLE_KEY, superpoweredInitialized);
         outState.putBoolean(IS_STREAMING_BUNDLE_KEY, isStreamingEnabled());
@@ -171,14 +169,14 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_streaming, container, false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         initButtonHandlers();
@@ -197,7 +195,6 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
     }
 
     private SharedPreferences getSharedPreferences() {
-        //noinspection ConstantConditions
         return getActivity().getSharedPreferences(SHARED_PREFERENCES_FILE_NAME, Context.MODE_PRIVATE);
     }
 
@@ -205,13 +202,11 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
         if (getSharedPreferences().getBoolean(NEVER_SHOW_LOW_LATENCY_MESSAGE_AGAIN_PREF_KEY, false))
             return;
 
-        boolean hasLowLatencyFeature = false;
-        boolean hasProFeature = false;
+        boolean hasLowLatencyFeature =
+                getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_AUDIO_LOW_LATENCY);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && getActivity() != null) {
-            hasLowLatencyFeature = getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_AUDIO_LOW_LATENCY);
-            hasProFeature = getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_AUDIO_PRO);
-        }
+        boolean hasProFeature =
+                getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_AUDIO_PRO);
 
         if (!hasLowLatencyFeature || !hasProFeature) {
 
@@ -232,7 +227,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
             public void onClick(View v) {
                 setStreaming(!isStreamingEnabled());
                 ((PlayPauseView) v).change(!isStreamingEnabled());
-                if (anyPermissionMissing()) {
+                if (!allPermissionsGranted()) {
                     requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 1);
                 } else {
                     updateStreamingState();

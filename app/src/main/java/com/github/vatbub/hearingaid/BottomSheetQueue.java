@@ -10,7 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Enables multiple bottom sheets to be shown one after another.
+ * Created by frede on 13.01.2018.
  */
 
 public class BottomSheetQueue extends LinkedList<BottomSheetQueue.BottomSheetBehaviourWrapper> {
@@ -89,10 +89,6 @@ public class BottomSheetQueue extends LinkedList<BottomSheetQueue.BottomSheetBeh
         }
     }
 
-    /**
-     * Returns the {@link BottomSheetBehaviourWrapper} that describes the bottom sheet that is currently on screen
-     * @return the {@link BottomSheetBehaviourWrapper} that describes the bottom sheet that is currently on screen
-     */
     public BottomSheetQueue.BottomSheetBehaviourWrapper getCurrentBottomSheet() {
         return currentBottomSheet;
     }
@@ -101,9 +97,6 @@ public class BottomSheetQueue extends LinkedList<BottomSheetQueue.BottomSheetBeh
         this.currentBottomSheet = currentBottomSheet;
     }
 
-    /**
-     * Hides the bottom sheet that is currently on screen (if one is currently shown) and immediately shows the next one.
-     */
     public void showNextSheet() {
         if (getCurrentBottomSheet() != null) {
             getCurrentBottomSheet().getBottomSheetBehavior().setState(BottomSheetBehavior.STATE_HIDDEN);
