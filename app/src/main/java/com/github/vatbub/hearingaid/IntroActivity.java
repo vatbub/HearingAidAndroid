@@ -9,7 +9,7 @@ import com.github.paolorotolo.appintro.AppIntroFragment;
 import com.github.paolorotolo.appintro.model.SliderPage;
 
 /**
- * Created by frede on 15.01.2018.
+ * Activity that shows the tutorial at the first startup
  */
 
 public class IntroActivity extends AppIntro {

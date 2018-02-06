@@ -2,6 +2,7 @@ package com.github.vatbub.hearingaid.fragments;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
@@ -39,7 +40,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         setHasOptionsMenu(true);
@@ -47,7 +48,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         ProfileManager.getInstance(getActivity()).getChangeListeners().add(this);
@@ -84,6 +85,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void addProfile() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(getString(R.string.fragment_settings_current_profile_add));

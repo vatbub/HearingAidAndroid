@@ -27,7 +27,7 @@ public class ProfileManager {
     public static final String HIGHER_HEARING_THRESHOLD_PREF_KEY = "higherHearingThreshold";
     public static final boolean EQ_ENABLED_DEFAULT_SETTING = true;
     private static Map<Context, ProfileManager> instances;
-    private List<ActiveProfileChangeListener> changeListeners = new ArrayList<>();
+    private final List<ActiveProfileChangeListener> changeListeners = new ArrayList<>();
     private Context callingContext;
     private Profile currentlyActiveProfile;
 

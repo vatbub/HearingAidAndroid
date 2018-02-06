@@ -11,16 +11,16 @@
     <string name="nav_share">Share</string>
     <string name="nav_feedback">Feedback</string>
     <string name="nav_communicate">Communicate</string>
-    <string name="fragment_privacy_titile">Privacy</string>
+    <string name="fragment_privacy_title">Privacy</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="fragment_streaming_titile">Hearing Aid</string>
+    <string name="fragment_streaming_title">Hearing Aid</string>
     <string name="nav_streaming">Main</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="fragment_about_text">Imprint, Licenses, ... [WIP]</string>
     <string name="fragment_about_title">About</string>
-    <string name="fragment_privacy_text">Loading privacy statment...</string>
+    <string name="fragment_privacy_text">Loading privacy statement…</string>
     <string name="fragment_streaming_snackbar_start_streaming">Started streaming</string>
     <string name="fragment_streaming_snackbar_stop_streaming">Stopped streaming</string>
     <string name="app_icon_content_description">app icon</string>
@@ -33,11 +33,11 @@
     <string name="share_message">With this app, I was able to hear again: %1$s</string>
     <string name="share_screen_title">Share this application with your friends</string>
     <string name="intro_activity_label">Welcome</string>
-    <string name="intro_slide_1_title">Welcome...</string>
-    <string name="intro_slide_1_description">...to HearingAid. The app that makes you hear again!</string>
+    <string name="intro_slide_1_title">Welcome…</string>
+    <string name="intro_slide_1_description">…to HearingAid. The app that makes you hear again!</string>
     <string name="intro_slide_2_title">What it does</string>
-    <string name="intro_slide_2_description">HearingAid will take the mic of your smartphone...</string>
-    <string name="intro_slide_3_description">...amplify it and send it to your ear using headphones.</string>
+    <string name="intro_slide_2_description">HearingAid will take the mic of your smartphone…</string>
+    <string name="intro_slide_3_description">…amplify it and send it to your ear using headphones.</string>
     <string name="intro_slide_4_title">First things first</string>
     <string name="intro_slide_4_description">We need your permission to access the mic.</string>
     <string name="fragment_settings_use_equalizer">Use the equalizer</string>
