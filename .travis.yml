@@ -25,6 +25,7 @@ before_install:
 - wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-127.0.0-linux-x86_64.tar.gz
 - tar xf google-cloud-sdk-127.0.0-linux-x86_64.tar.gz
 - echo "y" | ./google-cloud-sdk/bin/gcloud components update
+- gcloud config set project hearingaid-c625a
 - ./google-cloud-sdk/bin/gcloud auth activate-service-account --key-file HearingAid-d4e4b3143662.json
 script:
 - chmod +x ./gradlew
