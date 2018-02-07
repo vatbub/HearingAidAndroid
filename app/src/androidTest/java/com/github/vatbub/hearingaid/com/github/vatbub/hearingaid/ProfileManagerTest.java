@@ -177,4 +177,9 @@ public class ProfileManagerTest {
             System.out.println("Expected IndexOutOfBoundsException occurred");
         }
     }
+
+    @Test
+    public void alwaysFailingTest(){
+        Assert.fail("Intentional failure");
+    }
 }
