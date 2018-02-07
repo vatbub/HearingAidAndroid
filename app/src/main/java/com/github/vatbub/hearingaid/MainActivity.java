@@ -118,6 +118,19 @@ public class MainActivity extends AppCompatActivity
 
             ProfileManager.getInstance(this).applyProfile(profileToApply);
         }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        Bundle savedInstanceState = getIntent().getExtras();
+
+        if (savedInstanceState != null) {
+            int currentlyActiveProfileId = savedInstanceState.getInt(CURRENT_PROFILE_KEY);
+            if (currentlyActiveProfileId != -1 && ProfileManager.getInstance(this).getCurrentlyActiveProfile()==null)
+                ProfileManager.getInstance(this).applyProfile(currentlyActiveProfileId);
+        }
 
         initNavHeaderSpinner();
     }
@@ -171,6 +184,7 @@ public class MainActivity extends AppCompatActivity
         super.onSaveInstanceState(outState);
         outState.putString(CURRENT_FRAGMENT_TAG_KEY, currentFragmentTag);
         outState.putInt(CURRENT_PROFILE_KEY, ProfileManager.resetInstance(this));
+        getIntent().putExtras(outState);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

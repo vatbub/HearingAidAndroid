@@ -36,7 +36,6 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initProfileSelector();
     }
 
     @Override
@@ -51,11 +50,17 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        ProfileManager.getInstance(getActivity()).getChangeListeners().add(this);
         updateEqSwitch();
 
         initButtonHandlers();
         initFrequencyLabelsAndSeekbars();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ProfileManager.getInstance(getActivity()).getChangeListeners().add(this);
+        initProfileSelector();
     }
 
     private void initProfileSelector() {
