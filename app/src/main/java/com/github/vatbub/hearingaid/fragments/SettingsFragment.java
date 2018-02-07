@@ -36,6 +36,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initProfileSelector();
     }
 
     @Override
@@ -55,9 +56,14 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
 
         initButtonHandlers();
         initFrequencyLabelsAndSeekbars();
+    }
+
+    private void initProfileSelector() {
         Spinner profileSelector = findViewById(R.id.fragment_settings_profile_selector);
         profileSelector.setAdapter(getProfileAdapter());
         profileSelector.setOnItemSelectedListener(this);
+        if (ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile() != null)
+            profileSelector.setSelection(ProfileManager.getInstance(getContext()).getPosition(ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile()));
     }
 
     @Override
