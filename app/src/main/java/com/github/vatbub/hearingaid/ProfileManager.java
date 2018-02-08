@@ -81,6 +81,9 @@ public class ProfileManager {
     public void applyProfile(@Nullable Profile profileToBeApplied) {
         Profile previousProfile = getCurrentlyActiveProfile();
 
+        if (previousProfile!=null && previousProfile.equals(profileToBeApplied))
+            return;
+
         setCurrentlyActiveProfile(profileToBeApplied);
 
         for (ActiveProfileChangeListener changeListener : getChangeListeners()) {

@@ -121,14 +121,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
 
         Bundle savedInstanceState = getIntent().getExtras();
 
         if (savedInstanceState != null) {
             int currentlyActiveProfileId = savedInstanceState.getInt(CURRENT_PROFILE_KEY);
-            if (currentlyActiveProfileId != -1 && ProfileManager.getInstance(this).getCurrentlyActiveProfile()==null)
+            if (currentlyActiveProfileId != -1)
                 ProfileManager.getInstance(this).applyProfile(currentlyActiveProfileId);
         }
 
@@ -305,7 +305,8 @@ public class MainActivity extends AppCompatActivity
 
         Spinner profileSelector = findViewById(R.id.nav_header_profile_selector);
         int position = ProfileManager.getInstance(this).getPosition(newProfile);
-        profileSelector.setSelection(position);
+        if (profileSelector != null)
+            profileSelector.setSelection(position);
     }
 
     @Override
