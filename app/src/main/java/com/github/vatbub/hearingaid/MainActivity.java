@@ -286,7 +286,7 @@ public class MainActivity extends AppCompatActivity
 
     public ArrayAdapter<ProfileManager.Profile> getProfileAdapter() {
         if (profileAdapter == null) {
-            profileAdapter = new ArrayAdapter<>(this, R.layout.simple_spinner_item);
+            profileAdapter = new ArrayAdapter<>(this, R.layout.simple_spinner_item_app_drawer);
             profileAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
             initProfileAdapter();
         }
