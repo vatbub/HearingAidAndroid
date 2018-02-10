@@ -109,17 +109,6 @@ public class MainActivity extends AppCompatActivity
 
         // Start the thread
         t.start();
-
-        if (ProfileManager.getInstance(this).getCurrentlyActiveProfile() == null) {
-            List<ProfileManager.Profile> profiles = ProfileManager.getInstance(this).listProfiles();
-            ProfileManager.Profile profileToApply;
-            if (profiles.isEmpty())
-                profileToApply = ProfileManager.getInstance(this).createProfile("dummyProfile");
-            else
-                profileToApply = profiles.get(0);
-
-            ProfileManager.getInstance(this).applyProfile(profileToApply);
-        }
     }
 
     @Override
@@ -130,7 +119,16 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState != null) {
             int currentlyActiveProfileId = savedInstanceState.getInt(CURRENT_PROFILE_KEY);
-            if (currentlyActiveProfileId != -1) {
+            if (currentlyActiveProfileId == -1) {
+                List<ProfileManager.Profile> profiles = ProfileManager.getInstance(this).listProfiles();
+                ProfileManager.Profile profileToApply;
+                if (profiles.isEmpty())
+                    profileToApply = ProfileManager.getInstance(this).createProfile("dummyProfile");
+                else
+                    profileToApply = profiles.get(0);
+
+                ProfileManager.getInstance(this).applyProfile(profileToApply);
+            } else {
                 ignoreNextSpinnerSelection();
                 ProfileManager.getInstance(this).applyProfile(currentlyActiveProfileId);
             }

@@ -220,7 +220,8 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
     private void updateEqSwitch() {
         Switch eqSwitch = findViewById(R.id.eq_on_off_switch);
         if (eqSwitch==null) return;
-        eqSwitch.setChecked(ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile().isEqEnabled());
+        if (ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile()==null) return;
+        eqSwitch.setChecked(ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile().isEqEnabled());
     }
 
     @Override
