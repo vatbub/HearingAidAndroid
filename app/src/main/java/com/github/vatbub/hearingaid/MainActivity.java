@@ -1,7 +1,5 @@
 package com.github.vatbub.hearingaid;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,6 +8,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -38,6 +38,11 @@ public class MainActivity extends AppCompatActivity
     private final static String CURRENT_PROFILE_KEY = "currentProfile";
     private String currentFragmentTag;
     private ArrayAdapter<ProfileManager.Profile> profileAdapter;
+    private boolean ignoreNextSpinnerSelection = false;
+
+    public void ignoreNextSpinnerSelection() {
+        ignoreNextSpinnerSelection = true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,9 +67,6 @@ public class MainActivity extends AppCompatActivity
             currentFragmentTag = savedInstanceState.getString(CURRENT_FRAGMENT_TAG_KEY);
             updateSelectedItem(currentFragmentTag);
             updateTitle(currentFragmentTag);
-            int currentlyActiveProfileId = savedInstanceState.getInt(CURRENT_PROFILE_KEY);
-            if (currentlyActiveProfileId != -1)
-                ProfileManager.getInstance(this).applyProfile(currentlyActiveProfileId);
         }
 
         RemoteConfig.initConfig();
@@ -123,16 +125,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
-
+        initNavHeaderSpinner();
         Bundle savedInstanceState = getIntent().getExtras();
 
         if (savedInstanceState != null) {
             int currentlyActiveProfileId = savedInstanceState.getInt(CURRENT_PROFILE_KEY);
-            if (currentlyActiveProfileId != -1)
+            if (currentlyActiveProfileId != -1) {
+                ignoreNextSpinnerSelection();
                 ProfileManager.getInstance(this).applyProfile(currentlyActiveProfileId);
+            }
         }
-
-        initNavHeaderSpinner();
     }
 
     private void initNavHeaderSpinner() {
@@ -299,18 +301,22 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onChanged(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
+    public void onChanged(@Nullable ProfileManager.Profile oldProfile, @Nullable final ProfileManager.Profile newProfile) {
         if (newProfile == null)
             return;
 
-        Spinner profileSelector = findViewById(R.id.nav_header_profile_selector);
-        int position = ProfileManager.getInstance(this).getPosition(newProfile);
-        if (profileSelector != null)
-            profileSelector.setSelection(position);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        Spinner profileSelector = navigationView.getHeaderView(0).findViewById(R.id.nav_header_profile_selector);
+        int position = ProfileManager.getInstance(MainActivity.this).getPosition(newProfile);
+        profileSelector.setSelection(position);
     }
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
+        if (ignoreNextSpinnerSelection) {
+            ignoreNextSpinnerSelection = false;
+            return;
+        }
         ProfileManager.Profile selectedProfile = (ProfileManager.Profile) adapterView.getItemAtPosition(pos);
         ProfileManager.getInstance(this).applyProfile(selectedProfile);
     }
