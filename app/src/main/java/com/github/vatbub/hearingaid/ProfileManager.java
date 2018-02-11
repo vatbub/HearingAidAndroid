@@ -26,8 +26,8 @@ public class ProfileManager {
     public static final String LOWER_HEARING_THRESHOLD_PREF_KEY = "lowerHearingThreshold";
     public static final String HIGHER_HEARING_THRESHOLD_PREF_KEY = "higherHearingThreshold";
     public static final boolean EQ_ENABLED_DEFAULT_SETTING = true;
-    private static Map<Context, ProfileManager> instances;
-    private List<ActiveProfileChangeListener> changeListeners = new ArrayList<>();
+    private static final Map<Context, ProfileManager> instances = new HashMap<>();
+    private final List<ActiveProfileChangeListener> changeListeners = new ArrayList<>();
     private Context callingContext;
     private Profile currentlyActiveProfile;
 
@@ -36,22 +36,25 @@ public class ProfileManager {
     }
 
     public static ProfileManager getInstance(Context callingContext) {
-        if (instances == null)
-            instances = new HashMap<>();
-        if (!instances.containsKey(callingContext))
-            instances.put(callingContext, new ProfileManager(callingContext));
+        synchronized (instances) {
+            if (!instances.containsKey(callingContext))
+                instances.put(callingContext, new ProfileManager(callingContext));
 
-        return instances.get(callingContext);
+            return instances.get(callingContext);
+        }
     }
 
     public static int resetInstance(Context callingActivity) {
-        int res = -1;
+        synchronized (instances) {
+            int res = -1;
 
-        if (getInstance(callingActivity).getCurrentlyActiveProfile() != null)
-            res = getInstance(callingActivity).getCurrentlyActiveProfile().getId();
+            Profile currentProfile = getInstance(callingActivity).getCurrentlyActiveProfile();
+            if (currentProfile != null)
+                res = currentProfile.getId();
 
-        instances.remove(callingActivity);
-        return res;
+            instances.remove(callingActivity);
+            return res;
+        }
     }
 
     public List<ActiveProfileChangeListener> getChangeListeners() {
@@ -82,7 +85,7 @@ public class ProfileManager {
     public void applyProfile(@Nullable Profile profileToBeApplied) {
         Profile previousProfile = getCurrentlyActiveProfile();
 
-        if (previousProfile!=null && previousProfile.equals(profileToBeApplied))
+        if (previousProfile != null && previousProfile.equals(profileToBeApplied))
             return;
 
         setCurrentlyActiveProfile(profileToBeApplied);

@@ -7,7 +7,7 @@
         android:id="@+id/fragment_settings_current_profile_add_button"
         android:icon="@drawable/fragment_settings_add_button"
         android:title="@string/fragment_settings_current_profile_add"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/fragment_settings_current_profile_rename_button"
         android:title="@string/fragment_settings_current_profile_rename" />

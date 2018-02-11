@@ -140,7 +140,7 @@ public class BottomSheetQueue extends LinkedList<BottomSheetQueue.BottomSheetBeh
             this(bottomSheetBehavior, BottomSheetBehavior.STATE_EXPANDED);
         }
 
-        public BottomSheetBehaviourWrapper(BottomSheetBehavior bottomSheetBehavior, int stateToUseForExpansion) {
+        public BottomSheetBehaviourWrapper(BottomSheetBehavior bottomSheetBehavior, @SuppressWarnings("SameParameterValue") int stateToUseForExpansion) {
             this(bottomSheetBehavior, stateToUseForExpansion, new BottomSheetCallbackList());
         }
 

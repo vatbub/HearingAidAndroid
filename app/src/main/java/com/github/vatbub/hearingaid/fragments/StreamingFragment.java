@@ -104,11 +104,11 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
     }
 
     @SuppressWarnings("RedundantIfStatement")
-    private boolean allPermissionsGranted() {
+    private boolean permissionMissing() {
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
-            return false;
+            return true;
 
-        return true;
+        return false;
     }
 
     @Override
@@ -206,7 +206,10 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                 getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_AUDIO_LOW_LATENCY);
 
         boolean hasProFeature =
-                getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_AUDIO_PRO);
+                false;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            hasProFeature = getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_AUDIO_PRO);
+        }
 
         if (!hasLowLatencyFeature || !hasProFeature) {
 
@@ -227,7 +230,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
             public void onClick(View v) {
                 setStreaming(!isStreamingEnabled());
                 ((PlayPauseView) v).change(!isStreamingEnabled());
-                if (!allPermissionsGranted()) {
+                if (permissionMissing()) {
                     requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 1);
                 } else {
                     updateStreamingState();

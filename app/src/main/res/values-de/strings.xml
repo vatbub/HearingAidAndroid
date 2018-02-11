@@ -14,8 +14,6 @@
     <string name="fragment_streaming_titile">Hörgerät</string>
     <string name="nav_streaming">Start</string>
     <string name="fragment_about_title">Impressum</string>
-    <string name="fragment_about_text">Impressumstext, Lizenzen, bla und blub [WIP]</string>
-    <string name="fragment_privacy_text">Datenschutzerklärung wird geladen...</string>
     <string name="fragment_streaming_snackbar_start_streaming">Hörgerät eingeschaltet</string>
     <string name="fragment_streaming_snackbar_stop_streaming">Hörgerät ausgeschaltet</string>
     <string name="app_icon_content_description">App Icon</string>
@@ -28,12 +26,12 @@
     <string name="share_message">Mit dieser App konnte ich wieder hören: %1$s</string>
     <string name="share_screen_title">Teile diese App mit deinen Freunden</string>
     <string name="intro_activity_label">Willkommen</string>
-    <string name="intro_slide_1_title">Willkommen...</string>
-    <string name="intro_slide_1_description">...bei Hörgerät. Der App, die Ihnen wieder das Hören ermöglicht!</string>
+    <string name="intro_slide_1_title">Willkommen…</string>
+    <string name="intro_slide_1_description">…bei Hörgerät. Der App, die Ihnen wieder das Hören ermöglicht!</string>
     <string name="intro_slide_2_title">Wozu?</string>
-    <string name="intro_slide_2_description">Die App verwendet das Mikrofon in Ihrem Smartphone...</string>
-    <string name="intro_slide_3_description">...verstärkt es und spielt den Ton auf den Kopfhörern ab.</string>
-    <string name="intro_slide_4_title">Zu aller erst...</string>
+    <string name="intro_slide_2_description">Die App verwendet das Mikrofon in Ihrem Smartphone…</string>
+    <string name="intro_slide_3_description">…verstärkt es und spielt den Ton auf den Kopfhörern ab.</string>
+    <string name="intro_slide_4_title">Zu aller erst…</string>
     <string name="intro_slide_4_description">Wir brauchen Ihre Zustimmung, um auf das Mikrofon zuzugreifen.</string>
     <string name="fragment_settings_use_equalizer">Equalizer benutzen</string>
     <string name="fragment_settings_equalizer_explanation">Schalten Sie den Equalizer aus, wenn auf Ihrem Gerät starke Audioverzögerungen auftreten. Wenn Sie den Equalizer einschalten, können Sie den Klang jedoch an Ihren Hörverlust anpassen.</string>
@@ -60,4 +58,6 @@
     <string name="fragment_settings_add_profile_cancel">Abbrechen</string>
     <string name="fragment_settings_rename_profile_ok">Umbenennen</string>
     <string name="fragment_settings_rename_profile_cancel">Abbrechen</string>
+    <string name="fragment_about_superpowered_logo_content_description">Logo von Superpowered Inc.</string>
+    <string name="fragment_settings_loading">Laden…</string>
 </resources>
