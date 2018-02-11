@@ -267,10 +267,10 @@ public class MainActivity extends AppCompatActivity
     private void updateTitle(String fragmentTag) {
         switch (fragmentTag) {
             case "streamingFragment":
-                setTitle(getString(R.string.fragment_streaming_titile));
+                setTitle(getString(R.string.fragment_streaming_title));
                 break;
             case "privacyFragment":
-                setTitle(getString(R.string.fragment_privacy_titile));
+                setTitle(getString(R.string.fragment_privacy_title));
                 break;
             case "aboutFragment":
                 setTitle(getString(R.string.fragment_about_title));

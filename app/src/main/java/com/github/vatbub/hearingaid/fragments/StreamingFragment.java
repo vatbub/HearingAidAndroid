@@ -161,7 +161,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(SUPERPOWERED_INITIALIZED_BUNDLE_KEY, superpoweredInitialized);
         outState.putBoolean(IS_STREAMING_BUNDLE_KEY, isStreamingEnabled());
@@ -169,7 +169,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_streaming, container, false);
@@ -387,7 +387,9 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
         if (!superpoweredInitialized)
             return;
 
-        eqEnabled(ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile().isEqEnabled());
+        ProfileManager.Profile currentProfile = ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile();
+        if (currentProfile != null)
+            eqEnabled(currentProfile.isEqEnabled());
     }
 
     @Override

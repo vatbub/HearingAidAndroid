@@ -1,7 +1,9 @@
 package com.github.vatbub.hearingaid.fragments;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
@@ -19,6 +21,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.hearingaid.MainActivity;
 import com.github.vatbub.hearingaid.ProfileManager;
 import com.github.vatbub.hearingaid.R;
@@ -34,7 +37,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         setHasOptionsMenu(true);
@@ -91,11 +94,22 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
     }
 
     private void addProfile() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        Context context = getContext();
+        final MainActivity activity = (MainActivity) getActivity();
+        if (context==null){
+            Crashlytics.logException(new NullPointerException("context was null"));
+            return;
+        }
+        if (activity==null){
+            Crashlytics.logException(new NullPointerException("Activity was null"));
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(getString(R.string.fragment_settings_current_profile_add));
 
         // Set up the input
-        final EditText input = new EditText(getContext());
+        final EditText input = new EditText(context);
         // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(input);
@@ -105,9 +119,9 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 ProfileManager.Profile createdProfile = ProfileManager.getInstance(getActivity()).createProfile(input.getText().toString());
-                ((MainActivity) getActivity()).getProfileAdapter().add(createdProfile);
+                activity.getProfileAdapter().add(createdProfile);
                 getProfileAdapter().add(createdProfile);
-                ProfileManager.getInstance(getActivity()).applyProfile(createdProfile);
+                ProfileManager.getInstance(activity).applyProfile(createdProfile);
             }
         });
         builder.setNegativeButton(getString(R.string.fragment_settings_add_profile_cancel), new DialogInterface.OnClickListener() {
@@ -121,23 +135,38 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
     }
 
     private void renameProfile() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        Context context = getContext();
+        final MainActivity activity = (MainActivity) getActivity();
+        final ProfileManager.Profile currentProfile = ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile();
+        if (context==null){
+            Crashlytics.logException(new NullPointerException("context was null"));
+            return;
+        }
+        if (activity==null){
+            Crashlytics.logException(new NullPointerException("Activity was null"));
+            return;
+        }
+        if (currentProfile==null){
+            Crashlytics.logException(new NullPointerException("Current Profile was null"));
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(getString(R.string.fragment_settings_current_profile_rename));
 
         // Set up the input
         final EditText input = new EditText(getContext());
         // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
         input.setInputType(InputType.TYPE_CLASS_TEXT);
-        input.setText(ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile().getProfileName());
+        input.setText(currentProfile.getProfileName());
         builder.setView(input);
 
         // Set up the buttons
         builder.setPositiveButton(getString(R.string.fragment_settings_rename_profile_ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                ProfileManager.Profile currentProfile = ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile();
                 currentProfile.setProfileName(input.getText().toString());
-                ((MainActivity) getActivity()).initProfileAdapter();
+                activity.initProfileAdapter();
                 initProfileAdapter();
             }
         });
@@ -152,9 +181,15 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
     }
 
     private void removeProfile() {
+        final MainActivity activity = (MainActivity) getActivity();
+        if (activity==null){
+            Crashlytics.logException(new NullPointerException("Activity was null"));
+            return;
+        }
+
         ProfileManager.Profile currentProfile = ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile();
         ProfileManager.getInstance(getActivity()).deleteProfile(currentProfile);
-        ((MainActivity) getActivity()).getProfileAdapter().remove(currentProfile);
+        activity.getProfileAdapter().remove(currentProfile);
         getProfileAdapter().remove(currentProfile);
         ProfileManager.getInstance(getActivity()).applyProfile(ProfileManager.getInstance(getActivity()).listProfiles().get(0));
     }
@@ -216,9 +251,10 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
 
     private void updateEqSwitch() {
         Switch eqSwitch = findViewById(R.id.eq_on_off_switch);
+        ProfileManager.Profile currentProfile = ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile();
         if (eqSwitch == null) return;
-        if (ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile() == null) return;
-        eqSwitch.setChecked(ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile().isEqEnabled());
+        if (currentProfile == null) return;
+        eqSwitch.setChecked(currentProfile.isEqEnabled());
     }
 
     @Override

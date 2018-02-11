@@ -11,10 +11,10 @@
     <string name="nav_share">Share</string>
     <string name="nav_feedback">Feedback</string>
     <string name="nav_communicate">Communicate</string>
-    <string name="fragment_privacy_titile">Privacy</string>
+    <string name="fragment_privacy_title">Privacy</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="fragment_streaming_titile">Hearing Aid</string>
+    <string name="fragment_streaming_title">Hearing Aid</string>
     <string name="nav_streaming">Main</string>
 
     <!-- TODO: Remove or change this placeholder text -->
