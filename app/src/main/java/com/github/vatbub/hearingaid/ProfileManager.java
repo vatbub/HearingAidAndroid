@@ -58,6 +58,7 @@ public class ProfileManager {
         return changeListeners;
     }
 
+    @Nullable
     public Profile getCurrentlyActiveProfile() {
         return currentlyActiveProfile;
     }

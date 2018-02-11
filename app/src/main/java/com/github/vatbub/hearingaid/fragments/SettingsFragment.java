@@ -169,7 +169,9 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
         eqSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile().setEqEnabled(checked);
+                ProfileManager.Profile currentProfile = ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile();
+                if (currentProfile != null)
+                    currentProfile.setEqEnabled(checked);
 
                 StreamingFragment streamingFragment = (StreamingFragment) getActivity().getSupportFragmentManager().findFragmentByTag("streamingFragment");
                 if (streamingFragment != null)
@@ -219,8 +221,8 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
 
     private void updateEqSwitch() {
         Switch eqSwitch = findViewById(R.id.eq_on_off_switch);
-        if (eqSwitch==null) return;
-        if (ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile()==null) return;
+        if (eqSwitch == null) return;
+        if (ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile() == null) return;
         eqSwitch.setChecked(ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile().isEqEnabled());
     }
 
