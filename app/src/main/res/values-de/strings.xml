@@ -60,4 +60,15 @@
     <string name="fragment_settings_rename_profile_cancel">Abbrechen</string>
     <string name="fragment_about_superpowered_logo_content_description">Logo von Superpowered Inc.</string>
     <string name="fragment_settings_loading">Laden…</string>
+    <string name="feedback_title">Feedback senden</string>
+    <string name="feedback_message">Sie haben einen Fehler gefunden oder haben eine Idee für die App? Wir freuen uns über Ihr Feedback!</string>
+    <string name="feedback_hint">Feedback</string>
+    <string name="feedback_inlude_screenshot">Screenshot anhängen</string>
+    <string name="feedback_touch_to_preview_screenshot">Berühren für Vorschau</string>
+    <string name="feedback_error">Ein Fehler ist aufgetreten. Wir entschuldigen uns für die Unannehmlichkeiten und nehmen uns des Problems so schnell wie möglich an.</string>
+    <string name="feedback_screenshot_hint">screenshot_hint_here</string>
+    <string name="feedback_wait_dialog_title">Senden...</string>
+    <string name="feedback_wait_dialog_message">Ihr Feedback wird gesendet...</string>
+    <string name="feedback_success_toast">Vielen Dank für Ihr Feedback!</string>
+    <string name="feedback_failure_toast">Ihr Feedback konnte nicht gesendet werden :/</string>
 </resources>

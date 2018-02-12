@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.IdRes;
@@ -28,13 +29,17 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.hearingaid.fragments.AboutFragment;
 import com.github.vatbub.hearingaid.fragments.PrivacyFragment;
 import com.github.vatbub.hearingaid.fragments.SettingsFragment;
 import com.github.vatbub.hearingaid.fragments.StreamingFragment;
+import com.github.vatbub.safeAPIKeyStore.client.APIKeyClient;
+import com.github.vatbub.safeAPIKeyStore.client.InternalServerException;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import org.markdown4j.Markdown4jProcessor;
+import org.rm3l.maoni.Maoni;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,6 +48,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback, ProfileManager.ActiveProfileChangeListener, AdapterView.OnItemSelectedListener {
@@ -52,6 +58,47 @@ public class MainActivity extends AppCompatActivity
     private String currentFragmentTag;
     private ArrayAdapter<ProfileManager.Profile> profileAdapter;
     private boolean ignoreNextSpinnerSelection = false;
+
+    public static void displayMarkdown(Resources resources, Activity activity, @RawRes int markdownFile, @IdRes int webViewToDisplayMarkdownIn) throws IOException {
+        InputStream input = resources.openRawResource(markdownFile);
+        List<String> lines = readLines(input);
+        StringBuilder markdown = new StringBuilder();
+        for (String line : lines) {
+            markdown.append(line).append("\n");
+        }
+
+        String html = new Markdown4jProcessor().process(markdown.toString());
+        ((WebView) activity.findViewById(webViewToDisplayMarkdownIn)).loadData(html, "text/html", "UTF-8");
+    }
+
+    public static List<String> readLines(InputStream input) throws IOException {
+        InputStreamReader reader = new InputStreamReader(input);
+        return readLines(reader);
+    }
+
+    /**
+     * Get the contents of a <code>Reader</code> as a list of Strings,
+     * one entry per line.
+     * <p>
+     * This method buffers the input internally, so there is no need to use a
+     * <code>BufferedReader</code>.
+     *
+     * @param input the <code>Reader</code> to read from, not null
+     * @return the list of Strings, never null
+     * @throws NullPointerException if the input is null
+     * @throws IOException          if an I/O error occurs
+     * @since Commons IO 1.1
+     */
+    private static List<String> readLines(Reader input) throws IOException {
+        BufferedReader reader = new BufferedReader(input);
+        List<String> list = new ArrayList<>();
+        String line = reader.readLine();
+        while (line != null) {
+            list.add(line);
+            line = reader.readLine();
+        }
+        return list;
+    }
 
     public void ignoreNextSpinnerSelection() {
         ignoreNextSpinnerSelection = true;
@@ -222,7 +269,7 @@ public class MainActivity extends AppCompatActivity
             sendIntent.setType("text/plain");
             startActivity(Intent.createChooser(sendIntent, getString(R.string.share_screen_title)));
         } else if (id == R.id.nav_feedback) {
-
+            startFeedbackActivity();
         } else if (id == R.id.nav_privacy) {
             openFragment("privacyFragment", new PrivacyFragment());
         } else if (id == R.id.nav_about) {
@@ -297,47 +344,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public static void displayMarkdown(Resources resources, Activity activity, @RawRes int markdownFile, @IdRes int webViewToDisplayMarkdownIn) throws IOException {
-        InputStream input = resources.openRawResource(markdownFile);
-        List<String> lines = readLines(input);
-        StringBuilder markdown = new StringBuilder();
-        for (String line : lines) {
-            markdown.append(line).append("\n");
-        }
-
-        String html = new Markdown4jProcessor().process(markdown.toString());
-        ((WebView) activity.findViewById(webViewToDisplayMarkdownIn)).loadData(html, "text/html", "UTF-8");
-    }
-
-    public static  List<String> readLines(InputStream input) throws IOException {
-        InputStreamReader reader = new InputStreamReader(input);
-        return readLines(reader);
-    }
-
-    /**
-     * Get the contents of a <code>Reader</code> as a list of Strings,
-     * one entry per line.
-     * <p>
-     * This method buffers the input internally, so there is no need to use a
-     * <code>BufferedReader</code>.
-     *
-     * @param input  the <code>Reader</code> to read from, not null
-     * @return the list of Strings, never null
-     * @throws NullPointerException if the input is null
-     * @throws IOException if an I/O error occurs
-     * @since Commons IO 1.1
-     */
-    private static List<String> readLines(Reader input) throws IOException {
-        BufferedReader reader = new BufferedReader(input);
-        List<String> list = new ArrayList<>();
-        String line = reader.readLine();
-        while (line != null) {
-            list.add(line);
-            line = reader.readLine();
-        }
-        return list;
-    }
-
     public ArrayAdapter<ProfileManager.Profile> getProfileAdapter() {
         if (profileAdapter == null) {
             profileAdapter = new ArrayAdapter<>(this, R.layout.simple_spinner_item_app_drawer);
@@ -376,5 +382,71 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
         System.out.println("Nothing selected");
+    }
+
+    public void startFeedbackActivity() {
+        new StartFeedbackActivityTask().execute(this);
+    }
+
+    private static class StartFeedbackActivityTask extends AsyncTask<Activity, Void, Void>{
+
+        /**
+         * Override this method to perform a computation on a background thread. The
+         * specified parameters are the parameters passed to {@link #execute}
+         * by the caller of this task.
+         * <p>
+         * This method can call {@link #publishProgress} to publish updates
+         * on the UI thread.
+         *
+         * @param activities The parameters of the task.
+         * @return A result, defined by the subclass of this task.
+         * @see #onPreExecute()
+         * @see #onPostExecute
+         * @see #publishProgress
+         */
+        @Override
+        protected Void doInBackground(final Activity... activities) {
+            final org.rm3l.maoni.github.MaoniGithubListener listenerForMaoni;
+            try {
+                listenerForMaoni = new org.rm3l.maoni.github.MaoniGithubListener(activities[0], FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.GITHUB_FEEDBACK_USERNAME),
+                        APIKeyClient.getApiKey(FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.GITHUB_FEEDBACK_API_KEY_SERVER), (int) FirebaseRemoteConfig.getInstance().getLong(RemoteConfig.Keys.GITHUB_FEEDBACK_API_KEY_SERVER_PORT), "hearingAidGithub"),
+                        FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.GITHUB_FEEDBACK_REPO_OWNER),
+                        FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.GITHUB_FEEDBACK_REPO_NAME),
+                        true, activities[0].getString(R.string.feedback_wait_dialog_title),
+                        activities[0].getString(R.string.feedback_wait_dialog_message),
+                        FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.GITHUB_FEEDBACK_TITLE_PREFIX),
+                        null, null,
+                        null, //FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.GITHUB_FEEDBACK_LABELS).split(";"),
+                        null, activities[0].getString(R.string.feedback_success_toast),
+                        activities[0].getString(R.string.feedback_failure_toast));
+
+                activities[0].runOnUiThread(new Runnable(){
+                    @Override
+                    public void run() {
+                        //The optional file provider authority allows you to
+                        //share the screenshot capture file to other apps (depending on your callback implementation)
+                        new Maoni.Builder(null)
+                                .withWindowTitle(activities[0].getString(R.string.feedback_title)) //Set to an empty string to clear it
+                                .withMessage(activities[0].getString(R.string.feedback_message))
+                                // .withExtraLayout(R.layout.my_feedback_activity_extra_content)
+                                // .withHandler(myHandlerForMaoni) //Custom Callback for Maoni
+                                .withListener(listenerForMaoni)
+                                .withFeedbackContentHint(activities[0].getString(R.string.feedback_hint))
+                                .withIncludeScreenshotText(activities[0].getString(R.string.feedback_inlude_screenshot))
+                                .withTouchToPreviewScreenshotText(activities[0].getString(R.string.feedback_touch_to_preview_screenshot))
+                                .withContentErrorMessage(activities[0].getString(R.string.feedback_error))
+                                .withScreenshotHint(activities[0].getString(R.string.feedback_screenshot_hint))
+                                .disableLogsCapturingFeature()
+                                .build()
+                                .start(activities[0]);
+                    }
+                });
+            } catch (InternalServerException | IOException | TimeoutException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
+
+            return null;
+        }
     }
 }

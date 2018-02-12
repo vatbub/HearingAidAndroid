@@ -65,4 +65,15 @@
     <string name="fragment_settings_rename_profile_cancel">Cancel</string>
     <string name="fragment_about_superpowered_logo_content_description">Logo of Superpowered Inc.</string>
     <string name="fragment_settings_loading">Loading…</string>
+    <string name="feedback_title">Send Feedback</string>
+    <string name="feedback_message">Found a bug or had a fresh feature idea? We\'ll be happy to implement it!</string>
+    <string name="feedback_hint">Feedback</string>
+    <string name="feedback_inlude_screenshot">Send screenshot</string>
+    <string name="feedback_touch_to_preview_screenshot">Touch to preview and edit</string>
+    <string name="feedback_error">An error occurred. We are sorry for the inconvenience. We\'re working on this asap!</string>
+    <string name="feedback_screenshot_hint">screenshot_hint_here</string>
+    <string name="feedback_wait_dialog_title">Sending...</string>
+    <string name="feedback_wait_dialog_message">Sending your feedback...</string>
+    <string name="feedback_success_toast">Thanks for your feedback!</string>
+    <string name="feedback_failure_toast">Something went wrong while sending your feedback :/</string>
 </resources>
