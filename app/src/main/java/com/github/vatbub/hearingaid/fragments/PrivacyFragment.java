@@ -32,6 +32,7 @@ public class PrivacyFragment extends CustomFragment {
         try {
             MainActivity.displayMarkdown(getResources(), getActivity(), R.raw.privacy, R.id.fragment_privacy_markdown_view);
         } catch (IOException e) {
+            e.printStackTrace();
             Crashlytics.logException(e);
         }
     }

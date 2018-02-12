@@ -65,15 +65,14 @@
     <string name="fragment_settings_rename_profile_cancel">Cancel</string>
     <string name="fragment_about_superpowered_logo_content_description">Logo of Superpowered Inc.</string>
     <string name="fragment_settings_loading">Loading…</string>
-    <string name="feedback_title">Send Feedback</string>
+    <string name="feedback_title">Feedback</string>
     <string name="feedback_message">Found a bug or had a fresh feature idea? We\'ll be happy to implement it!</string>
     <string name="feedback_hint">Feedback</string>
-    <string name="feedback_inlude_screenshot">Send screenshot</string>
-    <string name="feedback_touch_to_preview_screenshot">Touch to preview and edit</string>
-    <string name="feedback_error">An error occurred. We are sorry for the inconvenience. We\'re working on this asap!</string>
-    <string name="feedback_screenshot_hint">screenshot_hint_here</string>
-    <string name="feedback_wait_dialog_title">Sending...</string>
-    <string name="feedback_wait_dialog_message">Sending your feedback...</string>
-    <string name="feedback_success_toast">Thanks for your feedback!</string>
-    <string name="feedback_failure_toast">Something went wrong while sending your feedback :/</string>
+    <string name="feedback_error">Please fill this field.</string>
+    <string name="feedback_latency_title">How much audio latency do you experience?</string>
+    <string name="feeedback_privacy_checkbox">I have read and agreed to the privacy statement</string>
+    <string name="feedback_view_privacy_statement">View the Privacy Statement</string>
+    <string name="feedback_privacy_unchecked_toast">Please accept the privacy statement</string>
+    <string name="feedback_latency_min">Not at all</string>
+    <string name="feedback_latency_max">Disturbing</string>
 </resources>

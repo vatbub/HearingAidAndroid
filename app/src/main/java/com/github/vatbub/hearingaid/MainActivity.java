@@ -26,7 +26,11 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.github.vatbub.hearingaid.fragments.AboutFragment;
 import com.github.vatbub.hearingaid.fragments.PrivacyFragment;
@@ -36,6 +40,8 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import org.markdown4j.Markdown4jProcessor;
 import org.rm3l.maoni.Maoni;
+import org.rm3l.maoni.common.contract.Handler;
+import org.rm3l.maoni.common.model.Feedback;
 import org.rm3l.maoni.email.MaoniEmailListener;
 
 import java.io.BufferedReader;
@@ -381,8 +387,51 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void startFeedbackActivity() {
-        final MaoniEmailListener listenerForMaoni = new MaoniEmailListener(this, FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.EMAIL_FEEDBACK_SUBJECT),
-                FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.EMAIL_FEEDBACK_TO_ADDRESS));
+        final SeekBar[] audioLatencySeekbar = new SeekBar[1];
+        MaoniEmailListener listenerForMaoni = new MaoniEmailListener(this, FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.EMAIL_FEEDBACK_SUBJECT),
+                FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.EMAIL_FEEDBACK_TO_ADDRESS)){
+            @Override
+            public boolean onSendButtonClicked(Feedback feedback) {
+                feedback.put("audioLatency", audioLatencySeekbar[0].getProgress());
+                return super.onSendButtonClicked(feedback);
+            }
+        };
+        Handler myHandlerForMaoni = new Handler() {
+            private CheckBox privacyCheckbox;
+
+            @Override
+            public void onDismiss() {
+
+            }
+
+            @Override
+            public boolean onSendButtonClicked(Feedback feedback) {
+                return true;
+            }
+
+            @Override
+            public void onCreate(View view, Bundle bundle) {
+                audioLatencySeekbar[0] = view.findViewById(R.id.feedback_audio_latency_seekbar);
+                privacyCheckbox = view.findViewById(R.id.feedback_privacy_check_box);
+                Button viewPrivacyButton = view.findViewById(R.id.feedback_view_privacy_button);
+                viewPrivacyButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(MainActivity.this, FeedbackPrivacyActivity.class);
+                        startActivity(intent);
+                    }
+                });
+            }
+
+            @Override
+            public boolean validateForm(View view) {
+                if (!privacyCheckbox.isChecked()){
+                    Toast.makeText(MainActivity.this, R.string.feedback_privacy_unchecked_toast, Toast.LENGTH_LONG).show();
+                    return false;
+                }
+                return true;
+            }
+        };
 
         //The optional file provider authority allows you to
         //share the screenshot capture file to other apps (depending on your callback implementation)
@@ -390,13 +439,12 @@ public class MainActivity extends AppCompatActivity
                 .withWindowTitle(getString(R.string.feedback_title)) //Set to an empty string to clear it
                 .withMessage(getString(R.string.feedback_message))
                 // .withExtraLayout(R.layout.my_feedback_activity_extra_content)
-                // .withHandler(myHandlerForMaoni) //Custom Callback for Maoni
+                .withHandler(myHandlerForMaoni) //Custom Callback for Maoni
                 .withListener(listenerForMaoni)
+                // .withTheme(R.style.AppTheme)
+                .withExtraLayout(R.layout.feedback_extra_layout)
                 .withFeedbackContentHint(getString(R.string.feedback_hint))
-                .withIncludeScreenshotText(getString(R.string.feedback_inlude_screenshot))
-                .withTouchToPreviewScreenshotText(getString(R.string.feedback_touch_to_preview_screenshot))
                 .withContentErrorMessage(getString(R.string.feedback_error))
-                .withScreenshotHint(getString(R.string.feedback_screenshot_hint))
                 .disableLogsCapturingFeature()
                 .disableScreenCapturingFeature()
                 .build()
