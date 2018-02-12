@@ -20,6 +20,7 @@ All mentioned licenses can be found below.
 - [AppIntro](https://github.com/apl-devs/AppIntro/) is subject to the Apache License v2.0.
 - [android-verticalseekbar](https://github.com/h6ah4i/android-verticalseekbar/) is subject to the Apache License v2.0.
 - [Markdown4J](http://github.com/jdcasey/markdown4j) is subject to the Apache License v2.0.
+- [Maoni](https://github.com/rm3l/maoni) is subject to the MIT License.
 - This app utilizes the [Superpowered Audio SDK](http://superpowered.com/) for fast audio processing which is subject to the Superpowered license.
 
 ## Apache License
@@ -198,8 +199,8 @@ _END OF TERMS AND CONDITIONS_
 
 ## The MIT License (MIT)
 
-Copyright © 2016 OHoussein  
-Copyright © 2015 Alex Lockwood
+- Play/Pause button: Copyright © 2016 OHoussein, 2015 Alex Lockwood
+- Maoni: Copyright © 2016 Armel Soro
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
