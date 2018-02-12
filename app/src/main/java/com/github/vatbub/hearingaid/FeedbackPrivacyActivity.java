@@ -13,12 +13,18 @@ public class FeedbackPrivacyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback_privacy);
-        // getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         try {
             MainActivity.displayMarkdown(getResources(), this, R.raw.privacy, R.id.activity_feedback_privacy_markdown_view);
         } catch (IOException e) {
             e.printStackTrace();
             Crashlytics.logException(e);
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp(){
+        finish();
+        return true;
     }
 }
