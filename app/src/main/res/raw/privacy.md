@@ -15,4 +15,10 @@ This data is transmitted anonymously and does not contain any personal informati
 
 # Feedback
 
-You have the possibility to submit feedback through the feedback feature in the sidebar. You can use this function to submit bug reports and suggestions for new features. Data you submit through this feature is stored as a so called "issue" in the GitHub repository of this app. Since this app's source code is publicly available ("open source"), the information submitted through issues is also publicly available and subject to GitHub's privacy policy which can be found [here](https://help.github.com/articles/github-privacy-statement/). By design, GitHub issues cannot be deleted, however you can request us to remove any personal information that you submitted accidentally.
+You have the possibility to submit feedback through the feedback feature in the sidebar. You can use this function to submit bug reports and suggestions for new features. Data you submit through this feature is sent to us via email. After clicking the "Send"-button in the feedback form, your email-app opens and you can review and modify all information that is sent to us prior to clicking the "Send"-button in your email-app, which will actually submit your feedback.
+
+Information you submit to us using this feature is generally not published. The original email containing your feedback will be deleted once your feedback is implemented. However, we reserve the right to publish your feedback as a so called GitHub Issue in our [GitHub Repository](https://github.com/vatbub/HearingAidAndroid/issues). Before publishing your feedback, we will remove any personal information that was associated with your feedback. Information published on GitHub is subject to GitHub's privacy policy which can be found [here](https://help.github.com/articles/github-privacy-statement/).
+
+If you do not wish that we publish your feedback on GitHub, please let us know in your feedback message.
+
+Please be aware that data transfer via the internet is subject to security risks and, therefore, complete protection against third-party access to transferred data cannot be ensured.
