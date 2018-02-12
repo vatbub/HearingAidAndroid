@@ -257,10 +257,6 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_streaming) {
             openFragment("streamingFragment", new StreamingFragment());
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
         } else if (id == R.id.nav_settings) {
             openFragment("settingsFragment", new SettingsFragment());
         } else if (id == R.id.nav_share) {
