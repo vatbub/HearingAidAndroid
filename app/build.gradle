@@ -97,8 +97,6 @@ dependencies {
     compile ('org.rm3l:maoni:4.1.2@aar') {
         transitive = true
     }
-    compile 'org.rm3l:maoni-github:2.4.2-rc1'
-    compile 'com.github.vatbub:safeAPIKeyStore.client:1.1'
 }
 
 

@@ -24,13 +24,8 @@ public class RemoteConfig {
         defaults.put(Keys.PLAY_STORE_URL, "https://fredplus10.me/");
         defaults.put(Keys.MIN_EQ_FREQUENCY, 16);
         defaults.put(Keys.MAX_EQ_FREQUENCY, 21000);
-        defaults.put(Keys.GITHUB_FEEDBACK_USERNAME, "vatbub");
-        defaults.put(Keys.GITHUB_FEEDBACK_REPO_OWNER, "vatbub");
-        defaults.put(Keys.GITHUB_FEEDBACK_REPO_NAME, "HearingAidAndroid");
-        defaults.put(Keys.GITHUB_FEEDBACK_LABELS, "feedback");
-        defaults.put(Keys.GITHUB_FEEDBACK_API_KEY_SERVER, "35.157.23.171");
-        defaults.put(Keys.GITHUB_FEEDBACK_API_KEY_SERVER_PORT, 1650);
-        defaults.put(Keys.GITHUB_FEEDBACK_TITLE_PREFIX, "[Feedback] ");
+        defaults.put(Keys.EMAIL_FEEDBACK_TO_ADDRESS, "feedback@fredplus10.me");
+        defaults.put(Keys.EMAIL_FEEDBACK_SUBJECT, "[Feedback HearingAidAndroid]");
 
         remoteConfig.setDefaults(defaults);
         Task<Void> fetchTask = remoteConfig.fetch();
@@ -52,12 +47,7 @@ public class RemoteConfig {
         public static final String PLAY_STORE_URL = "playStoreURL";
         public static final String MIN_EQ_FREQUENCY = "minEqFrequency";
         public static final String MAX_EQ_FREQUENCY = "maxEqFrequency";
-        public static final String GITHUB_FEEDBACK_USERNAME = "githubFeedbackUsername";
-        public static final String GITHUB_FEEDBACK_REPO_OWNER = "githubFeedbackRepoOwner";
-        public static final String GITHUB_FEEDBACK_REPO_NAME = "githubFeedbackRepoName";
-        public static final String GITHUB_FEEDBACK_LABELS = "githubFeedbackLabels";
-        public static final String GITHUB_FEEDBACK_API_KEY_SERVER = "githubFeedbackApiKeyServer";
-        public static final String GITHUB_FEEDBACK_API_KEY_SERVER_PORT = "githubFeedbackApiKeyServerPort";
-        public static final String GITHUB_FEEDBACK_TITLE_PREFIX= "githubFeedbackTitlePrefix";
+        public static final String EMAIL_FEEDBACK_TO_ADDRESS = "githubFeedbackToAddress";
+        public static final String EMAIL_FEEDBACK_SUBJECT = "emailFeedbackSubject";
     }
 }
