@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -329,35 +330,59 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                         }
 
                         final String finalContent = content.toString();
+
                         if (getActivity() != null) {
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     WebView motdView = findViewById(R.id.motd_web_view);
+
+                                    final BottomSheetQueue.BottomSheetCallbackList additionalCallbacks = new BottomSheetQueue.BottomSheetCallbackList();
+                                    additionalCallbacks.add(new BottomSheetQueue.CustomBottomSheetCallback() {
+                                        @Override
+                                        public void onRescheduled() {
+
+                                        }
+
+                                        @Override
+                                        public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                                            if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                                                try {
+                                                    motd.markAsRead();
+                                                } catch (IOException | ClassNotFoundException e) {
+                                                    // FirebaseCrash.report(e);
+                                                    Crashlytics.logException(e);
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+                                        }
+                                    });
+
+                                    motdView.setWebViewClient(new WebViewClient(){
+                                        /**
+                                         * Notify the host application that a page has finished loading. This method
+                                         * is called only for main frame. When onPageFinished() is called, the
+                                         * rendering picture may not be updated yet. To get the notification for the
+                                         * new Picture, use {@link WebView.PictureListener#onNewPicture}.
+                                         *
+                                         * @param view The WebView that is initiating the callback.
+                                         * @param url  The url of the page.
+                                         */
+                                        @Override
+                                        public void onPageFinished(WebView view, String url) {
+                                            super.onPageFinished(view, url);
+                                            bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mMOTDBottomSheetBehavior, BottomSheetBehavior.STATE_COLLAPSED, BottomSheetQueue.BottomSheetPriority.HIGH, additionalCallbacks));
+                                        }
+                                    });
+
                                     motdView.loadData(finalContent, "text/html", "UTF-8");
                                 }
                             });
                         }
-
-                        BottomSheetQueue.BottomSheetCallbackList additionalCallbacks = new BottomSheetQueue.BottomSheetCallbackList();
-                        additionalCallbacks.add(new BottomSheetBehavior.BottomSheetCallback() {
-                            @Override
-                            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                                    try {
-                                        motd.markAsRead();
-                                    } catch (IOException | ClassNotFoundException e) {
-                                        // FirebaseCrash.report(e);
-                                        Crashlytics.logException(e);
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-                            }
-                        });
 
                         Button readMoreButton = findViewById(R.id.motd_read_more);
                         readMoreButton.setOnClickListener(new View.OnClickListener() {
@@ -370,11 +395,9 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                                 startActivity(intent);
                             }
                         });
-
-                        bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mMOTDBottomSheetBehavior, BottomSheetBehavior.STATE_COLLAPSED, additionalCallbacks));
                     }
                 } catch (IllegalArgumentException | FeedException | IOException | ClassNotFoundException e) {
-                    // FirebaseCrash.report(e);
+                    e.printStackTrace();
                     Crashlytics.logException(e);
                 }
             }
