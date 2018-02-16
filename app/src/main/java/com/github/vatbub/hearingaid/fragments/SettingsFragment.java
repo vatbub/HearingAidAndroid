@@ -2,9 +2,11 @@ package com.github.vatbub.hearingaid.fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -17,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -27,9 +30,15 @@ import com.github.vatbub.hearingaid.ProfileManager;
 import com.github.vatbub.hearingaid.R;
 import com.github.vatbub.hearingaid.RemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GridLabelRenderer;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 
 public class SettingsFragment extends CustomFragment implements ProfileManager.ActiveProfileChangeListener, AdapterView.OnItemSelectedListener {
     public static final int numberOfChannels = 6;
+    LineGraphSeries<DataPoint> eqGraphSeries;
     private ArrayAdapter<ProfileManager.Profile> profileAdapter;
 
     public SettingsFragment() {
@@ -45,7 +54,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         updateEqSwitch();
@@ -59,6 +68,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
         super.onResume();
         ProfileManager.getInstance(getActivity()).getChangeListeners().add(this);
         initProfileSelector();
+        drawEQGraph();
     }
 
     private void initProfileSelector() {
@@ -96,11 +106,11 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
     private void addProfile() {
         Context context = getContext();
         final MainActivity activity = (MainActivity) getActivity();
-        if (context==null){
+        if (context == null) {
             Crashlytics.logException(new NullPointerException("context was null"));
             return;
         }
-        if (activity==null){
+        if (activity == null) {
             Crashlytics.logException(new NullPointerException("Activity was null"));
             return;
         }
@@ -138,15 +148,15 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
         Context context = getContext();
         final MainActivity activity = (MainActivity) getActivity();
         final ProfileManager.Profile currentProfile = ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile();
-        if (context==null){
+        if (context == null) {
             Crashlytics.logException(new NullPointerException("context was null"));
             return;
         }
-        if (activity==null){
+        if (activity == null) {
             Crashlytics.logException(new NullPointerException("Activity was null"));
             return;
         }
-        if (currentProfile==null){
+        if (currentProfile == null) {
             Crashlytics.logException(new NullPointerException("Current Profile was null"));
             return;
         }
@@ -182,7 +192,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
 
     private void removeProfile() {
         final MainActivity activity = (MainActivity) getActivity();
-        if (activity==null){
+        if (activity == null) {
             Crashlytics.logException(new NullPointerException("Activity was null"));
             return;
         }
@@ -223,6 +233,24 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
             String textToShow = getString(R.string.fragment_settings_frequency_bin_pattern_abbreviated).replace("{abbreviatedFrequency}", getStringForFrequency(meanBinFreq));
 
             ((TextView) findViewById(textViewIds[channel - 1])).setText(textToShow);
+
+            VerticalSeekBar seekBar = findViewById(getSeekbarIDs()[channel - 1]);
+            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    drawEQGraph();
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
         }
     }
 
@@ -280,5 +308,57 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
     private void initProfileAdapter() {
         getProfileAdapter().clear();
         getProfileAdapter().addAll(ProfileManager.getInstance(getActivity()).listProfiles());
+    }
+
+    private int[] getSeekbarIDs() {
+        return new int[]{R.id.eq_channel_1, R.id.eq_channel_2, R.id.eq_channel_3, R.id.eq_channel_4, R.id.eq_channel_5, R.id.eq_channel_6};
+    }
+
+    private void drawEQGraph() {
+        if (eqGraphSeries == null) {
+            // first call, init everything
+
+            GraphView graphView = findViewById(R.id.fragment_Settings_eq_graph);
+            eqGraphSeries = new LineGraphSeries<>();
+
+            // disable zooming and scrolling
+            graphView.getViewport().setScalable(false);
+            graphView.getViewport().setScrollable(false);
+
+            // viewport
+            graphView.getViewport().setXAxisBoundsManual(true);
+            graphView.getViewport().setMinX(0);
+            graphView.getViewport().setMaxX(numberOfChannels - 1);
+
+            graphView.getViewport().setYAxisBoundsManual(true);
+            graphView.getViewport().setMinY(0);
+            graphView.getViewport().setMaxY(100);
+
+            // disable grid
+            graphView.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.NONE);
+
+            // disable axis
+            graphView.getGridLabelRenderer().setHorizontalLabelsVisible(false);
+            graphView.getGridLabelRenderer().setVerticalLabelsVisible(false);
+
+            // move the view to the right position
+            // graphView.setPadding(findViewById(getSeekbarIDs()[0]).getLeft(), 0, findViewById(getSeekbarIDs()[numberOfChannels - 1]).getRight(), 0);
+
+            eqGraphSeries.setDrawBackground(true);
+            int accentColor = ContextCompat.getColor(getContext(), R.color.colorAccent);
+            int graphColor = Color.argb(100, Color.red(accentColor), Color.green(accentColor), Color.blue(accentColor));
+            eqGraphSeries.setBackgroundColor(graphColor);
+
+            graphView.addSeries(eqGraphSeries);
+        }
+
+        DataPoint[] graphData = new DataPoint[numberOfChannels];
+
+        for (int i = 0; i < numberOfChannels; i++) {
+            VerticalSeekBar seekBar = findViewById(getSeekbarIDs()[i]);
+            graphData[i] = new DataPoint(i, seekBar.getProgress());
+        }
+
+        eqGraphSeries.resetData(graphData);
     }
 }

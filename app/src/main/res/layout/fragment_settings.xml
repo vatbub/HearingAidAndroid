@@ -74,232 +74,246 @@
             app:layout_column="0"
             app:layout_row="3" />
 
-        <TableLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:stretchColumns="*"
-            android:visibility="visible"
-            app:layout_column="0"
-            app:layout_row="4">
+            android:layout_height="match_parent">
 
-            <TableRow
+            <com.jjoe64.graphview.GraphView
+                android:id="@+id/fragment_Settings_eq_graph"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginBottom="33dp"
+                android:layout_marginLeft="22dp"
+                android:layout_marginRight="28dp"
+                android:layout_marginTop="12dp" />
 
-                <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
-                    android:layout_width="wrap_content"
-                    android:layout_height="150dp"
-                    app:layout_column="2"
-                    app:layout_columnSpan="1"
-                    app:layout_row="3"
-                    grid:layout_columnWeight="1"
-                    grid:layout_gravity="fill"
-                    grid:layout_rowWeight="1">
-
-                    <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
-                        android:id="@+id/eq_channel_3"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:max="100"
-                        android:progress="0"
-                        android:splitTrack="false"
-                        app:seekBarRotation="CW270" /> <!-- Rotation: CW90 or CW270 -->
-                </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
-
-                <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
-                    android:layout_width="wrap_content"
-                    android:layout_height="150dp"
-                    app:layout_column="1"
-                    app:layout_columnSpan="1"
-                    app:layout_row="3"
-                    grid:layout_columnWeight="1"
-                    grid:layout_gravity="fill"
-                    grid:layout_rowWeight="1">
-
-                    <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
-                        android:id="@+id/eq_channel_2"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:max="100"
-                        android:progress="0"
-                        android:splitTrack="false"
-                        app:seekBarRotation="CW270" /> <!-- Rotation: CW90 or CW270 -->
-                </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
-
-                <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
-                    android:layout_width="wrap_content"
-                    android:layout_height="150dp"
-                    app:layout_column="5"
-                    app:layout_columnSpan="1"
-                    app:layout_row="3"
-                    grid:layout_columnWeight="1"
-                    grid:layout_gravity="fill"
-                    grid:layout_rowWeight="1">
-
-                    <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
-                        android:id="@+id/eq_channel_6"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:max="100"
-                        android:progress="0"
-                        android:splitTrack="false"
-                        app:seekBarRotation="CW270" />
-
-                    <!-- Rotation: CW90 or CW270 -->
-                </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
-
-                <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
-                    android:layout_width="wrap_content"
-                    android:layout_height="150dp"
-                    app:layout_column="4"
-                    app:layout_columnSpan="1"
-                    app:layout_row="3"
-                    grid:layout_columnWeight="1"
-                    grid:layout_gravity="fill"
-                    grid:layout_rowWeight="1">
-
-                    <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
-                        android:id="@+id/eq_channel_5"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:max="100"
-                        android:progress="0"
-                        android:splitTrack="false"
-                        app:seekBarRotation="CW270" /> <!-- Rotation: CW90 or CW270 -->
-                </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
-
-                <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
-                    android:layout_width="wrap_content"
-                    android:layout_height="150dp"
-                    app:layout_column="0"
-                    app:layout_columnSpan="1"
-                    app:layout_row="3"
-                    grid:layout_columnWeight="1"
-                    grid:layout_gravity="fill"
-                    grid:layout_rowWeight="1">
-
-                    <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
-                        android:id="@+id/eq_channel_1"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:max="100"
-                        android:progress="0"
-                        android:splitTrack="false"
-                        app:seekBarRotation="CW270" /> <!-- Rotation: CW90 or CW270 -->
-                </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
-
-                <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
-                    android:layout_width="wrap_content"
-                    android:layout_height="150dp"
-                    app:layout_column="3"
-                    app:layout_columnSpan="1"
-                    app:layout_row="3"
-                    grid:layout_columnWeight="1"
-                    grid:layout_gravity="fill"
-                    grid:layout_rowWeight="1">
-
-                    <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
-                        android:id="@+id/eq_channel_4"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:max="100"
-                        android:progress="0"
-                        android:splitTrack="false"
-                        app:seekBarRotation="CW270" /> <!-- Rotation: CW90 or CW270 -->
-                </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
-            </TableRow>
-
-            <TableRow
+            <TableLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:stretchColumns="*"
+                android:visibility="visible"
+                app:layout_column="0"
+                app:layout_row="4">
 
-                <TextView
-                    android:id="@+id/text_view_bin_1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:tag="text_view_bin_1"
-                    android:text="@string/fragment_settings_loading"
-                    android:textAlignment="center"
-                    app:layout_column="0"
-                    app:layout_columnSpan="1"
-                    app:layout_row="4"
-                    grid:layout_columnWeight="1"
-                    grid:layout_gravity="fill"
-                    grid:layout_rowWeight="1" />
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/text_view_bin_2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:tag="text_view_bin_2"
-                    android:text="@string/fragment_settings_loading"
-                    android:textAlignment="center"
-                    app:layout_column="1"
-                    app:layout_columnSpan="1"
-                    app:layout_row="4"
-                    grid:layout_columnWeight="1"
-                    grid:layout_gravity="fill"
-                    grid:layout_rowWeight="1" />
+                    <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
+                        android:layout_width="wrap_content"
+                        android:layout_height="150dp"
+                        app:layout_column="2"
+                        app:layout_columnSpan="1"
+                        app:layout_row="3"
+                        grid:layout_columnWeight="1"
+                        grid:layout_gravity="fill"
+                        grid:layout_rowWeight="1">
 
-                <TextView
-                    android:id="@+id/text_view_bin_3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:tag="text_view_bin_3"
-                    android:text="@string/fragment_settings_loading"
-                    android:textAlignment="center"
-                    app:layout_column="2"
-                    app:layout_columnSpan="1"
-                    app:layout_row="4"
-                    grid:layout_columnWeight="1"
-                    grid:layout_gravity="fill"
-                    grid:layout_rowWeight="1" />
+                        <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
+                            android:id="@+id/eq_channel_1"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:max="100"
+                            android:progress="0"
+                            android:splitTrack="false"
+                            app:seekBarRotation="CW270" /> <!-- Rotation: CW90 or CW270 -->
+                    </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
 
-                <TextView
-                    android:id="@+id/text_view_bin_4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:tag="text_view_bin_4"
-                    android:text="@string/fragment_settings_loading"
-                    android:textAlignment="center"
-                    app:layout_column="3"
-                    app:layout_columnSpan="1"
-                    app:layout_row="4"
-                    grid:layout_columnWeight="1"
-                    grid:layout_gravity="fill"
-                    grid:layout_rowWeight="1" />
+                    <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
+                        android:layout_width="wrap_content"
+                        android:layout_height="150dp"
+                        app:layout_column="1"
+                        app:layout_columnSpan="1"
+                        app:layout_row="3"
+                        grid:layout_columnWeight="1"
+                        grid:layout_gravity="fill"
+                        grid:layout_rowWeight="1">
 
-                <TextView
-                    android:id="@+id/text_view_bin_5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:tag="text_view_bin_5"
-                    android:text="@string/fragment_settings_loading"
-                    android:textAlignment="center"
-                    app:layout_column="4"
-                    app:layout_columnSpan="1"
-                    app:layout_row="4"
-                    grid:layout_columnWeight="1"
-                    grid:layout_gravity="fill"
-                    grid:layout_rowWeight="1" />
+                        <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
+                            android:id="@+id/eq_channel_2"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:max="100"
+                            android:progress="0"
+                            android:splitTrack="false"
+                            app:seekBarRotation="CW270" /> <!-- Rotation: CW90 or CW270 -->
+                    </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
 
-                <TextView
-                    android:id="@+id/text_view_bin_6"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:tag="text_view_bin_6"
-                    android:text="@string/fragment_settings_loading"
-                    android:textAlignment="center"
-                    app:layout_column="5"
-                    app:layout_columnSpan="1"
-                    app:layout_row="4"
-                    grid:layout_columnWeight="1"
-                    grid:layout_gravity="fill"
-                    grid:layout_rowWeight="1" />
+                    <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
+                        android:layout_width="wrap_content"
+                        android:layout_height="150dp"
+                        app:layout_column="5"
+                        app:layout_columnSpan="1"
+                        app:layout_row="3"
+                        grid:layout_columnWeight="1"
+                        grid:layout_gravity="fill"
+                        grid:layout_rowWeight="1">
 
-            </TableRow>
+                        <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
+                            android:id="@+id/eq_channel_3"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:max="100"
+                            android:progress="0"
+                            android:splitTrack="false"
+                            app:seekBarRotation="CW270" />
 
-        </TableLayout>
+                        <!-- Rotation: CW90 or CW270 -->
+                    </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
+
+                    <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
+                        android:layout_width="wrap_content"
+                        android:layout_height="150dp"
+                        app:layout_column="4"
+                        app:layout_columnSpan="1"
+                        app:layout_row="3"
+                        grid:layout_columnWeight="1"
+                        grid:layout_gravity="fill"
+                        grid:layout_rowWeight="1">
+
+                        <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
+                            android:id="@+id/eq_channel_4"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:max="100"
+                            android:progress="0"
+                            android:splitTrack="false"
+                            app:seekBarRotation="CW270" /> <!-- Rotation: CW90 or CW270 -->
+                    </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
+
+                    <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
+                        android:layout_width="wrap_content"
+                        android:layout_height="150dp"
+                        app:layout_column="0"
+                        app:layout_columnSpan="1"
+                        app:layout_row="3"
+                        grid:layout_columnWeight="1"
+                        grid:layout_gravity="fill"
+                        grid:layout_rowWeight="1">
+
+                        <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
+                            android:id="@+id/eq_channel_5"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:max="100"
+                            android:progress="0"
+                            android:splitTrack="false"
+                            app:seekBarRotation="CW270" /> <!-- Rotation: CW90 or CW270 -->
+                    </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
+
+                    <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
+                        android:layout_width="wrap_content"
+                        android:layout_height="150dp"
+                        app:layout_column="3"
+                        app:layout_columnSpan="1"
+                        app:layout_row="3"
+                        grid:layout_columnWeight="1"
+                        grid:layout_gravity="fill"
+                        grid:layout_rowWeight="1">
+
+                        <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
+                            android:id="@+id/eq_channel_6"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:max="100"
+                            android:progress="0"
+                            android:splitTrack="false"
+                            app:seekBarRotation="CW270" /> <!-- Rotation: CW90 or CW270 -->
+                    </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/text_view_bin_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:tag="text_view_bin_1"
+                        android:text="@string/fragment_settings_loading"
+                        android:textAlignment="center"
+                        app:layout_column="0"
+                        app:layout_columnSpan="1"
+                        app:layout_row="4"
+                        grid:layout_columnWeight="1"
+                        grid:layout_gravity="fill"
+                        grid:layout_rowWeight="1" />
+
+                    <TextView
+                        android:id="@+id/text_view_bin_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:tag="text_view_bin_2"
+                        android:text="@string/fragment_settings_loading"
+                        android:textAlignment="center"
+                        app:layout_column="1"
+                        app:layout_columnSpan="1"
+                        app:layout_row="4"
+                        grid:layout_columnWeight="1"
+                        grid:layout_gravity="fill"
+                        grid:layout_rowWeight="1" />
+
+                    <TextView
+                        android:id="@+id/text_view_bin_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:tag="text_view_bin_3"
+                        android:text="@string/fragment_settings_loading"
+                        android:textAlignment="center"
+                        app:layout_column="2"
+                        app:layout_columnSpan="1"
+                        app:layout_row="4"
+                        grid:layout_columnWeight="1"
+                        grid:layout_gravity="fill"
+                        grid:layout_rowWeight="1" />
+
+                    <TextView
+                        android:id="@+id/text_view_bin_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:tag="text_view_bin_4"
+                        android:text="@string/fragment_settings_loading"
+                        android:textAlignment="center"
+                        app:layout_column="3"
+                        app:layout_columnSpan="1"
+                        app:layout_row="4"
+                        grid:layout_columnWeight="1"
+                        grid:layout_gravity="fill"
+                        grid:layout_rowWeight="1" />
+
+                    <TextView
+                        android:id="@+id/text_view_bin_5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:tag="text_view_bin_5"
+                        android:text="@string/fragment_settings_loading"
+                        android:textAlignment="center"
+                        app:layout_column="4"
+                        app:layout_columnSpan="1"
+                        app:layout_row="4"
+                        grid:layout_columnWeight="1"
+                        grid:layout_gravity="fill"
+                        grid:layout_rowWeight="1" />
+
+                    <TextView
+                        android:id="@+id/text_view_bin_6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:tag="text_view_bin_6"
+                        android:text="@string/fragment_settings_loading"
+                        android:textAlignment="center"
+                        app:layout_column="5"
+                        app:layout_columnSpan="1"
+                        app:layout_row="4"
+                        grid:layout_columnWeight="1"
+                        grid:layout_gravity="fill"
+                        grid:layout_rowWeight="1" />
+
+                </TableRow>
+
+            </TableLayout>
+        </FrameLayout>
 
         <Button
             android:id="@+id/button2"
