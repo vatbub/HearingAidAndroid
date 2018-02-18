@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Android Pro Audio Test App</string>
+    <string name="main_label">Super, Ihr Gerät unterstützt Android Pro Audio (&lt;20 ms Autiolatenz)! Warum braucht man das, fragen Sie sich? Klicken Sie auf den Button unten für die Antwort.</string>
+    <string name="github_button">{oct-mark-github} Projekt auf GitHub</string>
+    <string name="icon_credits">Icons made by Freepik www.flaticon.com is licensed by CC 3.0 BY</string>
+</resources>

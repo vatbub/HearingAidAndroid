@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Android Low Latency Audio Test App</string>
+    <string name="main_label">Congrats, your phone supports Android Low Latency Audio (&lt;45 ms round trip latency)! Why is that great, you ask? Click the button below to see why.</string>
+    <string name="github_button">{oct-mark-github} View us on GitHub</string>
+    <string name="icon_credits">Icons made by Freepik www.flaticon.com is licensed by CC 3.0 BY</string>
+</resources>
