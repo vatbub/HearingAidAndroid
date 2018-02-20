@@ -25,27 +25,18 @@
 
         <Spinner
             android:id="@+id/fragment_settings_profile_selector"
+            style="@style/Base.Widget.AppCompat.Spinner.Underlined"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_column="0"
             android:layout_columnSpan="1"
             android:layout_columnWeight="2"
+            android:backgroundTint="@color/colorAccent"
             android:gravity="fill" />
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="7dp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginLeft="100dp"
-            android:layout_marginRight="100dp"
-            android:background="#000" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="7dp" />
+            android:layout_height="15dp" />
 
         <Switch
             android:id="@+id/eq_on_off_switch"
