@@ -30,6 +30,9 @@ import com.github.vatbub.hearingaid.RemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SettingsFragment extends CustomFragment implements ProfileManager.ActiveProfileChangeListener, AdapterView.OnItemSelectedListener {
     public static final int numberOfChannels = 6;
     private ArrayAdapter<ProfileManager.Profile> profileAdapter;
@@ -51,6 +54,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
         super.onViewCreated(view, savedInstanceState);
 
         updateEqSwitch();
+        loadEqSettings();
 
         initButtonHandlers();
         initFrequencyLabelsAndSeekbars();
@@ -232,6 +236,8 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if (fromUser)
+                        saveEqSettings();
                 }
 
                 @Override
@@ -244,6 +250,33 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
 
                 }
             });
+        }
+    }
+
+    private void saveEqSettings() {
+        List<Float> eqSettings = new ArrayList<>(getSeekbarIDs().length);
+        for (int seekbarId : getSeekbarIDs()) {
+            VerticalSeekBar seekBar = findViewById(seekbarId);
+            eqSettings.add(seekBar.getProgress() / (float) seekBar.getMax());
+        }
+
+        ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile().setEQSettings(eqSettings);
+    }
+
+    private void loadEqSettings() {
+        List<Float> eqSettings = ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile().getEQSettings();
+        int[] seekbarIDs = getSeekbarIDs();
+        if (seekbarIDs.length != eqSettings.size()) {
+            // setting was probably never set
+            eqSettings = new ArrayList<>();
+            for(int i=0; i<seekbarIDs.length; i++){
+                eqSettings.add(0f);
+            }
+        }
+
+        for (int i = 0; i < seekbarIDs.length; i++) {
+            VerticalSeekBar seekBar = findViewById(seekbarIDs[i]);
+            seekBar.setProgress((int) (eqSettings.get(i) * seekBar.getMax()));
         }
     }
 
@@ -268,6 +301,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
         int position = ProfileManager.getInstance(getActivity()).getPosition(newProfile);
         profileSelector.setSelection(position);
         updateEqSwitch();
+        loadEqSettings();
     }
 
     private void updateEqSwitch() {
@@ -276,6 +310,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
         if (eqSwitch == null) return;
         if (currentProfile == null) return;
         eqSwitch.setChecked(currentProfile.isEqEnabled());
+        updateEQViewEnabledStatus(currentProfile.isEqEnabled());
     }
 
     @Override
@@ -307,8 +342,8 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
         return new int[]{R.id.eq_channel_1, R.id.eq_channel_2, R.id.eq_channel_3, R.id.eq_channel_4, R.id.eq_channel_5, R.id.eq_channel_6};
     }
 
-    private void updateEQViewEnabledStatus(boolean enabled){
-        for(int seekbarId:getSeekbarIDs()){
+    private void updateEQViewEnabledStatus(boolean enabled) {
+        for (int seekbarId : getSeekbarIDs()) {
             findViewById(seekbarId).setEnabled(enabled);
         }
     }
