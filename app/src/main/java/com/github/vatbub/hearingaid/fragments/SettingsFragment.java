@@ -2,11 +2,9 @@ package com.github.vatbub.hearingaid.fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -31,14 +29,9 @@ import com.github.vatbub.hearingaid.R;
 import com.github.vatbub.hearingaid.RemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.GridLabelRenderer;
-import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.LineGraphSeries;
 
 public class SettingsFragment extends CustomFragment implements ProfileManager.ActiveProfileChangeListener, AdapterView.OnItemSelectedListener {
     public static final int numberOfChannels = 6;
-    LineGraphSeries<DataPoint> eqGraphSeries;
     private ArrayAdapter<ProfileManager.Profile> profileAdapter;
 
     public SettingsFragment() {
@@ -68,7 +61,6 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
         super.onResume();
         ProfileManager.getInstance(getActivity()).getChangeListeners().add(this);
         initProfileSelector();
-        drawEQGraph();
     }
 
     private void initProfileSelector() {
@@ -238,7 +230,6 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    drawEQGraph();
                 }
 
                 @Override
@@ -312,53 +303,5 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
 
     private int[] getSeekbarIDs() {
         return new int[]{R.id.eq_channel_1, R.id.eq_channel_2, R.id.eq_channel_3, R.id.eq_channel_4, R.id.eq_channel_5, R.id.eq_channel_6};
-    }
-
-    private void drawEQGraph() {
-        if (eqGraphSeries == null) {
-            // first call, init everything
-
-            GraphView graphView = findViewById(R.id.fragment_Settings_eq_graph);
-            eqGraphSeries = new LineGraphSeries<>();
-
-            // disable zooming and scrolling
-            graphView.getViewport().setScalable(false);
-            graphView.getViewport().setScrollable(false);
-
-            // viewport
-            graphView.getViewport().setXAxisBoundsManual(true);
-            graphView.getViewport().setMinX(0);
-            graphView.getViewport().setMaxX(numberOfChannels - 1);
-
-            graphView.getViewport().setYAxisBoundsManual(true);
-            graphView.getViewport().setMinY(0);
-            graphView.getViewport().setMaxY(100);
-
-            // disable grid
-            graphView.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.NONE);
-
-            // disable axis
-            graphView.getGridLabelRenderer().setHorizontalLabelsVisible(false);
-            graphView.getGridLabelRenderer().setVerticalLabelsVisible(false);
-
-            // move the view to the right position
-            // graphView.setPadding(findViewById(getSeekbarIDs()[0]).getLeft(), 0, findViewById(getSeekbarIDs()[numberOfChannels - 1]).getRight(), 0);
-
-            eqGraphSeries.setDrawBackground(true);
-            int accentColor = ContextCompat.getColor(getContext(), R.color.colorAccent);
-            int graphColor = Color.argb(100, Color.red(accentColor), Color.green(accentColor), Color.blue(accentColor));
-            eqGraphSeries.setBackgroundColor(graphColor);
-
-            graphView.addSeries(eqGraphSeries);
-        }
-
-        DataPoint[] graphData = new DataPoint[numberOfChannels];
-
-        for (int i = 0; i < numberOfChannels; i++) {
-            VerticalSeekBar seekBar = findViewById(getSeekbarIDs()[i]);
-            graphData[i] = new DataPoint(i, seekBar.getProgress());
-        }
-
-        eqGraphSeries.resetData(graphData);
     }
 }

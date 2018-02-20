@@ -97,7 +97,6 @@ dependencies {
     compile ('org.rm3l:maoni:4.1.2@aar') {
         transitive = true
     }
-    compile 'com.jjoe64:graphview:4.2.1'
 }
 
 
