@@ -1,5 +1,6 @@
 package com.github.vatbub.hearingaid.fragments;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -276,8 +277,22 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
 
         for (int i = 0; i < seekbarIDs.length; i++) {
             VerticalSeekBar seekBar = findViewById(seekbarIDs[i]);
-            seekBar.setProgress((int) (eqSettings.get(i) * seekBar.getMax()));
+            // seekBar.setProgress((int) (eqSettings.get(i) * seekBar.getMax()));
+            animateSeekbar(seekBar, (int) (eqSettings.get(i) * seekBar.getMax()));
         }
+    }
+
+    private void animateSeekbar(final SeekBar seekBar, int toValue){
+        ValueAnimator anim = ValueAnimator.ofInt(seekBar.getProgress(), toValue);
+        anim.setDuration(400);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int animProgress = (Integer) animation.getAnimatedValue();
+                seekBar.setProgress(animProgress);
+            }
+        });
+        anim.start();
     }
 
     private String getStringForFrequency(double frequency) {
