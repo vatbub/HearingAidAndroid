@@ -205,6 +205,8 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
                 if (currentProfile != null)
                     currentProfile.setEqEnabled(checked);
 
+                updateEQViewEnabledStatus(checked);
+
                 StreamingFragment streamingFragment = (StreamingFragment) getActivity().getSupportFragmentManager().findFragmentByTag("streamingFragment");
                 if (streamingFragment != null)
                     streamingFragment.notifyEQEnabledSettingChanged();
@@ -303,5 +305,11 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
 
     private int[] getSeekbarIDs() {
         return new int[]{R.id.eq_channel_1, R.id.eq_channel_2, R.id.eq_channel_3, R.id.eq_channel_4, R.id.eq_channel_5, R.id.eq_channel_6};
+    }
+
+    private void updateEQViewEnabledStatus(boolean enabled){
+        for(int seekbarId:getSeekbarIDs()){
+            findViewById(seekbarId).setEnabled(enabled);
+        }
     }
 }
