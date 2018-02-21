@@ -265,12 +265,16 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
     }
 
     private void loadEqSettings() {
-        List<Float> eqSettings = ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile().getEQSettings();
+        Context context = getContext();
+        if (context == null) return;
+        ProfileManager.Profile currentProfile = ProfileManager.getInstance(context).getCurrentlyActiveProfile();
+        if (currentProfile == null) return;
+        List<Float> eqSettings = currentProfile.getEQSettings();
         int[] seekbarIDs = getSeekbarIDs();
         if (seekbarIDs.length != eqSettings.size()) {
             // setting was probably never set
             eqSettings = new ArrayList<>();
-            for(int i=0; i<seekbarIDs.length; i++){
+            for (int ignored : seekbarIDs) {
                 eqSettings.add(0f);
             }
         }
@@ -282,7 +286,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
         }
     }
 
-    private void animateSeekbar(final SeekBar seekBar, int toValue){
+    private void animateSeekbar(final SeekBar seekBar, int toValue) {
         ValueAnimator anim = ValueAnimator.ofInt(seekBar.getProgress(), toValue);
         anim.setDuration(400);
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
