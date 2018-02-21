@@ -75,4 +75,10 @@
     <string name="feedback_privacy_unchecked_toast">Please accept the privacy statement</string>
     <string name="feedback_latency_min">Not at all</string>
     <string name="feedback_latency_max">Disturbing</string>
+    <string name="fragment_settings_crash_reporting_enabled">Send crash reports</string>
+    <string name="fragment_settings_view_privacy">View the Privacy Statement</string>
+    <string name="fragment_settings_restart_alert_title">Restart required</string>
+    <string name="fragment_settings_restart_alert_message">In order to apply the new settings, the app must restart. You may choose to restart later, in that case your settings will not be applied until you restart the app.</string>
+    <string name="fragment_settings_restart_alert_restart_button">Restart</string>
+    <string name="fragment_settings_restart_alert_cancel_button">Cancel</string>
 </resources>

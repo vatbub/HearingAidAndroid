@@ -70,4 +70,10 @@
     <string name="feedback_privacy_unchecked_toast">Bitte akzeptieren Sie die Datenschutzerklärung</string>
     <string name="feedback_latency_min">Nicht spürbar</string>
     <string name="feedback_latency_max">Störend</string>
+    <string name="fragment_settings_crash_reporting_enabled">Abstürze senden</string>
+    <string name="fragment_settings_view_privacy">Datenschutzerklärung anzeigen</string>
+    <string name="fragment_settings_restart_alert_title">Neustart erforderlich</string>
+    <string name="fragment_settings_restart_alert_message">Um die Einstellungen zu übernehmen, muss die App neugestartet werden. Sie können dies zu einem späteren Zeitpunkt machen, in dem Fall werden die Einstellungen erst beim nächsten Neustart der App übernommen.</string>
+    <string name="fragment_settings_restart_alert_restart_button">Neustarten</string>
+    <string name="fragment_settings_restart_alert_cancel_button">Abbrechen</string>
 </resources>

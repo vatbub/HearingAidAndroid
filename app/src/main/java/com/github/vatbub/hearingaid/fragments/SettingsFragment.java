@@ -3,10 +3,12 @@ package com.github.vatbub.hearingaid.fragments;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
@@ -24,6 +27,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
+import com.github.vatbub.hearingaid.CrashlyticsManager;
+import com.github.vatbub.hearingaid.FeedbackPrivacyActivity;
 import com.github.vatbub.hearingaid.MainActivity;
 import com.github.vatbub.hearingaid.ProfileManager;
 import com.github.vatbub.hearingaid.R;
@@ -56,9 +61,15 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
 
         updateEqSwitch();
         loadEqSettings();
+        updateCrashlyticsCheckBox();
 
         initButtonHandlers();
         initFrequencyLabelsAndSeekbars();
+    }
+
+    private void updateCrashlyticsCheckBox() {
+        AppCompatCheckBox crashReportsEnabledCheckBox = findViewById(R.id.enableCrashReportsCheckBox);
+        crashReportsEnabledCheckBox.setChecked(CrashlyticsManager.getInstance(getContext()).isCrashlyticsEnabled());
     }
 
     @Override
@@ -217,6 +228,61 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
                     streamingFragment.notifyEQEnabledSettingChanged();
             }
         });
+
+        AppCompatCheckBox crashReportsEnabledCheckBox = findViewById(R.id.enableCrashReportsCheckBox);
+        crashReportsEnabledCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                CrashlyticsManager.getInstance(getContext()).setCrashlyticsEnabled(isChecked);
+                showRestartDialog();
+            }
+        });
+
+        Button viewPrivacyStatementButton = findViewById(R.id.fragment_settings_view_privacy_button);
+        viewPrivacyStatementButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), FeedbackPrivacyActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void showRestartDialog() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+
+        // set title
+        alertDialogBuilder.setTitle(R.string.fragment_settings_restart_alert_title);
+
+        // set dialog message
+        alertDialogBuilder
+                .setMessage(R.string.fragment_settings_restart_alert_message)
+                .setCancelable(true)
+                .setPositiveButton(R.string.fragment_settings_restart_alert_restart_button, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        restartApp();
+                    }
+                })
+                .setNegativeButton(R.string.fragment_settings_restart_alert_cancel_button, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+    }
+
+    private void restartApp() {
+        Context context = getContext();
+        if (context == null) return;
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        context.startActivity(intent);
+        Runtime.getRuntime().exit(0);
     }
 
     private void initFrequencyLabelsAndSeekbars() {
