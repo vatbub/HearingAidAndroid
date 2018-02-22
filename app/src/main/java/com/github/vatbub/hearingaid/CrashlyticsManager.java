@@ -35,24 +35,31 @@ public class CrashlyticsManager {
         }
     }
 
-    public static void resetInstance(Context callingActivity) {
-        synchronized (instances) {
-            instances.remove(callingActivity);
-        }
-    }
-
+    /**
+     * Configures crashlytics for the current app session. Please note: This is a no-op if called more than once.
+     * This is because Crashlytics can only be configured once per app session.
+     */
     public void configureCrashlytics(){
-        if (Fabric.isInitialized()) throw new IllegalStateException("Crashlytics is already configured");
         CrashlyticsCore crashlyticsCore = new CrashlyticsCore.Builder().disabled(!isCrashlyticsEnabled()).build();
         Fabric.with(getCallingContext(), new Crashlytics.Builder().core(crashlyticsCore).build());
     }
 
+    /**
+     * Sets the setting whether to enable crashlytics or not. Please note: To apply the setting, the app must be restarted and {@link #configureCrashlytics()} must be called after the restart.
+     * @param enabled The setting to set.
+     */
     public void setCrashlyticsEnabled(boolean enabled){
         SharedPreferences.Editor editor = getPrefs().edit();
         editor.putBoolean(CRASHLYTICS_ENABLED_PREF_KEY, enabled);
         editor.apply();
     }
 
+    /**
+     * Returns the current crashlytics setting. Please note: This method will return the value that was set at the last call of {@link #setCrashlyticsEnabled(boolean)}.
+     * If {@link #configureCrashlytics()} has been called prior to that, Crashlytics might still be active even though this method returns false. See {@link #setCrashlyticsEnabled(boolean)} for more info.
+     * @see #setCrashlyticsEnabled(boolean)
+     * @return the current crashlytics setting.
+     */
     public boolean isCrashlyticsEnabled(){
         System.out.println(getPrefs().getBoolean(CRASHLYTICS_ENABLED_PREF_KEY, getDefaultEnabledValue()));
         return getPrefs().getBoolean(CRASHLYTICS_ENABLED_PREF_KEY, getDefaultEnabledValue());
@@ -66,7 +73,7 @@ public class CrashlyticsManager {
         return callingContext;
     }
 
-    public void setCallingContext(Context callingContext) {
+    private void setCallingContext(Context callingContext) {
         this.callingContext = callingContext;
     }
 
