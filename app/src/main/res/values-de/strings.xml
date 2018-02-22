@@ -76,4 +76,5 @@
     <string name="fragment_settings_restart_alert_message">Um die Einstellungen zu übernehmen, muss die App neugestartet werden. Sie können dies zu einem späteren Zeitpunkt machen, in dem Fall werden die Einstellungen erst beim nächsten Neustart der App übernommen.</string>
     <string name="fragment_settings_restart_alert_restart_button">Neustarten</string>
     <string name="fragment_settings_restart_alert_cancel_button">Abbrechen</string>
+    <string name="fragment_settings_crashlytics_title">Absturzberichte</string>
 </resources>

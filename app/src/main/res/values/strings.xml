@@ -81,4 +81,5 @@
     <string name="fragment_settings_restart_alert_message">In order to apply the new settings, the app must restart. You may choose to restart later, in that case your settings will not be applied until you restart the app.</string>
     <string name="fragment_settings_restart_alert_restart_button">Restart</string>
     <string name="fragment_settings_restart_alert_cancel_button">Cancel</string>
+    <string name="fragment_settings_crashlytics_title">Crash reports</string>
 </resources>
