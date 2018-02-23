@@ -11,6 +11,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+
 /**
  * Tests the {@link com.github.vatbub.hearingaid.ProfileManager}
  */
@@ -133,6 +135,18 @@ public class ProfileManagerTest {
     }
 
     @Test
+    public void profileSortingTest() {
+        int numberOfProfilesToCreate = 10;
+        for (int i=numberOfProfilesToCreate; i>=1; i--)
+            ProfileManager.getInstance(context).createProfile("profileSortingTestProfile" + i);
+
+        List<ProfileManager.Profile> resultingList = ProfileManager.getInstance(context).listProfiles();
+
+        for(int j = 1; j<numberOfProfilesToCreate; j++)
+            Assert.assertEquals(j, resultingList.get(j).getSortPosition());
+    }
+
+    @Test
     public void deleteProfileTest() {
         ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("deleteProfileProfile");
         ProfileManager.getInstance(context).deleteProfile(profile);
@@ -150,7 +164,6 @@ public class ProfileManagerTest {
     @Test
     public void statePersistenceAcrossListCallsTest() {
         ProfileManager.Profile profile1 = ProfileManager.getInstance(context).createProfile("statePersistenceAcrossListCallsProfile1");
-        ProfileManager.Profile profile2 = ProfileManager.getInstance(context).createProfile("statePersistenceAcrossListCallsProfile2");
         ProfileManager.getInstance(context).applyProfile(profile1);
         for (ProfileManager.Profile profileUnderTest : ProfileManager.getInstance(context).listProfiles()) {
             if (profileUnderTest.equals(profile1))

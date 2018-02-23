@@ -77,4 +77,7 @@
     <string name="fragment_settings_restart_alert_restart_button">Neustarten</string>
     <string name="fragment_settings_restart_alert_cancel_button">Abbrechen</string>
     <string name="fragment_settings_crashlytics_title">Absturzberichte</string>
+    <string name="profile_editor_drag_content_description">Ziehen um zu sortieren</string>
+    <string name="title_activity_profile_editor">Profile bearbeiten</string>
+    <string name="fragment_settings_edit_toolbar_entry">Profile bearbeiten</string>
 </resources>

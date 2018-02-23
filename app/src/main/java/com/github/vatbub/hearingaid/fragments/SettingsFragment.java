@@ -33,6 +33,7 @@ import com.github.vatbub.hearingaid.MainActivity;
 import com.github.vatbub.hearingaid.ProfileManager;
 import com.github.vatbub.hearingaid.R;
 import com.github.vatbub.hearingaid.RemoteConfig;
+import com.github.vatbub.hearingaid.profileeditor.ProfileEditorActivity;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar;
 
@@ -105,6 +106,10 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
                 return true;
             case R.id.fragment_settings_current_profile_rename_button:
                 renameProfile();
+                return true;
+            case R.id.fragment_settings_launch_profile_editor:
+                Intent intent = new Intent(getContext(), ProfileEditorActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

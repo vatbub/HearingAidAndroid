@@ -21,7 +21,9 @@
         <meta-data
             android:name="google_analytics_adid_collection_enabled"
             android:value="false" />
-        <meta-data android:name="firebase_crashlytics_collection_enabled" android:value="false" />
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="false" />
 
         <activity
             android:name=".SplashActivity"
@@ -40,6 +42,15 @@
             android:name=".IntroActivity"
             android:label="@string/intro_activity_label" />
         <activity android:name=".FeedbackPrivacyActivity" />
+        <activity
+            android:name=".profileeditor.ProfileEditorActivity"
+            android:label="@string/title_activity_profile_editor"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.github.vatbub.hearingaid.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

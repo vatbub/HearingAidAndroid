@@ -82,4 +82,7 @@
     <string name="fragment_settings_restart_alert_restart_button">Restart</string>
     <string name="fragment_settings_restart_alert_cancel_button">Cancel</string>
     <string name="fragment_settings_crashlytics_title">Crash reports</string>
+    <string name="title_activity_profile_editor">Profile Editor</string>
+    <string name="profile_editor_drag_content_description">Drag to sort</string>
+    <string name="fragment_settings_edit_toolbar_entry">Edit profiles</string>
 </resources>
