@@ -19,6 +19,7 @@ import java.util.Map;
 public class ProfileManager {
     public static final String SETTINGS_SHARED_PREFERENCES_NAME = "hearingAidSettings";
     public static final String PROFILE_NAME_PREF_KEY = "profileName";
+    public static final String PROFILE_SORT_PREF_KEY = "sortPosition";
     public static final String EQ_ENABLED_PREF_KEY = "equalizerEnabled";
     public static final String EQ_SETTING_PREF_KEY = "eqSetting";
     public static final String IDS_PREF_KEY = "profileIDs";
@@ -75,6 +76,7 @@ public class ProfileManager {
         for (int id : getIDs()) {
             res.add(new Profile(id));
         }
+        Collections.sort(res);
         return res;
     }
 
@@ -168,11 +170,25 @@ public class ProfileManager {
         return Collections.max(ids) + 1;
     }
 
+    /**
+     * Returns the next sort position for new profiles. Expects the profile list obtained using {@link #listProfiles()} to be sorted by the sort position.
+     *
+     * @return The next sort pos.
+     */
+    private int getNextSortPos() {
+        List<Profile> profiles = listProfiles();
+
+        if (profiles.isEmpty())
+            return 0;
+
+        return profiles.get(profiles.size() - 1).getSortPosition() + 1;
+    }
+
     public interface ActiveProfileChangeListener {
         void onChanged(@Nullable Profile oldProfile, @Nullable Profile newProfile);
     }
 
-    public class Profile {
+    public class Profile implements Comparable<Profile> {
         private int id;
 
         /**
@@ -182,6 +198,7 @@ public class ProfileManager {
          */
         private Profile(String profileName) {
             setId(getNextProfileId());
+            setSortPosition(getNextSortPos());
             saveProfile(this);
             setProfileName(profileName);
         }
@@ -196,6 +213,17 @@ public class ProfileManager {
                 throw new IndexOutOfBoundsException();
 
             setId(id);
+        }
+
+        public int getSortPosition() {
+            return getPrefs().getInt(generateProfilePrefKey(PROFILE_SORT_PREF_KEY), -1);
+        }
+
+        public void setSortPosition(int sortPosition) {
+            SharedPreferences prefs = getPrefs();
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt(generateProfilePrefKey(PROFILE_SORT_PREF_KEY), sortPosition);
+            editor.apply();
         }
 
         public List<Float> getEQSettings() {
@@ -316,6 +344,13 @@ public class ProfileManager {
             editor.apply();
         }
 
+        public void deleteSortPosition() {
+            SharedPreferences prefs = getPrefs();
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.remove(generateProfilePrefKey(PROFILE_SORT_PREF_KEY));
+            editor.apply();
+        }
+
         public String getProfileName() {
             return getPrefs().getString(generateProfilePrefKey(PROFILE_NAME_PREF_KEY), null);
         }
@@ -335,6 +370,7 @@ public class ProfileManager {
             deleteEqEnabled();
             deleteLowerHearingThreshold();
             deleteHigherHearingThreshold();
+            deleteSortPosition();
         }
 
         public boolean isActive() {
@@ -357,6 +393,16 @@ public class ProfileManager {
 
         private void setId(int id) {
             this.id = id;
+        }
+
+        @Override
+        public int compareTo(@NonNull Profile that) {
+            if (this.getSortPosition() < that.getSortPosition())
+                return -1;
+            else if (this.getSortPosition() > that.getSortPosition())
+                return 1;
+
+            return 0;
         }
 
         public class EQSettingsList extends ArrayList<Float> {
