@@ -137,12 +137,17 @@ public class ProfileManagerTest {
     @Test
     public void profileSortingTest() {
         int numberOfProfilesToCreate = 10;
-        for (int i=numberOfProfilesToCreate; i>=1; i--)
-            ProfileManager.getInstance(context).createProfile("profileSortingTestProfile" + i);
+        int incrCounter =0;
+        for (int i = numberOfProfilesToCreate; i >= 1; i--) {
+            ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("profileSortingTestProfile" + i);
+            Assert.assertEquals(incrCounter, profile.getSortPosition());
+            profile.setSortPosition(i);
+            incrCounter++;
+        }
 
         List<ProfileManager.Profile> resultingList = ProfileManager.getInstance(context).listProfiles();
 
-        for(int j = 1; j<numberOfProfilesToCreate; j++)
+        for (int j = 0; j < numberOfProfilesToCreate; j++)
             Assert.assertEquals(j, resultingList.get(j).getSortPosition());
     }
 
@@ -182,11 +187,11 @@ public class ProfileManagerTest {
     }
 
     @Test
-    public void illegalIdReadTest(){
-        try{
+    public void illegalIdReadTest() {
+        try {
             ProfileManager.getInstance(context).new Profile(1);
             Assert.fail("IndexOutOfBoundsException expected");
-        }catch(IndexOutOfBoundsException e){
+        } catch (IndexOutOfBoundsException e) {
             System.out.println("Expected IndexOutOfBoundsException occurred");
         }
     }

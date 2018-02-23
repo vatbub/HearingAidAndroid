@@ -216,6 +216,7 @@ public class ProfileManager {
         }
 
         public int getSortPosition() {
+            System.out.println(getPrefs().getInt(generateProfilePrefKey(PROFILE_SORT_PREF_KEY), -1));
             return getPrefs().getInt(generateProfilePrefKey(PROFILE_SORT_PREF_KEY), -1);
         }
 
