@@ -14,6 +14,9 @@ Our CI publishes the latest development build [here](https://s3.eu-central-1.ama
 
 (Unchecked items are still on our to do list)
 
+## The paper
+Yes, we are publishing a scientific paper about the app. Since the app is not finished yet, the paper isn't neither but you can have a look at its current version in the folder `paper`.
+
 ## Build
 1. Clone the repo
 2. Create a file called `local.properties` according to the instructions below.
