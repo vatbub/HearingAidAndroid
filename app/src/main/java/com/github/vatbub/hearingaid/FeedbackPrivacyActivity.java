@@ -15,7 +15,7 @@ public class FeedbackPrivacyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_feedback_privacy);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         try {
-            MainActivity.displayMarkdown(getResources(), this, R.raw.privacy, R.id.activity_feedback_privacy_markdown_view);
+            MainActivity.displayMarkdown(this, R.raw.privacy, R.id.activity_feedback_privacy_markdown_view);
         } catch (IOException e) {
             e.printStackTrace();
             Crashlytics.logException(e);

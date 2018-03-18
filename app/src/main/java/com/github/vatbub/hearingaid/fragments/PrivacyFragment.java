@@ -27,10 +27,10 @@ public class PrivacyFragment extends CustomFragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         try {
-            MainActivity.displayMarkdown(getResources(), getActivity(), R.raw.privacy, R.id.fragment_privacy_markdown_view);
+            MainActivity.displayMarkdown(getActivity(), R.raw.privacy, R.id.fragment_privacy_markdown_view);
         } catch (IOException e) {
             e.printStackTrace();
             Crashlytics.logException(e);

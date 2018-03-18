@@ -10,9 +10,12 @@
         android:orientation="vertical"
         tools:ignore="ScrollViewSize">
 
-        <WebView
+        <TextView
             android:id="@+id/fragment_privacy_markdown_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_marginStart="5dp"
+            android:textColor="@android:color/black" />
     </LinearLayout>
 </ScrollView>

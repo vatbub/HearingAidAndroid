@@ -15,15 +15,16 @@
             android:id="@+id/imageView2"
             android:layout_width="match_parent"
             android:layout_height="79dp"
-            android:src="@drawable/superpowered_logo"
-            android:contentDescription="@string/fragment_about_superpowered_logo_content_description" />
+            android:contentDescription="@string/fragment_about_superpowered_logo_content_description"
+            android:src="@drawable/superpowered_logo" />
 
-        <WebView
+        <TextView
             android:id="@+id/fragment_about_markdown_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </WebView>
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_marginStart="5dp"
+            android:textColor="@android:color/black" />
 
     </LinearLayout>
 </ScrollView>

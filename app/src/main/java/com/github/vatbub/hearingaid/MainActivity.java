@@ -3,7 +3,6 @@ package com.github.vatbub.hearingaid;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.IdRes;
@@ -19,38 +18,36 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.hearingaid.fragments.AboutFragment;
 import com.github.vatbub.hearingaid.fragments.PrivacyFragment;
 import com.github.vatbub.hearingaid.fragments.SettingsFragment;
 import com.github.vatbub.hearingaid.fragments.StreamingFragment;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
-import org.markdown4j.Markdown4jProcessor;
 import org.rm3l.maoni.Maoni;
 import org.rm3l.maoni.common.contract.Handler;
 import org.rm3l.maoni.common.model.Feedback;
 import org.rm3l.maoni.email.MaoniEmailListener;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
 import java.util.List;
+
+import ru.noties.markwon.Markwon;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback, ProfileManager.ActiveProfileChangeListener, AdapterView.OnItemSelectedListener {
@@ -61,45 +58,16 @@ public class MainActivity extends AppCompatActivity
     private ArrayAdapter<ProfileManager.Profile> profileAdapter;
     private boolean ignoreNextSpinnerSelection = false;
 
-    public static void displayMarkdown(Resources resources, Activity activity, @RawRes int markdownFile, @IdRes int webViewToDisplayMarkdownIn) throws IOException {
-        InputStream input = resources.openRawResource(markdownFile);
-        List<String> lines = readLines(input);
-        StringBuilder markdown = new StringBuilder();
-        for (String line : lines) {
-            markdown.append(line).append("\n");
-        }
+    public static void displayMarkdown(Activity activity, @RawRes int markdownFile, @IdRes int textViewToDisplayMarkdownIn) throws IOException {
+        TextView textView = activity.findViewById(textViewToDisplayMarkdownIn);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+        Markwon.unscheduleDrawables(textView);
+        Markwon.unscheduleTableRows(textView);
 
-        String html = new Markdown4jProcessor().process(markdown.toString());
-        ((WebView) activity.findViewById(webViewToDisplayMarkdownIn)).loadData(html, "text/html", "UTF-8");
-    }
+        textView.setText(MarkdownRenderer.getInstance(activity).getCachedRenderResult(markdownFile));
 
-    public static List<String> readLines(InputStream input) throws IOException {
-        InputStreamReader reader = new InputStreamReader(input);
-        return readLines(reader);
-    }
-
-    /**
-     * Get the contents of a <code>Reader</code> as a list of Strings,
-     * one entry per line.
-     * <p>
-     * This method buffers the input internally, so there is no need to use a
-     * <code>BufferedReader</code>.
-     *
-     * @param input the <code>Reader</code> to read from, not null
-     * @return the list of Strings, never null
-     * @throws NullPointerException if the input is null
-     * @throws IOException          if an I/O error occurs
-     * @since Commons IO 1.1
-     */
-    private static List<String> readLines(Reader input) throws IOException {
-        BufferedReader reader = new BufferedReader(input);
-        List<String> list = new ArrayList<>();
-        String line = reader.readLine();
-        while (line != null) {
-            list.add(line);
-            line = reader.readLine();
-        }
-        return list;
+        Markwon.scheduleDrawables(textView);
+        Markwon.scheduleTableRows(textView);
     }
 
     public void ignoreNextSpinnerSelection() {
@@ -110,6 +78,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CrashlyticsManager.getInstance(this).configureCrashlytics();
+        prerenderMarkdown();
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -280,6 +249,12 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private void prerenderMarkdown() {
+        Crashlytics.log(Log.INFO, "HearingAid", "Prerendering markdown...");
+        MarkdownRenderer.getInstance(this).prerender(R.raw.privacy);
+        MarkdownRenderer.getInstance(this).prerender(R.raw.about);
+    }
+
     private void openFragment(String tag, Fragment initialFragmentInstance) {
         // Insert the fragment by replacing any existing fragment
         /*FragmentManager fragmentManager = getSupportFragmentManager();
@@ -386,7 +361,7 @@ public class MainActivity extends AppCompatActivity
     public void startFeedbackActivity() {
         final SeekBar[] audioLatencySeekbar = new SeekBar[1];
         MaoniEmailListener listenerForMaoni = new MaoniEmailListener(this, FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.EMAIL_FEEDBACK_SUBJECT),
-                FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.EMAIL_FEEDBACK_TO_ADDRESS)){
+                FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.EMAIL_FEEDBACK_TO_ADDRESS)) {
             @Override
             public boolean onSendButtonClicked(Feedback feedback) {
                 feedback.put("audioLatency", audioLatencySeekbar[0].getProgress());
@@ -422,7 +397,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public boolean validateForm(View view) {
-                if (!privacyCheckbox.isChecked()){
+                if (!privacyCheckbox.isChecked()) {
                     Toast.makeText(MainActivity.this, R.string.feedback_privacy_unchecked_toast, Toast.LENGTH_LONG).show();
                     return false;
                 }
