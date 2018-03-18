@@ -21,15 +21,20 @@ import java.util.List;
  */
 
 public class ProfileManagerTest {
-    Context context;
+    private Context context;
 
     @Before
-    public void prepareContext() {
+    public void setup() {
         context = InstrumentationRegistry.getTargetContext();
+        resetProfiles();
     }
 
     @After
-    public void resetProfiles() {
+    public void cleanup() {
+        resetProfiles();
+    }
+
+    private void resetProfiles() {
         ProfileManager.getInstance(context).getChangeListeners().clear();
         for (ProfileManager.Profile profile : ProfileManager.getInstance(context).listProfiles())
             ProfileManager.getInstance(context).deleteProfile(profile);
@@ -140,7 +145,7 @@ public class ProfileManagerTest {
     @Test
     public void profileSortingTest() {
         int numberOfProfilesToCreate = 10;
-        int incrCounter =0;
+        int incrCounter = 0;
         List<ProfileManager.Profile> newOrder = new LinkedList<>();
         for (int i = numberOfProfilesToCreate; i >= 1; i--) {
             ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("profileSortingTestProfile" + i);
@@ -162,6 +167,61 @@ public class ProfileManagerTest {
 
         for (int j = 0; j < numberOfProfilesToCreate; j++)
             Assert.assertEquals(j, resultingList.get(j).getSortPosition());
+    }
+
+    @Test
+    public void missingElementInNewOrderSortingTest() {
+        int numberOfProfilesToCreate = 10;
+        List<ProfileManager.Profile> newOrder = new LinkedList<>();
+        for (int i = numberOfProfilesToCreate; i >= 1; i--) {
+            ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("missingElementInNewOrderSortingTestProfile" + i);
+            newOrder.add(0, profile);
+        }
+        newOrder.remove(0);
+
+        try {
+            ProfileManager.getInstance(context).setOrder(newOrder);
+            Assert.fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void excessiveElementInNewOrderSortingTest() {
+        int numberOfProfilesToCreate = 10;
+        List<ProfileManager.Profile> newOrder = new LinkedList<>();
+        for (int i = numberOfProfilesToCreate; i >= 1; i--) {
+            ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("excessiveElementInNewOrderSortingTestProfile" + i);
+            newOrder.add(0, profile);
+        }
+        ProfileManager.getInstance(context).deleteProfile(newOrder.get(0));
+
+        try {
+            ProfileManager.getInstance(context).setOrder(newOrder);
+            Assert.fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void swapElementInProfilesListSortingTest() {
+        int numberOfProfilesToCreate = 10;
+        List<ProfileManager.Profile> newOrder = new LinkedList<>();
+        for (int i = numberOfProfilesToCreate; i >= 1; i--) {
+            ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("swapElementInProfilesListSortingTestProfile" + i);
+            newOrder.add(0, profile);
+        }
+        ProfileManager.getInstance(context).deleteProfile(newOrder.get(numberOfProfilesToCreate - 1));
+        ProfileManager.getInstance(context).createProfile("swapElementInProfilesListSortingTestSwappedProfile");
+
+        try {
+            ProfileManager.getInstance(context).setOrder(newOrder);
+            Assert.fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -200,6 +260,13 @@ public class ProfileManagerTest {
     }
 
     @Test
+    public void getPositionOfIllegalProfileTest() {
+        ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("getPositionOfIllegalProfileTestProfile");
+        ProfileManager.getInstance(context).deleteProfile(profile);
+        Assert.assertEquals(-1, ProfileManager.getInstance(context).getPosition(profile));
+    }
+
+    @Test
     public void illegalIdReadTest() {
         try {
             ProfileManager.getInstance(context).new Profile(1);
@@ -207,5 +274,46 @@ public class ProfileManagerTest {
         } catch (IndexOutOfBoundsException e) {
             System.out.println("Expected IndexOutOfBoundsException occurred");
         }
+    }
+
+    @Test
+    public void applySameProfileAgainTest() {
+        final int[] changeListenerCalledCount = {0};
+        final ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("applySameProfileAgainTestProfile");
+        Assert.assertFalse(profile.isActive());
+        ProfileManager.getInstance(context).getChangeListeners().add(new ProfileManager.ActiveProfileChangeListener() {
+            @Override
+            public void onChanged(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
+                Assert.assertEquals(null, oldProfile);
+                Assert.assertEquals(profile, newProfile);
+                changeListenerCalledCount[0]++;
+            }
+        });
+        // apply twice
+        ProfileManager.getInstance(context).applyProfile(profile);
+        ProfileManager.getInstance(context).applyProfile(profile);
+        Assert.assertEquals(profile, ProfileManager.getInstance(context).getCurrentlyActiveProfile());
+        Assert.assertTrue(profile.isActive());
+        Assert.assertEquals(1, changeListenerCalledCount[0]);
+    }
+
+    @Test
+    public void eqEnabledSettingTest() {
+        ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("eqEnabledSettingTestProfile");
+        Assert.assertEquals(ProfileManager.EQ_ENABLED_DEFAULT_SETTING, profile.isEqEnabled());
+
+        profile.setEqEnabled(true);
+        Assert.assertEquals(true, profile.isEqEnabled());
+
+        profile.setEqEnabled(false);
+        Assert.assertEquals(false, profile.isEqEnabled());
+    }
+
+    @Test
+    public void getProfileNameTest() {
+        String name = "getProfileNameTestProfile";
+        ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile(name);
+        Assert.assertEquals(name, profile.getProfileName());
+        Assert.assertEquals(name, profile.toString());
     }
 }

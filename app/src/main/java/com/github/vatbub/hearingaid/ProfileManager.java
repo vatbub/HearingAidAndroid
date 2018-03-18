@@ -59,7 +59,7 @@ public class ProfileManager {
     }
 
     private static boolean isListEqualsWithoutOrder(List<?> l1, List<?> l2) {
-        return l1.size() == l2.size() && l1.containsAll(l2) && l2.containsAll(l1);
+        return l1.containsAll(l2) && l2.containsAll(l1);
     }
 
     public List<ActiveProfileChangeListener> getChangeListeners() {
