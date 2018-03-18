@@ -58,6 +58,10 @@ public class ProfileManager {
         }
     }
 
+    private static boolean isListEqualsWithoutOrder(List<?> l1, List<?> l2) {
+        return l1.size() == l2.size() && l1.containsAll(l2) && l2.containsAll(l1);
+    }
+
     public List<ActiveProfileChangeListener> getChangeListeners() {
         return changeListeners;
     }
@@ -78,6 +82,15 @@ public class ProfileManager {
         }
         Collections.sort(res);
         return res;
+    }
+
+    public void setOrder(List<Profile> newOrder) {
+        List<Profile> currentOrder = listProfiles();
+        if (!isListEqualsWithoutOrder(currentOrder, newOrder))
+            throw new IllegalArgumentException("newOrder must contain the same elements as listProfiles()");
+
+        for (int i = 0; i < newOrder.size(); i++)
+            newOrder.get(i).setSortPosition(i);
     }
 
     public void applyProfile(int id) {
@@ -216,11 +229,10 @@ public class ProfileManager {
         }
 
         public int getSortPosition() {
-            System.out.println(getPrefs().getInt(generateProfilePrefKey(PROFILE_SORT_PREF_KEY), -1));
             return getPrefs().getInt(generateProfilePrefKey(PROFILE_SORT_PREF_KEY), -1);
         }
 
-        public void setSortPosition(int sortPosition) {
+        private void setSortPosition(int sortPosition) {
             SharedPreferences prefs = getPrefs();
             SharedPreferences.Editor editor = prefs.edit();
             editor.putInt(generateProfilePrefKey(PROFILE_SORT_PREF_KEY), sortPosition);

@@ -11,6 +11,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -138,14 +141,24 @@ public class ProfileManagerTest {
     public void profileSortingTest() {
         int numberOfProfilesToCreate = 10;
         int incrCounter =0;
+        List<ProfileManager.Profile> newOrder = new LinkedList<>();
         for (int i = numberOfProfilesToCreate; i >= 1; i--) {
             ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("profileSortingTestProfile" + i);
             Assert.assertEquals(incrCounter, profile.getSortPosition());
-            profile.setSortPosition(i);
+            newOrder.add(0, profile);
             incrCounter++;
         }
 
+        List<ProfileManager.Profile> expectedDefaultOrder = new ArrayList<>(newOrder);
+        Collections.reverse(expectedDefaultOrder);
         List<ProfileManager.Profile> resultingList = ProfileManager.getInstance(context).listProfiles();
+
+        Assert.assertEquals(expectedDefaultOrder, resultingList);
+
+        // apply the new order
+        ProfileManager.getInstance(context).setOrder(newOrder);
+
+        resultingList = ProfileManager.getInstance(context).listProfiles();
 
         for (int j = 0; j < numberOfProfilesToCreate; j++)
             Assert.assertEquals(j, resultingList.get(j).getSortPosition());
