@@ -80,9 +80,8 @@ public class MarkdownRenderer {
     private void createSpannableConfiguration() {
         SpannableTheme theme = SpannableTheme.builderWithDefaults(getContext())
                 .headingBreakHeight(0)
-                .bulletWidth(2)
                 .build();
-        SpannableConfiguration spannableConfiguration = SpannableConfiguration.builder(getContext())
+        spannableConfiguration = SpannableConfiguration.builder(getContext())
                 .theme(theme)
                 .build();
     }
