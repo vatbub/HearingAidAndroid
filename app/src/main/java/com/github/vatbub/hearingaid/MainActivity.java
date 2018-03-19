@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity
     private void initNavHeaderSpinner() {
         NavigationView navigationView = findViewById(R.id.nav_view);
         Spinner profileSelector = navigationView.getHeaderView(0).findViewById(R.id.nav_header_profile_selector);
-        profileSelector.setAdapter(getProfileAdapter());
+        profileSelector.setAdapter(getProfileAdapter(true));
         ProfileManager.getInstance(this).getChangeListeners().add(this);
         profileSelector.setOnItemSelectedListener(this);
     }
@@ -319,11 +319,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     public ArrayAdapter<ProfileManager.Profile> getProfileAdapter() {
+        return getProfileAdapter(false);
+    }
+
+    public ArrayAdapter<ProfileManager.Profile> getProfileAdapter(boolean forceRefresh) {
         if (profileAdapter == null) {
             profileAdapter = new ArrayAdapter<>(this, R.layout.simple_spinner_item_app_drawer);
             profileAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
             initProfileAdapter();
-        }
+        } else if (forceRefresh)
+            initProfileAdapter();
         return profileAdapter;
     }
 

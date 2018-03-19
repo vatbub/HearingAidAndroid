@@ -60,6 +60,14 @@ public class ProfileManager {
         }
     }
 
+    private static List<ProfileManagerListener> getChangeListenersForAllInstances() {
+        List<ProfileManagerListener> res = new ArrayList<>();
+        for (Map.Entry<Context, ProfileManager> entry : instances.entrySet())
+            res.addAll(entry.getValue().getChangeListeners());
+
+        return res;
+    }
+
     public List<ProfileManagerListener> getChangeListeners() {
         return changeListeners;
     }
@@ -106,14 +114,14 @@ public class ProfileManager {
 
         setCurrentlyActiveProfile(profileToBeApplied);
 
-        for (ProfileManagerListener changeListener : getChangeListeners()) {
+        for (ProfileManagerListener changeListener : getChangeListenersForAllInstances()) {
             changeListener.onProfileApplied(previousProfile, profileToBeApplied);
         }
     }
 
     public Profile createProfile(String profileName) {
         Profile res = new Profile(profileName);
-        for (ProfileManagerListener changeListener : getChangeListeners()) {
+        for (ProfileManagerListener changeListener : getChangeListenersForAllInstances()) {
             changeListener.onProfileCreated(res);
         }
         return res;
@@ -123,7 +131,7 @@ public class ProfileManager {
         if (profile.isActive())
             applyProfile(null);
 
-        for (ProfileManagerListener changeListener : getChangeListeners()) {
+        for (ProfileManagerListener changeListener : getChangeListenersForAllInstances()) {
             changeListener.onProfileDeleted(profile);
         }
 

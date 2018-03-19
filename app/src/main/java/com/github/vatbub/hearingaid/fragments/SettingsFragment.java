@@ -82,7 +82,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
 
     private void initProfileSelector() {
         Spinner profileSelector = findViewById(R.id.fragment_settings_profile_selector);
-        profileSelector.setAdapter(getProfileAdapter());
+        profileSelector.setAdapter(getProfileAdapter(true));
         profileSelector.setOnItemSelectedListener(this);
         if (ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile() != null)
             profileSelector.setSelection(ProfileManager.getInstance(getContext()).getPosition(ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile()));
@@ -427,11 +427,16 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
     }
 
     public ArrayAdapter<ProfileManager.Profile> getProfileAdapter() {
+        return getProfileAdapter(false);
+    }
+
+    public ArrayAdapter<ProfileManager.Profile> getProfileAdapter(boolean forceRefresh) {
         if (profileAdapter == null) {
             profileAdapter = new ArrayAdapter<>(getContext(), R.layout.simple_spinner_item_black);
             profileAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
             initProfileAdapter();
-        }
+        } else if (forceRefresh)
+            initProfileAdapter();
         return profileAdapter;
     }
 
