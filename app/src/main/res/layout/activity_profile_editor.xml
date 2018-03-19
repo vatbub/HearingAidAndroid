@@ -21,6 +21,19 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_profile_editor" />
+    <include
+        android:id="@+id/include"
+        layout="@layout/content_profile_editor"
+        android:layout_gravity="fill_vertical" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/profile_editor_floatingActionButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:layout_anchor="@+id/include"
+        app:layout_anchorGravity="right|bottom"
+        app:srcCompat="@drawable/profile_editor_add_button"
+        app:useCompatPadding="true" />
 
 </android.support.design.widget.CoordinatorLayout>

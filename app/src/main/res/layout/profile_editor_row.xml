@@ -19,7 +19,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
+
+        <EditText
             android:id="@+id/profileNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
@@ -28,6 +29,7 @@
             android:layout_marginStart="8dp"
             android:layout_toStartOf="@id/dragButton"
             android:gravity="center_vertical|start"
+            android:hint="@string/profile_editor_profile_name_hint"
             android:textColor="@android:color/black"
             app:layout_constraintStart_toStartOf="parent" />
 

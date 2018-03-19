@@ -81,4 +81,5 @@
     <string name="title_activity_profile_editor">Profile bearbeiten</string>
     <string name="fragment_settings_edit_toolbar_entry">Profile bearbeiten</string>
     <string name="profile_editor_profile_deleted_snackbar">Profil %1$s wurde gelöscht</string>
+    <string name="profile_editor_profile_name_hint">Profilname</string>
 </resources>

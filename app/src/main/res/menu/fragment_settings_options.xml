@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/fragment_settings_current_profile_add_button"
-        android:icon="@drawable/fragment_settings_add_button"
-        android:title="@string/fragment_settings_current_profile_add"
+        android:id="@+id/fragment_settings_launch_profile_editor"
+        android:icon="@drawable/fragment_settings_edit_button"
+        android:title="@string/fragment_settings_edit_toolbar_entry"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/fragment_settings_current_profile_add_button"
+        android:title="@string/fragment_settings_current_profile_add"
+        app:showAsAction="never" />
     <item
         android:id="@+id/fragment_settings_current_profile_rename_button"
         android:title="@string/fragment_settings_current_profile_rename" />
     <item
         android:id="@+id/fragment_settings_current_profile_remove_button"
         android:title="@string/fragment_settings_current_profile_remove"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/fragment_settings_launch_profile_editor"
-        android:title="@string/fragment_settings_edit_toolbar_entry"
         app:showAsAction="never" />
 </menu>

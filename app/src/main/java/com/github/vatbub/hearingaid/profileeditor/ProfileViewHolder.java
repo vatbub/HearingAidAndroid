@@ -2,8 +2,8 @@ package com.github.vatbub.hearingaid.profileeditor;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.github.vatbub.hearingaid.R;
 
@@ -12,20 +12,20 @@ import com.github.vatbub.hearingaid.R;
  */
 
 public class ProfileViewHolder extends RecyclerView.ViewHolder {
-    private TextView profileNameTextView;
+    private EditText profileNameTextView;
     private ImageButton dragButton;
 
     public ProfileViewHolder(View itemView) {
         super(itemView);
         setDragButton(itemView.<ImageButton>findViewById(R.id.dragButton));
-        setProfileNameTextView(itemView.<TextView>findViewById(R.id.profileNameTextView));
+        setProfileNameTextView(itemView.<EditText>findViewById(R.id.profileNameTextView));
     }
 
-    public TextView getProfileNameTextView() {
+    public EditText getProfileNameTextView() {
         return profileNameTextView;
     }
 
-    public void setProfileNameTextView(TextView profileNameTextView) {
+    public void setProfileNameTextView(EditText profileNameTextView) {
         this.profileNameTextView = profileNameTextView;
     }
 

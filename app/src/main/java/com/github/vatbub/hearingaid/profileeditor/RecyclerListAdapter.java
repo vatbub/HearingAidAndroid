@@ -3,6 +3,8 @@ package com.github.vatbub.hearingaid.profileeditor;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,9 +35,25 @@ public class RecyclerListAdapter extends android.support.v7.widget.RecyclerView.
     }
 
     @Override
-    public void onBindViewHolder(ProfileViewHolder holder, int position) {
-        ProfileManager.Profile profile = ProfileManager.getInstance(getCallingContext()).listProfiles().get(position);
+    public void onBindViewHolder(@NonNull ProfileViewHolder holder, int position) {
+        final ProfileManager.Profile profile = ProfileManager.getInstance(getCallingContext()).listProfiles().get(position);
         holder.getProfileNameTextView().setText(profile.getProfileName());
+        holder.getProfileNameTextView().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                profile.setProfileName(s.toString());
+            }
+        });
     }
 
     /**
