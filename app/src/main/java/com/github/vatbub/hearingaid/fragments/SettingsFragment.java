@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatCheckBox;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,13 +19,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.hearingaid.CrashlyticsManager;
 import com.github.vatbub.hearingaid.FeedbackPrivacyActivity;
 import com.github.vatbub.hearingaid.MainActivity;
@@ -98,15 +95,6 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.fragment_settings_current_profile_add_button:
-                addProfile();
-                return true;
-            case R.id.fragment_settings_current_profile_remove_button:
-                removeProfile();
-                return true;
-            case R.id.fragment_settings_current_profile_rename_button:
-                renameProfile();
-                return true;
             case R.id.fragment_settings_launch_profile_editor:
                 Intent intent = new Intent(getContext(), ProfileEditorActivity.class);
                 startActivity(intent);
@@ -114,103 +102,6 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void addProfile() {
-        Context context = getContext();
-        final MainActivity activity = (MainActivity) getActivity();
-        if (context == null) {
-            Crashlytics.logException(new NullPointerException("context was null"));
-            return;
-        }
-        if (activity == null) {
-            Crashlytics.logException(new NullPointerException("Activity was null"));
-            return;
-        }
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(getString(R.string.fragment_settings_current_profile_add));
-
-        // Set up the input
-        final EditText input = new EditText(context);
-        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
-
-        // Set up the buttons
-        builder.setPositiveButton(getString(R.string.fragment_settings_add_profile_ok), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                ProfileManager.Profile createdProfile = ProfileManager.getInstance(getActivity()).createProfile(input.getText().toString());
-                ProfileManager.getInstance(activity).applyProfile(createdProfile);
-            }
-        });
-        builder.setNegativeButton(getString(R.string.fragment_settings_add_profile_cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
-    }
-
-    private void renameProfile() {
-        Context context = getContext();
-        final MainActivity activity = (MainActivity) getActivity();
-        final ProfileManager.Profile currentProfile = ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile();
-        if (context == null) {
-            Crashlytics.logException(new NullPointerException("context was null"));
-            return;
-        }
-        if (activity == null) {
-            Crashlytics.logException(new NullPointerException("Activity was null"));
-            return;
-        }
-        if (currentProfile == null) {
-            Crashlytics.logException(new NullPointerException("Current Profile was null"));
-            return;
-        }
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(getString(R.string.fragment_settings_current_profile_rename));
-
-        // Set up the input
-        final EditText input = new EditText(getContext());
-        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        input.setText(currentProfile.getProfileName());
-        builder.setView(input);
-
-        // Set up the buttons
-        builder.setPositiveButton(getString(R.string.fragment_settings_rename_profile_ok), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                currentProfile.setProfileName(input.getText().toString());
-                activity.initProfileAdapter();
-                initProfileAdapter();
-            }
-        });
-        builder.setNegativeButton(getString(R.string.fragment_settings_rename_profile_cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
-    }
-
-    private void removeProfile() {
-        final MainActivity activity = (MainActivity) getActivity();
-        if (activity == null) {
-            Crashlytics.logException(new NullPointerException("Activity was null"));
-            return;
-        }
-
-        ProfileManager.Profile currentProfile = ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile();
-        ProfileManager.getInstance(getActivity()).deleteProfile(currentProfile);
-        ProfileManager.getInstance(getActivity()).applyProfile(ProfileManager.getInstance(getActivity()).listProfiles().get(0));
     }
 
     private void initButtonHandlers() {
