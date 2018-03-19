@@ -98,6 +98,7 @@ dependencies {
         transitive = true
     }
     implementation 'ru.noties:markwon:1.0.3'
+    implementation 'com.android.support:cardview-v7:27.1.0'
 }
 
 

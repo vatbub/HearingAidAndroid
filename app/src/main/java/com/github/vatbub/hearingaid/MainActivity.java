@@ -50,7 +50,7 @@ import java.util.List;
 import ru.noties.markwon.Markwon;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback, ProfileManager.ActiveProfileChangeListener, AdapterView.OnItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback, ProfileManager.ProfileManagerListener, AdapterView.OnItemSelectedListener {
 
     private final static String CURRENT_FRAGMENT_TAG_KEY = "currentFragmentTag";
     private final static String CURRENT_PROFILE_KEY = "currentProfile";
@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState != null) {
             int currentlyActiveProfileId = savedInstanceState.getInt(CURRENT_PROFILE_KEY);
-            if (currentlyActiveProfileId == -1) {
+            if (currentlyActiveProfileId == -1 || !ProfileManager.getInstance(this).profileExists(currentlyActiveProfileId)) {
                 List<ProfileManager.Profile> profiles = ProfileManager.getInstance(this).listProfiles();
                 ProfileManager.Profile profileToApply;
                 if (profiles.isEmpty())
@@ -333,7 +333,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onChanged(@Nullable ProfileManager.Profile oldProfile, @Nullable final ProfileManager.Profile newProfile) {
+    public void onProfileApplied(@Nullable ProfileManager.Profile oldProfile, @Nullable final ProfileManager.Profile newProfile) {
         if (newProfile == null)
             return;
 
@@ -341,6 +341,26 @@ public class MainActivity extends AppCompatActivity
         Spinner profileSelector = navigationView.getHeaderView(0).findViewById(R.id.nav_header_profile_selector);
         int position = ProfileManager.getInstance(MainActivity.this).getPosition(newProfile);
         profileSelector.setSelection(position);
+    }
+
+    @Override
+    public void onProfileCreated(ProfileManager.Profile newProfile) {
+        getProfileAdapter().add(newProfile);
+    }
+
+    /**
+     * Called just before a profile is deleted. Since the callback is called before the deletion of the profile, one can still access information from the profile in the callback.
+     *
+     * @param deletedProfile The profile about to be deleted
+     */
+    @Override
+    public void onProfileDeleted(ProfileManager.Profile deletedProfile) {
+        getProfileAdapter().remove(deletedProfile);
+    }
+
+    @Override
+    public void onSortOrderChanged(List<ProfileManager.Profile> previousOrder, List<ProfileManager.Profile> newOrder) {
+        initProfileAdapter();
     }
 
     @Override

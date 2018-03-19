@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.github.vatbub.hearingaid.utils.ListUtils;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,7 +30,7 @@ public class ProfileManager {
     public static final String HIGHER_HEARING_THRESHOLD_PREF_KEY = "higherHearingThreshold";
     public static final boolean EQ_ENABLED_DEFAULT_SETTING = true;
     private static final Map<Context, ProfileManager> instances = new HashMap<>();
-    private final List<ActiveProfileChangeListener> changeListeners = new ArrayList<>();
+    private final List<ProfileManagerListener> changeListeners = new ArrayList<>();
     private Context callingContext;
     private Profile currentlyActiveProfile;
 
@@ -58,11 +60,7 @@ public class ProfileManager {
         }
     }
 
-    private static boolean isListEqualsWithoutOrder(List<?> l1, List<?> l2) {
-        return l1.containsAll(l2) && l2.containsAll(l1);
-    }
-
-    public List<ActiveProfileChangeListener> getChangeListeners() {
+    public List<ProfileManagerListener> getChangeListeners() {
         return changeListeners;
     }
 
@@ -86,11 +84,14 @@ public class ProfileManager {
 
     public void setOrder(List<Profile> newOrder) {
         List<Profile> currentOrder = listProfiles();
-        if (!isListEqualsWithoutOrder(currentOrder, newOrder))
+        if (!ListUtils.getInstance().isListEqualsWithoutOrder(currentOrder, newOrder))
             throw new IllegalArgumentException("newOrder must contain the same elements as listProfiles()");
 
         for (int i = 0; i < newOrder.size(); i++)
             newOrder.get(i).setSortPosition(i);
+
+        for (ProfileManagerListener changeListener : getChangeListeners())
+            changeListener.onSortOrderChanged(currentOrder, newOrder);
     }
 
     public void applyProfile(int id) {
@@ -105,18 +106,27 @@ public class ProfileManager {
 
         setCurrentlyActiveProfile(profileToBeApplied);
 
-        for (ActiveProfileChangeListener changeListener : getChangeListeners()) {
-            changeListener.onChanged(previousProfile, profileToBeApplied);
+        for (ProfileManagerListener changeListener : getChangeListeners()) {
+            changeListener.onProfileApplied(previousProfile, profileToBeApplied);
         }
     }
 
     public Profile createProfile(String profileName) {
-        return new Profile(profileName);
+        Profile res = new Profile(profileName);
+        for (ProfileManagerListener changeListener : getChangeListeners()) {
+            changeListener.onProfileCreated(res);
+        }
+        return res;
     }
 
     public void deleteProfile(Profile profile) {
         if (profile.isActive())
             applyProfile(null);
+
+        for (ProfileManagerListener changeListener : getChangeListeners()) {
+            changeListener.onProfileDeleted(profile);
+        }
+
         profile.delete();
         List<Integer> ids = getIDs();
         ids.remove((Integer) profile.getId());
@@ -197,8 +207,23 @@ public class ProfileManager {
         return profiles.get(profiles.size() - 1).getSortPosition() + 1;
     }
 
-    public interface ActiveProfileChangeListener {
-        void onChanged(@Nullable Profile oldProfile, @Nullable Profile newProfile);
+    public boolean profileExists(int id) {
+        return getIDs().contains(id);
+    }
+
+    public interface ProfileManagerListener {
+        void onProfileApplied(@Nullable Profile oldProfile, @Nullable Profile newProfile);
+
+        void onProfileCreated(Profile newProfile);
+
+        /**
+         * Called just before a profile is deleted. Since the callback is called before the deletion of the profile, one can still access information from the profile in the callback.
+         *
+         * @param deletedProfile The profile about to be deleted
+         */
+        void onProfileDeleted(Profile deletedProfile);
+
+        void onSortOrderChanged(List<Profile> previousOrder, List<Profile> newOrder);
     }
 
     public class Profile implements Comparable<Profile> {
@@ -222,7 +247,7 @@ public class ProfileManager {
          * @param id The id of the profile to load.
          */
         public Profile(int id) {
-            if (!getIDs().contains(id))
+            if (!profileExists(id))
                 throw new IndexOutOfBoundsException();
 
             setId(id);

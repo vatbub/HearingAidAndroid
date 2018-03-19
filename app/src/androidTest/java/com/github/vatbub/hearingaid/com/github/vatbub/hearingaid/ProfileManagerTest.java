@@ -51,9 +51,9 @@ public class ProfileManagerTest {
         final boolean[] changeListenerCalled = {false};
         final ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("applyWithIdProfile");
         Assert.assertFalse(profile.isActive());
-        ProfileManager.getInstance(context).getChangeListeners().add(new ProfileManager.ActiveProfileChangeListener() {
+        ProfileManager.getInstance(context).getChangeListeners().add(new ProfileManager.ProfileManagerListener() {
             @Override
-            public void onChanged(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
+            public void onProfileApplied(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
                 Assert.assertEquals(null, oldProfile);
                 Assert.assertEquals(profile, newProfile);
                 changeListenerCalled[0] = true;
@@ -70,9 +70,9 @@ public class ProfileManagerTest {
         final boolean[] changeListenerCalled = {false};
         final ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("applyWithObjectProfile");
         Assert.assertFalse(profile.isActive());
-        ProfileManager.getInstance(context).getChangeListeners().add(new ProfileManager.ActiveProfileChangeListener() {
+        ProfileManager.getInstance(context).getChangeListeners().add(new ProfileManager.ProfileManagerListener() {
             @Override
-            public void onChanged(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
+            public void onProfileApplied(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
                 Assert.assertEquals(null, oldProfile);
                 Assert.assertEquals(profile, newProfile);
                 changeListenerCalled[0] = true;
@@ -101,9 +101,9 @@ public class ProfileManagerTest {
         Assert.assertFalse(profile1.isActive());
         Assert.assertFalse(profile2.isActive());
 
-        ProfileManager.getInstance(context).getChangeListeners().add(new ProfileManager.ActiveProfileChangeListener() {
+        ProfileManager.getInstance(context).getChangeListeners().add(new ProfileManager.ProfileManagerListener() {
             @Override
-            public void onChanged(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
+            public void onProfileApplied(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
                 Assert.assertEquals(null, oldProfile);
                 Assert.assertEquals(profile1, newProfile);
 
@@ -117,9 +117,9 @@ public class ProfileManagerTest {
         Assert.assertTrue(profile1.isActive());
         Assert.assertFalse(profile2.isActive());
 
-        ProfileManager.getInstance(context).getChangeListeners().add(new ProfileManager.ActiveProfileChangeListener() {
+        ProfileManager.getInstance(context).getChangeListeners().add(new ProfileManager.ProfileManagerListener() {
             @Override
-            public void onChanged(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
+            public void onProfileApplied(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
                 Assert.assertEquals(profile1, oldProfile);
                 Assert.assertEquals(profile2, newProfile);
 
@@ -281,9 +281,9 @@ public class ProfileManagerTest {
         final int[] changeListenerCalledCount = {0};
         final ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("applySameProfileAgainTestProfile");
         Assert.assertFalse(profile.isActive());
-        ProfileManager.getInstance(context).getChangeListeners().add(new ProfileManager.ActiveProfileChangeListener() {
+        ProfileManager.getInstance(context).getChangeListeners().add(new ProfileManager.ProfileManagerListener() {
             @Override
-            public void onChanged(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
+            public void onProfileApplied(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
                 Assert.assertEquals(null, oldProfile);
                 Assert.assertEquals(profile, newProfile);
                 changeListenerCalledCount[0]++;

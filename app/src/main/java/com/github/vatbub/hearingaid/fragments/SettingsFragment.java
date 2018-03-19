@@ -40,7 +40,7 @@ import com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SettingsFragment extends CustomFragment implements ProfileManager.ActiveProfileChangeListener, AdapterView.OnItemSelectedListener {
+public class SettingsFragment extends CustomFragment implements ProfileManager.ProfileManagerListener, AdapterView.OnItemSelectedListener {
     public static final int numberOfChannels = 6;
     private ArrayAdapter<ProfileManager.Profile> profileAdapter;
 
@@ -142,8 +142,6 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 ProfileManager.Profile createdProfile = ProfileManager.getInstance(getActivity()).createProfile(input.getText().toString());
-                activity.getProfileAdapter().add(createdProfile);
-                getProfileAdapter().add(createdProfile);
                 ProfileManager.getInstance(activity).applyProfile(createdProfile);
             }
         });
@@ -212,8 +210,6 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
 
         ProfileManager.Profile currentProfile = ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile();
         ProfileManager.getInstance(getActivity()).deleteProfile(currentProfile);
-        activity.getProfileAdapter().remove(currentProfile);
-        getProfileAdapter().remove(currentProfile);
         ProfileManager.getInstance(getActivity()).applyProfile(ProfileManager.getInstance(getActivity()).listProfiles().get(0));
     }
 
@@ -383,7 +379,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
     }
 
     @Override
-    public void onChanged(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
+    public void onProfileApplied(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
         if (newProfile == null)
             return;
 
@@ -393,6 +389,22 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.A
         updateEqSwitch();
         loadEqSettings();
     }
+
+    @Override
+    public void onProfileCreated(ProfileManager.Profile newProfile) {
+        getProfileAdapter().add(newProfile);
+    }
+
+    @Override
+    public void onProfileDeleted(ProfileManager.Profile deletedProfile) {
+        getProfileAdapter().remove(deletedProfile);
+    }
+
+    @Override
+    public void onSortOrderChanged(List<ProfileManager.Profile> previousOrder, List<ProfileManager.Profile> newOrder) {
+        initProfileAdapter();
+    }
+
 
     private void updateEqSwitch() {
         Switch eqSwitch = findViewById(R.id.eq_on_off_switch);

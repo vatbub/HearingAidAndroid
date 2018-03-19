@@ -6,4 +6,9 @@
     <dimen name="nav_header_height">176dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="play_pause_button_size">100dp</dimen>
+
+    <!--- Below dimens are only there as a workaround for a bug in Android studio -->
+    <dimen name="card_recycler_corner_radius">2dp</dimen>
+    <dimen name="cardview_default_elevation">2dp</dimen>
+    <dimen name="card_recycler_elevation">2dp</dimen>
 </resources>

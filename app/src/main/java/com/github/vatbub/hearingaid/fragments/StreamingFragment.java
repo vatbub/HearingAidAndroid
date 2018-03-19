@@ -39,10 +39,11 @@ import com.rometools.rome.io.FeedException;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 
-public class StreamingFragment extends CustomFragment implements ProfileManager.ActiveProfileChangeListener {
+public class StreamingFragment extends CustomFragment implements ProfileManager.ProfileManagerListener {
     private static final String SUPERPOWERED_INITIALIZED_BUNDLE_KEY = "superpoweredInitialized";
     private static final String IS_STREAMING_BUNDLE_KEY = "isStreaming";
     private static final String SHARED_PREFERENCES_FILE_NAME = "com.github.vatbub.hearingaid.fragments.StreamingFragment.Preferences";
@@ -362,7 +363,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                                         }
                                     });
 
-                                    motdView.setWebViewClient(new WebViewClient(){
+                                    motdView.setWebViewClient(new WebViewClient() {
                                         /**
                                          * Notify the host application that a page has finished loading. This method
                                          * is called only for main frame. When onPageFinished() is called, the
@@ -416,7 +417,22 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
     }
 
     @Override
-    public void onChanged(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
+    public void onProfileApplied(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
         notifyEQEnabledSettingChanged();
+    }
+
+    @Override
+    public void onProfileCreated(ProfileManager.Profile newProfile) {
+        // no op
+    }
+
+    @Override
+    public void onProfileDeleted(ProfileManager.Profile deletedProfile) {
+        // no op
+    }
+
+    @Override
+    public void onSortOrderChanged(List<ProfileManager.Profile> previousOrder, List<ProfileManager.Profile> newOrder) {
+        // no op
     }
 }
