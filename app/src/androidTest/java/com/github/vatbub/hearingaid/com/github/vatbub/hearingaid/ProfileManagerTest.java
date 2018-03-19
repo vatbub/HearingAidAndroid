@@ -58,6 +58,26 @@ public class ProfileManagerTest {
                 Assert.assertEquals(profile, newProfile);
                 changeListenerCalled[0] = true;
             }
+
+            @Override
+            public void onProfileCreated(ProfileManager.Profile newProfile) {
+
+            }
+
+            /**
+             * Called just before a profile is deleted. Since the callback is called before the deletion of the profile, one can still access information from the profile in the callback.
+             *
+             * @param deletedProfile The profile about to be deleted
+             */
+            @Override
+            public void onProfileDeleted(ProfileManager.Profile deletedProfile) {
+
+            }
+
+            @Override
+            public void onSortOrderChanged(List<ProfileManager.Profile> previousOrder, List<ProfileManager.Profile> newOrder) {
+
+            }
         });
         ProfileManager.getInstance(context).applyProfile(profile.getId());
         Assert.assertEquals(profile, ProfileManager.getInstance(context).getCurrentlyActiveProfile());
@@ -76,6 +96,26 @@ public class ProfileManagerTest {
                 Assert.assertEquals(null, oldProfile);
                 Assert.assertEquals(profile, newProfile);
                 changeListenerCalled[0] = true;
+            }
+
+            @Override
+            public void onProfileCreated(ProfileManager.Profile newProfile) {
+
+            }
+
+            /**
+             * Called just before a profile is deleted. Since the callback is called before the deletion of the profile, one can still access information from the profile in the callback.
+             *
+             * @param deletedProfile The profile about to be deleted
+             */
+            @Override
+            public void onProfileDeleted(ProfileManager.Profile deletedProfile) {
+
+            }
+
+            @Override
+            public void onSortOrderChanged(List<ProfileManager.Profile> previousOrder, List<ProfileManager.Profile> newOrder) {
+
             }
         });
         ProfileManager.getInstance(context).applyProfile(profile);
@@ -110,6 +150,21 @@ public class ProfileManagerTest {
                 ProfileManager.getInstance(context).getChangeListeners().remove(this);
                 changeListenerCalled[0] = true;
             }
+
+            @Override
+            public void onProfileCreated(ProfileManager.Profile newProfile) {
+
+            }
+
+            @Override
+            public void onProfileDeleted(ProfileManager.Profile deletedProfile) {
+
+            }
+
+            @Override
+            public void onSortOrderChanged(List<ProfileManager.Profile> previousOrder, List<ProfileManager.Profile> newOrder) {
+
+            }
         });
 
         ProfileManager.getInstance(context).applyProfile(profile1);
@@ -125,6 +180,21 @@ public class ProfileManagerTest {
 
                 ProfileManager.getInstance(context).getChangeListeners().remove(this);
                 changeListenerCalled[1] = true;
+            }
+
+            @Override
+            public void onProfileCreated(ProfileManager.Profile newProfile) {
+
+            }
+
+            @Override
+            public void onProfileDeleted(ProfileManager.Profile deletedProfile) {
+
+            }
+
+            @Override
+            public void onSortOrderChanged(List<ProfileManager.Profile> previousOrder, List<ProfileManager.Profile> newOrder) {
+
             }
         });
 
@@ -287,6 +357,21 @@ public class ProfileManagerTest {
                 Assert.assertEquals(null, oldProfile);
                 Assert.assertEquals(profile, newProfile);
                 changeListenerCalledCount[0]++;
+            }
+
+            @Override
+            public void onProfileCreated(ProfileManager.Profile newProfile) {
+
+            }
+
+            @Override
+            public void onProfileDeleted(ProfileManager.Profile deletedProfile) {
+
+            }
+
+            @Override
+            public void onSortOrderChanged(List<ProfileManager.Profile> previousOrder, List<ProfileManager.Profile> newOrder) {
+
             }
         });
         // apply twice
