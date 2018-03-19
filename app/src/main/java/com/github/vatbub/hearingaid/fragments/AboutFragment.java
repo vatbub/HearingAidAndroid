@@ -34,7 +34,7 @@ public class AboutFragment extends CustomFragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         try {
             MainActivity.displayMarkdown(getActivity(), R.raw.about, R.id.fragment_about_markdown_view);

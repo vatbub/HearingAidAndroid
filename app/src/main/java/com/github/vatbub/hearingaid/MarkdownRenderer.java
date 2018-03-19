@@ -28,8 +28,8 @@ import ru.noties.markwon.spans.SpannableTheme;
 
 public class MarkdownRenderer {
     private static final Map<Context, MarkdownRenderer> instances = new HashMap<>();
-    private SparseArray<CharSequence> results;
-    private SparseArray<ResultStatus> resultStatusArray;
+    private final SparseArray<CharSequence> results;
+    private final SparseArray<ResultStatus> resultStatusArray;
     private Parser parser;
     private SpannableConfiguration spannableConfiguration;
     private Context context;

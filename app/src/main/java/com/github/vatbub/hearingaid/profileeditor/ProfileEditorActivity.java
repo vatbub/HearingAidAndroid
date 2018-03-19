@@ -16,7 +16,6 @@ import com.github.vatbub.hearingaid.R;
 import java.util.List;
 
 public class ProfileEditorActivity extends AppCompatActivity implements ProfileManager.ProfileManagerListener {
-    private RecyclerView recyclerView;
     private RecyclerListAdapter adapter;
 
     @Override
@@ -30,7 +29,7 @@ public class ProfileEditorActivity extends AppCompatActivity implements ProfileM
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        recyclerView = findViewById(R.id.profile_editor_recycler_view);
+        RecyclerView recyclerView = findViewById(R.id.profile_editor_recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 

@@ -27,6 +27,7 @@ public class RecyclerListAdapter extends android.support.v7.widget.RecyclerView.
         setCallingContext(callingContext);
     }
 
+    @NonNull
     @Override
     public ProfileViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         parentView = parent;
