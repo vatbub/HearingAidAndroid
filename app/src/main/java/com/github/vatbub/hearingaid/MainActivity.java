@@ -389,7 +389,8 @@ public class MainActivity extends AppCompatActivity
                 FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.EMAIL_FEEDBACK_TO_ADDRESS)) {
             @Override
             public boolean onSendButtonClicked(Feedback feedback) {
-                feedback.put("audioLatency", audioLatencySeekbar[0].getProgress());
+                //noinspection UnnecessaryBoxing
+                feedback.put("audioLatency", Integer.valueOf(audioLatencySeekbar[0].getProgress()));
                 return super.onSendButtonClicked(feedback);
             }
         };
@@ -432,6 +433,7 @@ public class MainActivity extends AppCompatActivity
 
         //The optional file provider authority allows you to
         //share the screenshot capture file to other apps (depending on your callback implementation)
+        //noinspection UnnecessaryBoxing
         new Maoni.Builder(null)
                 .withWindowTitle(getString(R.string.feedback_title)) //Set to an empty string to clear it
                 .withMessage(getString(R.string.feedback_message))
@@ -439,7 +441,7 @@ public class MainActivity extends AppCompatActivity
                 .withHandler(myHandlerForMaoni) //Custom Callback for Maoni
                 .withListener(listenerForMaoni)
                 // .withTheme(R.style.AppTheme)
-                .withExtraLayout(R.layout.feedback_extra_layout)
+                .withExtraLayout(Integer.valueOf(R.layout.feedback_extra_layout))
                 .withFeedbackContentHint(getString(R.string.feedback_hint))
                 .withContentErrorMessage(getString(R.string.feedback_error))
                 .disableLogsCapturingFeature()

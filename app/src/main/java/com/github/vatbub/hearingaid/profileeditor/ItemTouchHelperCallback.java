@@ -22,7 +22,8 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
     }
 
     @Override
-    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder
+            viewHolder, RecyclerView.ViewHolder target) {
         // If the 2 items are not the same type, no dragging
         if (viewHolder.getItemViewType() != target.getItemViewType())
             return false;

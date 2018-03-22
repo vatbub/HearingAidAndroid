@@ -13,10 +13,14 @@ import com.github.vatbub.hearingaid.R;
 
 public class ProfileViewHolder extends RecyclerView.ViewHolder {
     private EditText profileNameTextView;
+    private ImageButton deleteButton;
     private ImageButton dragButton;
+    private View itemView;
 
     public ProfileViewHolder(View itemView) {
         super(itemView);
+        setItemView(itemView);
+        setDeleteButton(itemView.<ImageButton>findViewById(R.id.deleteButton));
         setDragButton(itemView.<ImageButton>findViewById(R.id.dragButton));
         setProfileNameTextView(itemView.<EditText>findViewById(R.id.profileNameTextView));
     }
@@ -29,11 +33,27 @@ public class ProfileViewHolder extends RecyclerView.ViewHolder {
         this.profileNameTextView = profileNameTextView;
     }
 
+    public ImageButton getDeleteButton() {
+        return deleteButton;
+    }
+
+    public void setDeleteButton(ImageButton deleteButton) {
+        this.deleteButton = deleteButton;
+    }
+
     public ImageButton getDragButton() {
         return dragButton;
     }
 
     public void setDragButton(ImageButton dragButton) {
         this.dragButton = dragButton;
+    }
+
+    public View getItemView() {
+        return itemView;
+    }
+
+    public void setItemView(View itemView) {
+        this.itemView = itemView;
     }
 }

@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
 import com.github.vatbub.hearingaid.ProfileManager;
@@ -35,9 +34,6 @@ public class ProfileEditorActivity extends AppCompatActivity implements ProfileM
 
         recyclerView.setAdapter(getAdapter());
 
-        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(adapter);
-        ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(callback);
-        mItemTouchHelper.attachToRecyclerView(recyclerView);
         initButtonHandlers();
     }
 
@@ -49,7 +45,7 @@ public class ProfileEditorActivity extends AppCompatActivity implements ProfileM
 
     public RecyclerListAdapter getAdapter() {
         if (adapter == null)
-            adapter = new RecyclerListAdapter(this);
+            adapter = new RecyclerListAdapter(this, this.<RecyclerView>findViewById(R.id.profile_editor_recycler_view));
         return adapter;
     }
 
