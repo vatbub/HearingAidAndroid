@@ -17,6 +17,7 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.common.view.motd.PlatformIndependentMOTD;
 import com.github.vatbub.hearingaid.AndroidMOTDFileOutputStreamProvider;
 import com.github.vatbub.hearingaid.BottomSheetQueue;
+import com.github.vatbub.hearingaid.Constants;
 import com.github.vatbub.hearingaid.ProfileManager;
 import com.github.vatbub.hearingaid.R;
 import com.github.vatbub.hearingaid.RemoteConfig;
@@ -133,8 +135,18 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
 
         String channelId = "hearingAidPlayPauseNotificationChannel";
 
+        Context context = getContext();
+        if (context == null) {
+            Crashlytics.log(Log.WARN, Constants.LOG_TAG, "Context was null, not issuing notification");
+            return;
+        }
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager == null) {
+            Crashlytics.log(Log.WARN, Constants.LOG_TAG, "notificationManager was null, not issuing notification");
+            return;
+        }
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
             String channelName = getString(R.string.fragment_streaming_playpause_notification_channel_name);
             String channelDescription = getString(R.string.fragment_streaming_playpause_notification_channel_description);
             int importance = NotificationManager.IMPORTANCE_HIGH;
@@ -142,11 +154,10 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
             NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, importance);
             notificationChannel.setDescription(channelDescription);
             notificationChannel.enableVibration(false);
-            assert notificationManager != null;
             notificationManager.createNotificationChannel(notificationChannel);
         }
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getActivity(), channelId)
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(R.drawable.notification_icon)
                 .setContentTitle(getString(R.string.app_name));
 

@@ -250,7 +250,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void prerenderMarkdown() {
-        Crashlytics.log(Log.INFO, "HearingAid", "Prerendering markdown...");
+        Crashlytics.log(Log.INFO, Constants.LOG_TAG, "Prerendering markdown...");
         MarkdownRenderer.getInstance(this).prerender(R.raw.privacy);
         MarkdownRenderer.getInstance(this).prerender(R.raw.about);
     }
