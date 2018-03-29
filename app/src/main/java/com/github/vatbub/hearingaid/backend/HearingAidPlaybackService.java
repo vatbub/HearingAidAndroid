@@ -1,17 +1,24 @@
 package com.github.vatbub.hearingaid.backend;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.media.AudioAttributes;
+import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.media.AudioAttributesCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.hearingaid.Constants;
 
 import java.util.List;
@@ -26,6 +33,12 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
 
     private MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
+    private AudioManager.OnAudioFocusChangeListener onAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+        @Override
+        public void onAudioFocusChange(int focusChange) {
+
+        }
+    };
 
     @Override
     public void onCreate() {
@@ -139,6 +152,15 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
     private native void eqEnabled(boolean eqEnabled);
 
     private class HearingAidMediaSessionCallback extends MediaSessionCompat.Callback {
+        private BroadcastReceiver becomeNoisyReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (!AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) return;
+                onPause(); // pause the playback
+            }
+        };
+        private AudioFocusRequest audioFocusRequest;
+
         @Override
         public void onCommand(String command, Bundle extras, ResultReceiver cb) {
             super.onCommand(command, extras, cb);
@@ -150,24 +172,91 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
         @Override
         public void onPlay() {
             super.onPlay();
+            AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            if (audioManager == null) {
+                Crashlytics.log(Log.WARN, LOG_TAG, "AudioManager was null, not executing MediaSession.onPlay()");
+                return;
+            }
+            // Request audio focus for playback, this registers the afChangeListener
+            int result;
+            final int streamType = AudioManager.STREAM_MUSIC;
+            final int focusGain = AudioManager.AUDIOFOCUS_GAIN;
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                    .setFlags(AudioAttributesCompat.FLAG_AUDIBILITY_ENFORCED)
+                    .setLegacyStreamType(streamType)
+                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
+                    .build();
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                audioFocusRequest = new AudioFocusRequest.Builder(focusGain)
+                        .setAudioAttributes(audioAttributes)
+                        .setWillPauseWhenDucked(true)
+                        .setOnAudioFocusChangeListener(onAudioFocusChangeListener)
+                        .build();
+
+                result = audioManager.requestAudioFocus(audioFocusRequest);
+            } else {
+                result = audioManager.requestAudioFocus(onAudioFocusChangeListener,
+                        // Use the music stream.
+                        streamType,
+                        // Request permanent focus.
+                        focusGain);
+            }
+
+            if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) return;
+
             startService(new Intent(HearingAidPlaybackService.this, HearingAidPlaybackService.class));
-            onPlayPause(true);
+
+            mMediaSession.setActive(true);
             updatePlayerState(true);
+
+            // Superpowered
+            onPlayPause(true);
+            onForeground();
+
+            IntentFilter broadcastIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+            registerReceiver(becomeNoisyReceiver, broadcastIntentFilter);
+            // HearingAidPlaybackService.this.startForeground();
         }
 
         @Override
         public void onPause() {
             super.onPause();
-            onStop();
+
+            onPlayPause(false);
+            updatePlayerState(false);
+
+            // unregister BECOME_NOISY BroadcastReceiver
+            unregisterReceiver(becomeNoisyReceiver);
+            // Take the service out of the foreground, retain the notification
+            // stopForeground(false);
+
         }
 
         @Override
         public void onStop() {
             super.onStop();
+            AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            if (audioManager == null) {
+                Crashlytics.log(Log.WARN, LOG_TAG, "AudioManager was null, not executing MediaSession.onStop()");
+                return;
+            }
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+                audioManager.abandonAudioFocusRequest(audioFocusRequest);
+            else
+                audioManager.abandonAudioFocus(onAudioFocusChangeListener);
+
+            unregisterReceiver(becomeNoisyReceiver);
+            stopSelf();
+            mMediaSession.setActive(false);
+
             onPlayPause(false);
             onBackground();
-            stopSelf();
             updatePlayerState(false);
+
+            // stopForeground(false);
         }
     }
 }
