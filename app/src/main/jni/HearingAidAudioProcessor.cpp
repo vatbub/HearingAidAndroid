@@ -138,7 +138,7 @@ this->eqEnabled = eqEnabled;
 }
 
 extern "C" JNIEXPORT void
-Java_com_github_vatbub_hearingaid_fragments_StreamingFragment_HearingAidAudioProcessor(
+Java_com_github_vatbub_hearingaid_backend_HearingAidPlaybackService_HearingAidAudioProcessor(
         JNIEnv *javaEnvironment, jobject __unused obj, jint samplerate,
         jint buffersize/*, jstring apkPath, jint fileAoffset, jint fileAlength, jint fileBoffset, jint fileBlength*/) {
     // const char *path = javaEnvironment->GetStringUTFChars(apkPath, JNI_FALSE);
@@ -147,26 +147,28 @@ Java_com_github_vatbub_hearingaid_fragments_StreamingFragment_HearingAidAudioPro
     // javaEnvironment->ReleaseStringUTFChars(apkPath, path);
 }
 
-extern "C" JNIEXPORT void Java_com_github_vatbub_hearingaid_fragments_StreamingFragment_onPlayPause(
+extern "C" JNIEXPORT void
+Java_com_github_vatbub_hearingaid_backend_HearingAidPlaybackService_onPlayPause(
         JNIEnv *__unused javaEnvironment, jobject __unused obj, jboolean play) {
     jniInstance->onPlayPause(play);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_github_vatbub_hearingaid_fragments_StreamingFragment_onBackground(JNIEnv *env,
-                                                                           jobject instance) {
+Java_com_github_vatbub_hearingaid_backend_HearingAidPlaybackService_onBackground(JNIEnv *env,
+                                                                                 jobject instance) {
     jniInstance->onBackground();
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_github_vatbub_hearingaid_fragments_StreamingFragment_onForeground(JNIEnv *env,
-                                                                           jobject instance) {
+Java_com_github_vatbub_hearingaid_backend_HearingAidPlaybackService_onForeground(JNIEnv *env,
+                                                                                 jobject instance) {
     jniInstance->onForeground();
 }
 
-extern "C" JNIEXPORT void Java_com_github_vatbub_hearingaid_fragments_StreamingFragment_eqEnabled(
+extern "C" JNIEXPORT void
+Java_com_github_vatbub_hearingaid_backend_HearingAidPlaybackService_eqEnabled(
         JNIEnv *__unused javaEnvironment, jobject __unused obj, jboolean eqEnabled) {
     jniInstance->enableEQ(eqEnabled);
 }

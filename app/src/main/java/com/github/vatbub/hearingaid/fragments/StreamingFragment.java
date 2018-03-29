@@ -1,22 +1,28 @@
 package com.github.vatbub.hearingaid.fragments;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,10 +40,10 @@ import com.github.vatbub.hearingaid.Constants;
 import com.github.vatbub.hearingaid.ProfileManager;
 import com.github.vatbub.hearingaid.R;
 import com.github.vatbub.hearingaid.RemoteConfig;
+import com.github.vatbub.hearingaid.backend.HearingAidPlaybackService;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.ohoussein.playpause.PlayPauseView;
 import com.rometools.rome.feed.synd.SyndContent;
-import com.rometools.rome.io.FeedException;
 
 import java.io.IOException;
 import java.net.URL;
@@ -46,23 +52,67 @@ import java.util.List;
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 
 public class StreamingFragment extends CustomFragment implements ProfileManager.ProfileManagerListener {
-    private static final String SUPERPOWERED_INITIALIZED_BUNDLE_KEY = "superpoweredInitialized";
-    private static final String IS_STREAMING_BUNDLE_KEY = "isStreaming";
     private static final String SHARED_PREFERENCES_FILE_NAME = "com.github.vatbub.hearingaid.fragments.StreamingFragment.Preferences";
     private static final String NEVER_SHOW_LOW_LATENCY_MESSAGE_AGAIN_PREF_KEY = "doNotShowLowLatencyMessage";
     private static final String NOTIFICATION_SHOWN_KEY = "notificationShownKey";
 
-    static {
-        System.loadLibrary("HearingAidAudioProcessor");
-    }
-
     private boolean notificationShown;
-    private boolean isStreaming;
-    private boolean superpoweredInitialized = false;
     private BottomSheetBehavior mLatencyBottomSheetBehavior;
     private BottomSheetBehavior mMOTDBottomSheetBehavior;
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private BottomSheetQueue bottomSheetBehaviourQueue;
+
+    private MediaBrowserCompat mMediaBrowser;
+    private PlayPauseView mPlayPause;
+    private MediaControllerCompat.Callback controllerCallback =
+            new MediaControllerCompat.Callback() {
+                @Override
+                public void onPlaybackStateChanged(PlaybackStateCompat state) {
+                    boolean isStreaming = state.getState() == PlaybackStateCompat.STATE_PLAYING;
+                    mPlayPause.change(!isStreaming);
+                    if (isStreaming) {
+                        Snackbar.make(findViewById(R.id.fragment_content), R.string.fragment_streaming_snackbar_start_streaming, 3000).show();
+                    } else {
+                        Snackbar.make(findViewById(R.id.fragment_content), R.string.fragment_streaming_snackbar_stop_streaming, 3000).show();
+                    }
+                }
+            };
+    private boolean startStreamAfterConnectingToMediaBrowserService;
+    private final MediaBrowserCompat.ConnectionCallback mConnectionCallbacks =
+            new MediaBrowserCompat.ConnectionCallback() {
+                @Override
+                public void onConnected() {
+                    try {
+                        // Get the token for the MediaSession
+                        MediaSessionCompat.Token token = mMediaBrowser.getSessionToken();
+
+                        // Create a MediaControllerCompat
+                        MediaControllerCompat mediaController = new MediaControllerCompat(getContext(), // Context
+                                token);
+
+                        // Save the controller
+                        MediaControllerCompat.setMediaController(getActivity(), mediaController);
+
+                        // Finish building the UI
+                        buildTransportControls();
+
+                        if (startStreamAfterConnectingToMediaBrowserService)
+                            setStreaming(true);
+                    } catch (RemoteException e) {
+                        Crashlytics.logException(e);
+                    }
+                }
+
+                @Override
+                public void onConnectionSuspended() {
+                    // The Service has crashed. Disable transport controls until it automatically reconnects
+                }
+
+                @Override
+                public void onConnectionFailed() {
+                    // The Service has refused our connection
+                }
+            };
 
     public StreamingFragment() {
         // Required empty public constructor
@@ -72,39 +122,26 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (permissions.length == 0 || grantResults.length == 0 || grantResults[0] == PERMISSION_DENIED) {
             setStreaming(false);
-            ((PlayPauseView) findViewById(R.id.mainToggleButton)).change(!isStreamingEnabled());
             return;
         }
 
-        updateStreamingState();
+        // permission granted
+        connectMediaBrowser();
+        startStreamAfterConnectingToMediaBrowserService = true;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (superpoweredInitialized && isStreamingEnabled())
-            onForeground();
+        // if (superpoweredInitialized && isStreamingEnabled())
+        // onForeground();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (superpoweredInitialized)
-            onBackground();
-    }
-
-    public boolean isStreamingEnabled() {
-        return isStreaming;
-    }
-
-    private void updateStreamingState() {
-        initSuperpoweredIfNotInitialized();
-        if (isStreamingEnabled()) {
-            Snackbar.make(findViewById(R.id.fragment_content), R.string.fragment_streaming_snackbar_start_streaming, 3000).show();
-        } else {
-            Snackbar.make(findViewById(R.id.fragment_content), R.string.fragment_streaming_snackbar_stop_streaming, 3000).show();
-        }
-        onPlayPause(isStreamingEnabled());
+        // if (superpoweredInitialized)
+        // onBackground();
     }
 
     @SuppressWarnings("RedundantIfStatement")
@@ -120,13 +157,59 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
-            superpoweredInitialized = savedInstanceState.getBoolean(SUPERPOWERED_INITIALIZED_BUNDLE_KEY);
-            setStreaming(savedInstanceState.getBoolean(IS_STREAMING_BUNDLE_KEY));
+            // setStreaming(savedInstanceState.getBoolean(IS_STREAMING_BUNDLE_KEY));
             notificationShown = savedInstanceState.getBoolean(NOTIFICATION_SHOWN_KEY);
         }
 
         bottomSheetBehaviourQueue = new BottomSheetQueue();
         ProfileManager.getInstance(getActivity()).getChangeListeners().add(this);
+
+        initMediaBrowser();
+    }
+
+    private void initMediaBrowser() {
+        if (permissionMissing()) return;
+        if (mMediaBrowser != null) return;
+
+        mMediaBrowser = new MediaBrowserCompat(getContext(),
+                new ComponentName(getContext(), HearingAidPlaybackService.class),
+                mConnectionCallbacks,
+                null); // optional Bundle
+    }
+
+    private void connectMediaBrowser() {
+        if (permissionMissing()) return;
+        initMediaBrowser();
+
+        mMediaBrowser.connect();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        connectMediaBrowser();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // (see "stay in sync with the MediaSession")
+        if (MediaControllerCompat.getMediaController(getActivity()) != null) {
+            MediaControllerCompat.getMediaController(getActivity()).unregisterCallback(controllerCallback);
+        }
+        mMediaBrowser.disconnect();
+    }
+
+    private void buildTransportControls() {
+        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(getActivity());
+
+        // Display the initial state
+        PlaybackStateCompat playbackState = mediaController.getPlaybackState();
+        mPlayPause.change(playbackState.getState() == PlaybackStateCompat.STATE_PLAYING, false);
+
+        // Register a Callback to stay in sync
+        mediaController.registerCallback(controllerCallback);
     }
 
     private void showPlayPauseNotification() {
@@ -173,11 +256,14 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
             notificationBuilder.addAction(R.drawable.notification_icon, getString(R.string.fragment_streaming_playpause_notification_pause_action_name), PendingIntent.getActivity(getActivity(), 0, getActivity().getIntent(), PendingIntent.FLAG_CANCEL_CURRENT));
     }
 
+    public boolean isStreamingEnabled() {
+        int playbackState = MediaControllerCompat.getMediaController(getActivity()).getPlaybackState().getState();
+        return playbackState == PlaybackStateCompat.STATE_PLAYING;
+    }
+
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(SUPERPOWERED_INITIALIZED_BUNDLE_KEY, superpoweredInitialized);
-        outState.putBoolean(IS_STREAMING_BUNDLE_KEY, isStreamingEnabled());
         outState.putBoolean(NOTIFICATION_SHOWN_KEY, notificationShown);
     }
 
@@ -191,6 +277,9 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Grab the view for the play/pause button
+        mPlayPause = findViewById(R.id.mainToggleButton);
 
         initButtonHandlers();
 
@@ -238,15 +327,16 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
     }
 
     public void initButtonHandlers() {
-        findViewById(R.id.mainToggleButton).setOnClickListener(new View.OnClickListener() {
+        mPlayPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setStreaming(!isStreamingEnabled());
-                ((PlayPauseView) v).change(!isStreamingEnabled());
+                // Since this is a play/pause button, you'll need to test the current state
+                // and choose the action accordingly
+
                 if (permissionMissing()) {
                     requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 1);
                 } else {
-                    updateStreamingState();
+                    setStreaming(!isStreamingEnabled());
                 }
             }
         });
@@ -275,42 +365,12 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
         });
     }
 
-    /**
-     * Initializes the superpowered sdk and associated c++ code.
-     * No-op if already initialized.
-     */
-    private void initSuperpoweredIfNotInitialized() {
-        if (superpoweredInitialized)
-            return;
-
-        // Get the device's sample rate and buffer size to enable low-latency Android audio io, if available.
-        String samplerateString, buffersizeString;
-        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
-        assert audioManager != null;
-        samplerateString = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
-        buffersizeString = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
-        if (samplerateString == null) samplerateString = "44100";
-        if (buffersizeString == null) buffersizeString = "512";
-
-        HearingAidAudioProcessor(Integer.parseInt(samplerateString), Integer.parseInt(buffersizeString));
-
-        notifyEQEnabledSettingChanged();
-
-        superpoweredInitialized = true;
-    }
-
-    private native void HearingAidAudioProcessor(int samplerate, int buffersize);
-
-    private native void onPlayPause(boolean play);
-
-    private native void onBackground();
-
-    private native void onForeground();
-
-    private native void eqEnabled(boolean eqEnabled);
-
     public void setStreaming(boolean streaming) {
-        isStreaming = streaming;
+        if (streaming) {
+            MediaControllerCompat.getMediaController(getActivity()).getTransportControls().play();
+        } else {
+            MediaControllerCompat.getMediaController(getActivity()).getTransportControls().pause();
+        }
     }
 
     private void showMOTDIfApplicable() {
@@ -399,7 +459,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                             }
                         });
                     }
-                } catch (IllegalArgumentException | FeedException | IOException | ClassNotFoundException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     Crashlytics.logException(e);
                 }
@@ -410,12 +470,18 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
     }
 
     public void notifyEQEnabledSettingChanged() {
-        if (!superpoweredInitialized)
-            return;
-
+        if (getContext() == null) return;
         ProfileManager.Profile currentProfile = ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile();
-        if (currentProfile != null)
-            eqEnabled(currentProfile.isEqEnabled());
+        if (currentProfile == null) return;
+        Activity activity = getActivity();
+        if (activity == null) return;
+        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(activity);
+        if (mediaController == null) return;
+
+        Bundle params = new Bundle();
+        params.putBoolean(Constants.EQ_CHANGED_RESULT, currentProfile.isEqEnabled());
+
+        mediaController.sendCommand(Constants.CUSTOM_COMMAND_NOTIFY_EQ_ENABLED_CHANGED, params, null);
     }
 
     @Override
@@ -436,5 +502,8 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
     @Override
     public void onSortOrderChanged(List<ProfileManager.Profile> previousOrder, List<ProfileManager.Profile> newOrder) {
         // no op
+    }
+
+    private class HearingAidConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
     }
 }
