@@ -53,6 +53,7 @@ HearingAidAudioProcessor::HearingAidAudioProcessor(unsigned int samplerate,
                                                  SL_ANDROID_RECORDING_PRESET_UNPROCESSED,
             // SL_ANDROID_RECORDING_PRESET_VOICE_COMMUNICATION,
                                                  SL_ANDROID_STREAM_MEDIA, 0);
+    onPlayPause(false);
 }
 
 HearingAidAudioProcessor::~HearingAidAudioProcessor() {
@@ -134,7 +135,7 @@ void HearingAidAudioProcessor::stop() {
 }
 
 void HearingAidAudioProcessor::enableEQ(bool eqEnabled) {
-this->eqEnabled = eqEnabled;
+    this->eqEnabled = eqEnabled;
 }
 
 extern "C" JNIEXPORT void
