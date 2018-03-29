@@ -1,6 +1,11 @@
 package com.github.vatbub.hearingaid.backend;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -11,18 +16,24 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.media.AudioAttributesCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
+import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.hearingaid.Constants;
+import com.github.vatbub.hearingaid.R;
 
 import java.util.List;
 
+import static com.github.vatbub.hearingaid.Constants.ACTION_PAUSE;
+import static com.github.vatbub.hearingaid.Constants.ACTION_PLAY;
 import static com.github.vatbub.hearingaid.Constants.EMPTY_MEDIA_ROOT_ID;
 import static com.github.vatbub.hearingaid.Constants.LOG_TAG;
 
@@ -31,6 +42,7 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
         System.loadLibrary("HearingAidAudioProcessor");
     }
 
+    private final int notificationId = 6392634;
     private MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
 
@@ -147,15 +159,95 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
 
     private native void eqEnabled(boolean eqEnabled);
 
+    private Notification createPlayerNotification(boolean isPlaying) {
+        String channelId = "hearingAidPlayPauseNotificationChannel";
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            String channelName = getString(R.string.fragment_streaming_playpause_notification_channel_name);
+            String channelDescription = getString(R.string.fragment_streaming_playpause_notification_channel_description);
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+
+            NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, importance);
+            notificationChannel.setDescription(channelDescription);
+            notificationChannel.enableVibration(false);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.notification_icon)
+                .setContentTitle(getString(R.string.app_name));
+
+        if (isPlaying)
+            notificationBuilder.setContentText(getString(R.string.fragment_streaming_playpause_notification_content_running));
+        else
+            notificationBuilder.setContentText(getString(R.string.fragment_streaming_playpause_notification_content_not_running));
+
+        notificationBuilder// .setContentIntent(mMediaSession.getController().getSessionActivity())
+                .setDeleteIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_STOP))
+                .setColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+
+        PendingIntent pendingIntent = retrievePlaybackAction(isPlaying);
+        if (isPlaying) {
+            notificationBuilder.addAction(new NotificationCompat.Action(
+                    R.drawable.ic_media_pause_light,
+                    getString(R.string.fragment_streaming_playpause_notification_pause_action_name),
+                    pendingIntent));
+        } else {
+            notificationBuilder.addAction(new NotificationCompat.Action(
+                    R.drawable.ic_media_play_light,
+                    getString(R.string.fragment_streaming_playpause_notification_play_action_name),
+                    pendingIntent));
+        }
+        // Take advantage of MediaStyle features
+        notificationBuilder.setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
+                .setMediaSession(mMediaSession.getSessionToken())
+                .setShowActionsInCompactView(0)
+
+                // Add a cancel button
+                .setShowCancelButton(true)
+                .setCancelButtonIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(this,
+                        PlaybackStateCompat.ACTION_STOP)));
+
+        return notificationBuilder.build();
+    }
+
+    private PendingIntent retrievePlaybackAction(boolean isPlaying) {
+        Intent action;
+        PendingIntent pendingIntent;
+        final ComponentName serviceName = new ComponentName(this, HearingAidPlaybackService.class);
+        // Play and pause
+        if (isPlaying)
+            action = new Intent(ACTION_PAUSE);
+        else
+            action = new Intent(ACTION_PLAY);
+        action.setComponent(serviceName);
+        pendingIntent = PendingIntent.getService(this, 1, action, 0);
+        return pendingIntent;
+
+    }
+
     private class HearingAidMediaSessionCallback extends MediaSessionCompat.Callback {
-        private BroadcastReceiver becomeNoisyReceiver = new BroadcastReceiver() {
+        private AudioFocusRequest audioFocusRequest;
+        private BroadcastReceiver becomingNoisyReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (!AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) return;
-                onPause(); // pause the playback
+                onPause();
             }
         };
-        private AudioFocusRequest audioFocusRequest;
+        private BroadcastReceiver actionPauseReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                onPause();
+            }
+        };
+        private BroadcastReceiver actionPlayReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                onPlay();
+            }
+        };
         private AudioManager.OnAudioFocusChangeListener onAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
             @Override
             public void onAudioFocusChange(int focusChange) {
@@ -227,9 +319,15 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             onPlayPause(true);
             onForeground();
 
-            IntentFilter broadcastIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-            registerReceiver(becomeNoisyReceiver, broadcastIntentFilter);
-            // HearingAidPlaybackService.this.startForeground();
+            IntentFilter becomingNoisyIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+            IntentFilter pauseIntentFilter = new IntentFilter(ACTION_PAUSE);
+            IntentFilter playIntentFilter = new IntentFilter(ACTION_PLAY);
+
+            registerReceiver(becomingNoisyReceiver, becomingNoisyIntentFilter);
+            registerReceiver(actionPauseReceiver, pauseIntentFilter);
+            registerReceiver(actionPlayReceiver, playIntentFilter);
+
+            startForeground(notificationId, createPlayerNotification(true));
         }
 
         @Override
@@ -240,10 +338,13 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             updatePlayerState(false);
 
             // unregister BECOME_NOISY BroadcastReceiver
-            unregisterReceiver(becomeNoisyReceiver);
+            unregisterReceiver(becomingNoisyReceiver);
             // Take the service out of the foreground, retain the notification
-            // stopForeground(false);
+            stopForeground(false);
 
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (notificationManager != null)
+                notificationManager.notify(notificationId, createPlayerNotification(false));
         }
 
         @Override
@@ -260,7 +361,10 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             else
                 audioManager.abandonAudioFocus(onAudioFocusChangeListener);
 
-            unregisterReceiver(becomeNoisyReceiver);
+            unregisterReceiver(becomingNoisyReceiver);
+            unregisterReceiver(actionPauseReceiver);
+            unregisterReceiver(actionPlayReceiver);
+
             stopSelf();
             mMediaSession.setActive(false);
 
@@ -268,7 +372,7 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             onBackground();
             updatePlayerState(false);
 
-            // stopForeground(false);
+            stopForeground(true);
         }
     }
 }

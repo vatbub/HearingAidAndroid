@@ -2,9 +2,6 @@ package com.github.vatbub.hearingaid.fragments;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -18,12 +15,10 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,9 +49,7 @@ import static android.content.pm.PackageManager.PERMISSION_DENIED;
 public class StreamingFragment extends CustomFragment implements ProfileManager.ProfileManagerListener {
     private static final String SHARED_PREFERENCES_FILE_NAME = "com.github.vatbub.hearingaid.fragments.StreamingFragment.Preferences";
     private static final String NEVER_SHOW_LOW_LATENCY_MESSAGE_AGAIN_PREF_KEY = "doNotShowLowLatencyMessage";
-    private static final String NOTIFICATION_SHOWN_KEY = "notificationShownKey";
 
-    private boolean notificationShown;
     private BottomSheetBehavior mLatencyBottomSheetBehavior;
     private BottomSheetBehavior mMOTDBottomSheetBehavior;
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
@@ -156,11 +149,6 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            // setStreaming(savedInstanceState.getBoolean(IS_STREAMING_BUNDLE_KEY));
-            notificationShown = savedInstanceState.getBoolean(NOTIFICATION_SHOWN_KEY);
-        }
-
         bottomSheetBehaviourQueue = new BottomSheetQueue();
         ProfileManager.getInstance(getActivity()).getChangeListeners().add(this);
 
@@ -169,6 +157,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
 
     private void initMediaBrowser() {
         if (permissionMissing()) return;
+        if (getContext() == null) return;
         if (mMediaBrowser != null) return;
 
         mMediaBrowser = new MediaBrowserCompat(getContext(),
@@ -212,59 +201,9 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
         mediaController.registerCallback(controllerCallback);
     }
 
-    private void showPlayPauseNotification() {
-        if (notificationShown)
-            return;
-
-        String channelId = "hearingAidPlayPauseNotificationChannel";
-
-        Context context = getContext();
-        if (context == null) {
-            Crashlytics.log(Log.WARN, Constants.LOG_TAG, "Context was null, not issuing notification");
-            return;
-        }
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        if (notificationManager == null) {
-            Crashlytics.log(Log.WARN, Constants.LOG_TAG, "notificationManager was null, not issuing notification");
-            return;
-        }
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            String channelName = getString(R.string.fragment_streaming_playpause_notification_channel_name);
-            String channelDescription = getString(R.string.fragment_streaming_playpause_notification_channel_description);
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-
-            NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, importance);
-            notificationChannel.setDescription(channelDescription);
-            notificationChannel.enableVibration(false);
-            notificationManager.createNotificationChannel(notificationChannel);
-        }
-
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.notification_icon)
-                .setContentTitle(getString(R.string.app_name));
-
-        if (isStreamingEnabled())
-            notificationBuilder.setContentText(getString(R.string.fragment_streaming_playpause_notification_content_running));
-        else
-            notificationBuilder.setContentText(getString(R.string.fragment_streaming_playpause_notification_content_not_running));
-
-        notificationBuilder.setContentIntent(PendingIntent.getActivity(getActivity(), 0, getActivity().getIntent(), PendingIntent.FLAG_CANCEL_CURRENT));
-
-        if (isStreamingEnabled())
-            // TODO Add play pause action to the intent
-            notificationBuilder.addAction(R.drawable.notification_icon, getString(R.string.fragment_streaming_playpause_notification_pause_action_name), PendingIntent.getActivity(getActivity(), 0, getActivity().getIntent(), PendingIntent.FLAG_CANCEL_CURRENT));
-    }
-
     public boolean isStreamingEnabled() {
         int playbackState = MediaControllerCompat.getMediaController(getActivity()).getPlaybackState().getState();
         return playbackState == PlaybackStateCompat.STATE_PLAYING;
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(NOTIFICATION_SHOWN_KEY, notificationShown);
     }
 
     @Override
