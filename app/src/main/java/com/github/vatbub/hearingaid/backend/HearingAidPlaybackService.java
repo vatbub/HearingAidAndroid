@@ -33,12 +33,6 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
 
     private MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
-    private AudioManager.OnAudioFocusChangeListener onAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
-        @Override
-        public void onAudioFocusChange(int focusChange) {
-
-        }
-    };
 
     @Override
     public void onCreate() {
@@ -56,7 +50,8 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
         mStateBuilder = new PlaybackStateCompat.Builder()
                 .setActions(
                         PlaybackStateCompat.ACTION_PLAY |
-                                PlaybackStateCompat.ACTION_PLAY_PAUSE);
+                                PlaybackStateCompat.ACTION_PLAY_PAUSE |
+                                PlaybackStateCompat.ACTION_PAUSE);
         updatePlayerState(false);
 
         // MySessionCallback() has methods that handle callbacks from a media controller
@@ -160,6 +155,22 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             }
         };
         private AudioFocusRequest audioFocusRequest;
+        private AudioManager.OnAudioFocusChangeListener onAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+            @Override
+            public void onAudioFocusChange(int focusChange) {
+                switch (focusChange) {
+                    case AudioManager.AUDIOFOCUS_LOSS:
+                        onStop();
+                        break;
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                        onPause();
+                        break;
+                    case AudioManager.AUDIOFOCUS_GAIN:
+                        onPlay();
+                }
+            }
+        };
 
         @Override
         public void onCommand(String command, Bundle extras, ResultReceiver cb) {
