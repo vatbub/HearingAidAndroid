@@ -206,7 +206,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
 
         // Display the initial state
         PlaybackStateCompat playbackState = mediaController.getPlaybackState();
-        mPlayPause.change(playbackState.getState() == PlaybackStateCompat.STATE_PLAYING, false);
+        mPlayPause.change(playbackState.getState() != PlaybackStateCompat.STATE_PLAYING, false);
 
         // Register a Callback to stay in sync
         mediaController.registerCallback(controllerCallback);
