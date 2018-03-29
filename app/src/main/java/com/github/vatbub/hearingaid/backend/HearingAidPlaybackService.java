@@ -51,7 +51,8 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
                 .setActions(
                         PlaybackStateCompat.ACTION_PLAY |
                                 PlaybackStateCompat.ACTION_PLAY_PAUSE |
-                                PlaybackStateCompat.ACTION_PAUSE);
+                                PlaybackStateCompat.ACTION_PAUSE |
+                                PlaybackStateCompat.ACTION_STOP);
         updatePlayerState(false);
 
         // MySessionCallback() has methods that handle callbacks from a media controller
