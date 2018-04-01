@@ -361,9 +361,14 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             else
                 audioManager.abandonAudioFocus(onAudioFocusChangeListener);
 
-            unregisterReceiver(becomingNoisyReceiver);
-            unregisterReceiver(actionPauseReceiver);
-            unregisterReceiver(actionPlayReceiver);
+            try {
+                unregisterReceiver(becomingNoisyReceiver);
+                unregisterReceiver(actionPauseReceiver);
+                unregisterReceiver(actionPlayReceiver);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
 
             stopSelf();
             mMediaSession.setActive(false);
