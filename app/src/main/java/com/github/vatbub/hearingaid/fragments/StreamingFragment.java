@@ -187,7 +187,8 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
         if (MediaControllerCompat.getMediaController(getActivity()) != null) {
             MediaControllerCompat.getMediaController(getActivity()).unregisterCallback(controllerCallback);
         }
-        mMediaBrowser.disconnect();
+        if (mMediaBrowser != null)
+            mMediaBrowser.disconnect();
     }
 
     private void buildTransportControls() {
