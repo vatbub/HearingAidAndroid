@@ -4,11 +4,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
@@ -25,17 +21,13 @@ import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
-
 import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.hearingaid.Constants;
 import com.github.vatbub.hearingaid.R;
 
 import java.util.List;
 
-import static com.github.vatbub.hearingaid.Constants.ACTION_PAUSE;
-import static com.github.vatbub.hearingaid.Constants.ACTION_PLAY;
-import static com.github.vatbub.hearingaid.Constants.EMPTY_MEDIA_ROOT_ID;
-import static com.github.vatbub.hearingaid.Constants.LOG_TAG;
+import static com.github.vatbub.hearingaid.Constants.*;
 
 public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
     static {
@@ -167,7 +159,7 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
 
             String channelName = getString(R.string.fragment_streaming_playpause_notification_channel_name);
             String channelDescription = getString(R.string.fragment_streaming_playpause_notification_channel_description);
-            int importance = NotificationManager.IMPORTANCE_HIGH;
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
 
             NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, importance);
             notificationChannel.setDescription(channelDescription);
