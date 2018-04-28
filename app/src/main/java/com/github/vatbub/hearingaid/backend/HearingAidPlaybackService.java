@@ -159,7 +159,7 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
 
             String channelName = getString(R.string.fragment_streaming_playpause_notification_channel_name);
             String channelDescription = getString(R.string.fragment_streaming_playpause_notification_channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_LOW;
 
             NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, importance);
             notificationChannel.setDescription(channelDescription);
@@ -178,7 +178,7 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
 
         notificationBuilder// .setContentIntent(mMediaSession.getController().getSessionActivity())
                 .setDeleteIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_STOP))
-                .setColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+                .setColor(ContextCompat.getColor(this, R.color.colorPrimary));
 
         PendingIntent pendingIntent = retrievePlaybackAction(isPlaying);
         if (isPlaying) {
