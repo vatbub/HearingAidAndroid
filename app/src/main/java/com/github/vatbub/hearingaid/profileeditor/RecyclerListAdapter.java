@@ -2,8 +2,10 @@ package com.github.vatbub.hearingaid.profileeditor;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
@@ -12,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.github.vatbub.hearingaid.ProfileManager;
 import com.github.vatbub.hearingaid.R;
 
@@ -68,7 +69,7 @@ public class RecyclerListAdapter extends android.support.v7.widget.RecyclerView.
         holder.getDeleteButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteItem(holder.getAdapterPosition());
+                deleteItemWithAlert(holder.getAdapterPosition());
             }
         });
         holder.getDragButton().setOnTouchListener(new View.OnTouchListener() {
@@ -111,13 +112,42 @@ public class RecyclerListAdapter extends android.support.v7.widget.RecyclerView.
 
     @Override
     public void onItemDismiss(int position) {
-        deleteItem(position);
+        deleteItemWithAlert(position);
+    }
+
+    private void deleteItemWithAlert(final int position) {
+        String profileName = ProfileManager.getInstance(getCallingContext()).listProfiles().get(position).getProfileName();
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getCallingContext());
+
+        // set title
+        alertDialogBuilder.setTitle(R.string.profile_editor_delete_profile_alert_title);
+
+        // set dialog message
+        alertDialogBuilder
+                .setMessage(String.format(getCallingContext().getString(R.string.profile_editor_delete_profile_alert_message), profileName))
+                .setCancelable(true)
+                .setPositiveButton(R.string.profile_editor_delete_profile_alert_delete_button, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        deleteItem(position);
+                    }
+                })
+                .setNegativeButton(R.string.profile_editor_delete_profile_button_cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                        RecyclerListAdapter.this.notifyItemChanged(position);
+                    }
+                });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
     }
 
     private void deleteItem(final int position) {
         final ProfileManager.Profile profile = ProfileManager.getInstance(getCallingContext()).listProfiles().get(position);
-
-        // TODO: Add alert
 
         final String profileName = profile.getProfileName();
         Snackbar.make(getParentView(), String.format(getCallingContext().getString(R.string.profile_editor_profile_deleted_snackbar), profileName), Snackbar.LENGTH_SHORT).show();

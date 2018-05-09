@@ -84,4 +84,8 @@
     <string name="fragment_settings_edit_toolbar_entry">Edit profiles</string>
     <string name="profile_editor_profile_deleted_snackbar">Profile %1$s has been deleted</string>
     <string name="profile_editor_profile_name_hint">Profile name</string>
+    <string name="profile_editor_delete_profile_alert_title">Delete profile</string>
+    <string name="profile_editor_delete_profile_alert_message">This will delete the profile %1$s permanently. Are you sure?</string>
+    <string name="profile_editor_delete_profile_alert_button_delete">Delete</string>
+    <string name="profile_editor_delete_profile_button_cancel">Cancel</string>
 </resources>

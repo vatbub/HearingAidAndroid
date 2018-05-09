@@ -79,4 +79,8 @@
     <string name="fragment_settings_edit_toolbar_entry">Profile bearbeiten</string>
     <string name="profile_editor_profile_deleted_snackbar">Profil %1$s wurde gelöscht</string>
     <string name="profile_editor_profile_name_hint">Profilname</string>
+    <string name="profile_editor_delete_profile_alert_title">Profil löschen</string>
+    <string name="profile_editor_delete_profile_alert_message">Das Profil %1$s wird dauerhaft gelöscht. Sind Sie sicher?</string>
+    <string name="profile_editor_delete_profile_alert_delete_button">Löschen</string>
+    <string name="profile_editor_delete_profile_button_cancel">Abbrechen</string>
 </resources>
