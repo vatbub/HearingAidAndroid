@@ -1,76 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:card_view="http://schemas.android.com/tools"
-    android:id="@+id/card_view_item_recycler_view"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="4dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="4dp"
-    android:foreground="?attr/selectableItemBackground"
-    card_view:cardCornerRadius="@dimen/card_recycler_corner_radius"
-    card_view:cardElevation="@dimen/card_recycler_elevation">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:card_view="http://schemas.android.com/tools"
+              android:id="@+id/card_view_item_recycler_view"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:foreground="?attr/selectableItemBackground"
+              card_view:cardCornerRadius="@dimen/card_recycler_corner_radius"
+              card_view:cardElevation="@dimen/card_recycler_elevation"
+              android:orientation="vertical"
+              android:background="@android:color/white">
+
+    <View
+            android:background="@android:color/darker_gray"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"/>
 
     <GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
 
         <EditText
-            android:id="@+id/profileNameTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_column="0"
-            android:layout_columnWeight="1"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:gravity="center_vertical|start"
-            android:hint="@string/profile_editor_profile_name_hint"
-            android:textColor="@android:color/black"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                android:id="@+id/profileNameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_column="0"
+                android:layout_columnWeight="1"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical|start"
+                android:hint="@string/profile_editor_profile_name_hint"
+                android:textColor="@android:color/black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
 
         <ImageButton
-            android:id="@+id/deleteButton"
-            style="@android:style/Widget.DeviceDefault.Light.ImageButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_column="1"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/profile_editor_drag_content_description"
-            android:padding="10dp"
-            android:scaleType="centerInside"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/profileNameTextView"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@android:drawable/ic_delete" />
+                android:id="@+id/deleteButton"
+                style="@android:style/Widget.DeviceDefault.Light.ImageButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_column="1"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/profile_editor_drag_content_description"
+                android:padding="10dp"
+                android:scaleType="centerInside"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/profileNameTextView"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/delete_profile_icon"
+                android:scaleX="0.8"
+                android:scaleY="0.8"/>
 
         <ImageButton
-            android:id="@+id/dragButton"
-            style="@android:style/Widget.DeviceDefault.Light.ImageButton"
-            android:layout_width="40dp"
-            android:layout_height="50dp"
-            android:layout_column="2"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/profile_editor_drag_content_description"
-            android:padding="10dp"
-            android:scaleType="centerInside"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.936"
-            app:layout_constraintStart_toEndOf="@+id/deleteButton"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/drag_icon" />
+                android:id="@+id/dragButton"
+                style="@android:style/Widget.DeviceDefault.Light.ImageButton"
+                android:layout_width="40dp"
+                android:layout_height="50dp"
+                android:layout_column="2"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/profile_editor_drag_content_description"
+                android:padding="10dp"
+                android:scaleType="centerInside"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.936"
+                app:layout_constraintStart_toEndOf="@+id/deleteButton"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/drag_icon"/>
 
     </GridLayout>
-</android.support.v7.widget.CardView>
+
+    <View
+            android:background="@android:color/darker_gray"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"/>
+
+</LinearLayout>
