@@ -127,7 +127,7 @@ public class RecyclerListAdapter extends android.support.v7.widget.RecyclerView.
         alertDialogBuilder
                 .setMessage(String.format(getCallingContext().getString(R.string.profile_editor_delete_profile_alert_message), profileName))
                 .setCancelable(true)
-                .setPositiveButton(R.string.profile_editor_delete_profile_alert_delete_button, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.profile_editor_delete_profile_alert_button_delete, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         deleteItem(position);
                     }

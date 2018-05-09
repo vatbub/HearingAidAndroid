@@ -8,11 +8,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-
 import com.github.vatbub.hearingaid.ProfileManager;
 import com.github.vatbub.hearingaid.R;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class ProfileEditorActivity extends AppCompatActivity implements ProfileManager.ProfileManagerListener {
     private RecyclerListAdapter adapter;
@@ -54,9 +54,22 @@ public class ProfileEditorActivity extends AppCompatActivity implements ProfileM
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ProfileManager.getInstance(ProfileEditorActivity.this).createProfile("");
+                ProfileManager.getInstance(ProfileEditorActivity.this).createProfile(getNameForNewProfile());
             }
         });
+    }
+
+    private String getNameForNewProfile() {
+        String nameTemplate = getString(R.string.profile_editor_new_profile_default_name);
+        Pattern nameRegex = Pattern.compile(nameTemplate.replace("%1$d", "[0-9]*"));
+        List<ProfileManager.Profile> profiles = ProfileManager.getInstance(this).listProfiles();
+        int counter = 1;
+
+        for (ProfileManager.Profile profile : profiles) {
+            if (nameRegex.matcher(profile.getProfileName()).matches())
+                counter++;
+        }
+        return String.format(nameTemplate, counter);
     }
 
     @Override

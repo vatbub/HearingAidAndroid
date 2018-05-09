@@ -88,4 +88,5 @@
     <string name="profile_editor_delete_profile_alert_message">This will delete the profile %1$s permanently. Are you sure?</string>
     <string name="profile_editor_delete_profile_alert_button_delete">Delete</string>
     <string name="profile_editor_delete_profile_button_cancel">Cancel</string>
+    <string name="profile_editor_new_profile_default_name">New profile %1$d</string>
 </resources>
