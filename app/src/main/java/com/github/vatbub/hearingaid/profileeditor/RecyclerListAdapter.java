@@ -36,13 +36,14 @@ public class RecyclerListAdapter extends android.support.v7.widget.RecyclerView.
         ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(this);
         setItemTouchHelper(new ItemTouchHelper(callback));
         getItemTouchHelper().attachToRecyclerView(getParentView());
+
     }
 
     @NonNull
     @Override
     public ProfileViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.profile_editor_row, parent, false);
-        return new ProfileViewHolder(view);
+        return new ProfileViewHolder(view, this, getCallingContext());
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -82,6 +83,11 @@ public class RecyclerListAdapter extends android.support.v7.widget.RecyclerView.
         });
     }
 
+    @Override
+    public void onViewRecycled(@NonNull ProfileViewHolder holder) {
+        super.onViewRecycled(holder);
+        holder.recycle(getCallingContext());
+    }
 
     /**
      * Returns the total number of items in the data set held by the adapter.
