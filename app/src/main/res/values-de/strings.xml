@@ -84,4 +84,5 @@
     <string name="profile_editor_delete_profile_alert_button_delete">Löschen</string>
     <string name="profile_editor_delete_profile_button_cancel">Abbrechen</string>
     <string name="profile_editor_new_profile_default_name">Neues Profil %1$d</string>
+    <string name="profile_editor_delete_button_unable_to_delete">Das letzte Profil kann nicht gelöscht werden</string>
 </resources>

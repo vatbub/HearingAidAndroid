@@ -54,7 +54,6 @@
                 app:layout_constraintStart_toEndOf="@+id/profileNameTextView"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/delete_profile_icon"
-                android:tint="@drawable/disabled_tint_selector"
                 android:scaleX="0.8"
                 android:scaleY="0.8"/>
 

@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 import com.github.vatbub.hearingaid.ProfileManager;
 import com.github.vatbub.hearingaid.R;
 
@@ -43,7 +44,7 @@ public class RecyclerListAdapter extends android.support.v7.widget.RecyclerView.
     @Override
     public ProfileViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.profile_editor_row, parent, false);
-        return new ProfileViewHolder(view, this, getCallingContext());
+        return new ProfileViewHolder(view);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -70,6 +71,11 @@ public class RecyclerListAdapter extends android.support.v7.widget.RecyclerView.
         holder.getDeleteButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (getItemCount() == 1) {
+                    Toast.makeText(getCallingContext(), R.string.profile_editor_delete_button_unable_to_delete, Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 deleteItemWithAlert(holder.getAdapterPosition());
             }
         });
@@ -81,12 +87,6 @@ public class RecyclerListAdapter extends android.support.v7.widget.RecyclerView.
                 return false;
             }
         });
-    }
-
-    @Override
-    public void onViewRecycled(@NonNull ProfileViewHolder holder) {
-        super.onViewRecycled(holder);
-        holder.recycle(getCallingContext());
     }
 
     /**
