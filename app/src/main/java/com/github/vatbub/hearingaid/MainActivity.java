@@ -23,38 +23,25 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.SeekBar;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import android.widget.*;
 import com.crashlytics.android.Crashlytics;
-import com.github.vatbub.hearingaid.fragments.AboutFragment;
-import com.github.vatbub.hearingaid.fragments.PrivacyFragment;
-import com.github.vatbub.hearingaid.fragments.SettingsFragment;
-import com.github.vatbub.hearingaid.fragments.StreamingFragment;
+import com.github.vatbub.hearingaid.fragments.CustomFragment;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-
 import org.rm3l.maoni.Maoni;
 import org.rm3l.maoni.common.contract.Handler;
 import org.rm3l.maoni.common.model.Feedback;
 import org.rm3l.maoni.email.MaoniEmailListener;
+import ru.noties.markwon.Markwon;
 
 import java.io.IOException;
 import java.util.List;
-
-import ru.noties.markwon.Markwon;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback, ProfileManager.ProfileManagerListener, AdapterView.OnItemSelectedListener {
 
     private final static String CURRENT_FRAGMENT_TAG_KEY = "currentFragmentTag";
     private final static String CURRENT_PROFILE_KEY = "currentProfile";
-    private String currentFragmentTag;
+    private CustomFragment.FragmentTag currentFragmentTag;
     private ArrayAdapter<ProfileManager.Profile> profileAdapter;
     private boolean ignoreNextSpinnerSelection = false;
 
@@ -94,9 +81,9 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState == null) {
             navigationView.setCheckedItem(R.id.nav_streaming);
-            openFragment("streamingFragment", new StreamingFragment());
+            openFragment(CustomFragment.FragmentTag.STREAMING_FRAGMENT);
         } else {
-            currentFragmentTag = savedInstanceState.getString(CURRENT_FRAGMENT_TAG_KEY);
+            currentFragmentTag = CustomFragment.FragmentTag.valueOf(savedInstanceState.getString(CURRENT_FRAGMENT_TAG_KEY));
             updateSelectedItem(currentFragmentTag);
             updateTitle(currentFragmentTag);
         }
@@ -182,7 +169,7 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             try {
-                String fragmentTagAboutToBeOpened = getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 2).getName();
+                CustomFragment.FragmentTag fragmentTagAboutToBeOpened = CustomFragment.FragmentTag.valueOf(getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 2).getName());
                 Log.d(getClass().getName(), "Navigating back to fragment: " + fragmentTagAboutToBeOpened);
                 updateTitle(fragmentTagAboutToBeOpened);
                 updateSelectedItem(fragmentTagAboutToBeOpened);
@@ -203,18 +190,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(CURRENT_FRAGMENT_TAG_KEY, currentFragmentTag);
+        outState.putString(CURRENT_FRAGMENT_TAG_KEY, currentFragmentTag.toString());
         outState.putInt(CURRENT_PROFILE_KEY, ProfileManager.resetInstance(this));
         getIntent().putExtras(outState);
     }
@@ -226,9 +208,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_streaming) {
-            openFragment("streamingFragment", new StreamingFragment());
+            openFragment(CustomFragment.FragmentTag.STREAMING_FRAGMENT);
         } else if (id == R.id.nav_settings) {
-            openFragment("settingsFragment", new SettingsFragment());
+            openFragment(CustomFragment.FragmentTag.SETTINGS_FRAGMENT);
         } else if (id == R.id.nav_share) {
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
@@ -239,9 +221,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_feedback) {
             startFeedbackActivity();
         } else if (id == R.id.nav_privacy) {
-            openFragment("privacyFragment", new PrivacyFragment());
+            openFragment(CustomFragment.FragmentTag.PRIVACY_FRAGMENT);
         } else if (id == R.id.nav_about) {
-            openFragment("aboutFragment", new AboutFragment());
+            openFragment(CustomFragment.FragmentTag.ABOUT_FRAGMENT);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -255,7 +237,7 @@ public class MainActivity extends AppCompatActivity
         MarkdownRenderer.getInstance(this).prerender(R.raw.about);
     }
 
-    private void openFragment(String tag, Fragment initialFragmentInstance) {
+    private void openFragment(CustomFragment.FragmentTag tag) {
         // Insert the fragment by replacing any existing fragment
         /*FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
@@ -264,56 +246,56 @@ public class MainActivity extends AppCompatActivity
 */
 
         Log.d(getClass().getName(), "Opening fragment: " + tag);
-        Fragment fragmentToUse = getSupportFragmentManager().findFragmentByTag(tag);
+        Fragment fragmentToUse = getSupportFragmentManager().findFragmentByTag(tag.toString());
         boolean fragmentFound = fragmentToUse != null;
         if (!fragmentFound)
-            fragmentToUse = initialFragmentInstance;
+            fragmentToUse = CustomFragment.createInstance(tag);
 
         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        if (currentFragmentTag != null && getSupportFragmentManager().findFragmentByTag(currentFragmentTag) != null)
-            fragmentTransaction.hide(getSupportFragmentManager().findFragmentByTag(currentFragmentTag));
+        if (currentFragmentTag != null && getSupportFragmentManager().findFragmentByTag(currentFragmentTag.toString()) != null)
+            fragmentTransaction.hide(getSupportFragmentManager().findFragmentByTag(currentFragmentTag.toString()));
 
         if (fragmentFound)
             fragmentTransaction.show(fragmentToUse);
         else
-            fragmentTransaction.add(R.id.content, fragmentToUse, tag);
+            fragmentTransaction.add(R.id.content, fragmentToUse, tag.toString());
 
-        fragmentTransaction.addToBackStack(tag);
+        fragmentTransaction.addToBackStack(tag.toString());
         fragmentTransaction.commit();
         currentFragmentTag = tag;
 
         updateTitle(tag);
     }
 
-    private void updateTitle(String fragmentTag) {
+    private void updateTitle(CustomFragment.FragmentTag fragmentTag) {
         switch (fragmentTag) {
-            case "streamingFragment":
+            case STREAMING_FRAGMENT:
                 setTitle(getString(R.string.fragment_streaming_title));
                 break;
-            case "privacyFragment":
+            case PRIVACY_FRAGMENT:
                 setTitle(getString(R.string.fragment_privacy_title));
                 break;
-            case "aboutFragment":
+            case ABOUT_FRAGMENT:
                 setTitle(getString(R.string.fragment_about_title));
                 break;
-            case "settingsFragment":
+            case SETTINGS_FRAGMENT:
                 setTitle(getString(R.string.fragment_settings_title));
         }
     }
 
-    private void updateSelectedItem(String fragmentTag) {
+    private void updateSelectedItem(CustomFragment.FragmentTag fragmentTag) {
         NavigationView navigationView = findViewById(R.id.nav_view);
         switch (fragmentTag) {
-            case "streamingFragment":
+            case STREAMING_FRAGMENT:
                 navigationView.setCheckedItem(R.id.nav_streaming);
                 break;
-            case "privacyFragment":
+            case PRIVACY_FRAGMENT:
                 navigationView.setCheckedItem(R.id.nav_privacy);
                 break;
-            case "aboutFragment":
+            case ABOUT_FRAGMENT:
                 navigationView.setCheckedItem(R.id.nav_about);
                 break;
-            case "settingsFragment":
+            case SETTINGS_FRAGMENT:
                 navigationView.setCheckedItem(R.id.nav_settings);
         }
     }

@@ -34,4 +34,29 @@ public class CustomFragment extends Fragment {
     public <T extends View> T findViewById(@IdRes int id) {
         return createdView.findViewById(id);
     }
+
+    /**
+     * Creates an instance for the specified tag.
+     *
+     * @param fragmentTag The tag of the fragment to instantiate
+     * @return A new instance of the specified fragment
+     */
+    public static CustomFragment createInstance(FragmentTag fragmentTag) {
+        switch (fragmentTag) {
+            case ABOUT_FRAGMENT:
+                return new AboutFragment();
+            case PRIVACY_FRAGMENT:
+                return new PrivacyFragment();
+            case SETTINGS_FRAGMENT:
+                return new SettingsFragment();
+            case STREAMING_FRAGMENT:
+                return new StreamingFragment();
+        }
+
+        return null;
+    }
+
+    public enum FragmentTag {
+        ABOUT_FRAGMENT, PRIVACY_FRAGMENT, SETTINGS_FRAGMENT, STREAMING_FRAGMENT
+    }
 }
