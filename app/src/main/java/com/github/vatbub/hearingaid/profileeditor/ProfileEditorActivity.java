@@ -21,7 +21,6 @@ public class ProfileEditorActivity extends AppCompatActivity implements ProfileM
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_editor);
-        ProfileManager.getInstance(this).getChangeListeners().add(this);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -41,6 +40,12 @@ public class ProfileEditorActivity extends AppCompatActivity implements ProfileM
     protected void onPause() {
         super.onPause();
         ProfileManager.resetInstance(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ProfileManager.getInstance(this).getChangeListeners().add(this);
     }
 
     public RecyclerListAdapter getAdapter() {
