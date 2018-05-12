@@ -19,7 +19,9 @@
     <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="10dp">
 
 
         <EditText
@@ -29,7 +31,6 @@
                 android:layout_column="0"
                 android:layout_columnWeight="1"
                 android:layout_marginBottom="8dp"
-                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:gravity="center_vertical|start"
                 android:hint="@string/profile_editor_profile_name_hint"
@@ -64,18 +65,20 @@
                 android:layout_height="50dp"
                 android:layout_column="2"
                 android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
                 android:layout_marginTop="8dp"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/profile_editor_drag_content_description"
-                android:padding="10dp"
                 android:scaleType="centerInside"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.936"
                 app:layout_constraintStart_toEndOf="@+id/deleteButton"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/drag_icon"/>
+                app:srcCompat="@drawable/drag_icon"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"/>
 
     </GridLayout>
 
