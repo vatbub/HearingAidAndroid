@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import com.github.vatbub.hearingaid.ProfileManager;
 import com.github.vatbub.hearingaid.R;
 
@@ -50,18 +49,13 @@ public class ProfileEditorActivity extends AppCompatActivity implements ProfileM
 
     public RecyclerListAdapter getAdapter() {
         if (adapter == null)
-            adapter = new RecyclerListAdapter(this, this.<RecyclerView>findViewById(R.id.profile_editor_recycler_view));
+            adapter = new RecyclerListAdapter(this, this.findViewById(R.id.profile_editor_recycler_view));
         return adapter;
     }
 
     private void initButtonHandlers() {
         FloatingActionButton floatingActionButton = findViewById(R.id.profile_editor_floatingActionButton);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ProfileManager.getInstance(ProfileEditorActivity.this).createProfile(getNameForNewProfile());
-            }
-        });
+        floatingActionButton.setOnClickListener(v -> ProfileManager.getInstance(ProfileEditorActivity.this).createProfile(getNameForNewProfile()));
     }
 
     private String getNameForNewProfile() {

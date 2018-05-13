@@ -91,38 +91,35 @@ public class MainActivity extends AppCompatActivity
         RemoteConfig.initConfig();
 
         //  Declare a new thread to do a preference check
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                //  Initialize SharedPreferences
-                SharedPreferences getPrefs = PreferenceManager
-                        .getDefaultSharedPreferences(getBaseContext());
+        Thread t = new Thread(() -> {
+            //  Initialize SharedPreferences
+            SharedPreferences getPrefs = PreferenceManager
+                    .getDefaultSharedPreferences(getBaseContext());
 
-                //  Create a new boolean and preference and set it to true
-                boolean isFirstStart = getPrefs.getBoolean("firstStart", true);
+            //  Create a new boolean and preference and set it to true
+            boolean isFirstStart = getPrefs.getBoolean("firstStart", true);
 
-                //  If the activity has never started before...
-                if (isFirstStart) {
+            //  If the activity has never started before...
+            if (isFirstStart) {
 
-                    //  Launch app intro
-                    final Intent i = new Intent(MainActivity.this, IntroActivity.class);
+                //  Launch app intro
+                final Intent i = new Intent(MainActivity.this, IntroActivity.class);
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            startActivity(i);
-                        }
-                    });
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(i);
+                    }
+                });
 
-                    //  Make a new preferences editor
-                    SharedPreferences.Editor e = getPrefs.edit();
+                //  Make a new preferences editor
+                SharedPreferences.Editor e = getPrefs.edit();
 
-                    //  Edit preference to make it false because we don't want this to run again
-                    e.putBoolean("firstStart", false);
+                //  Edit preference to make it false because we don't want this to run again
+                e.putBoolean("firstStart", false);
 
-                    //  Apply changes
-                    e.apply();
-                }
+                //  Apply changes
+                e.apply();
             }
         });
 
@@ -186,11 +183,6 @@ public class MainActivity extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -394,12 +386,9 @@ public class MainActivity extends AppCompatActivity
                 audioLatencySeekbar[0] = view.findViewById(R.id.feedback_audio_latency_seekbar);
                 privacyCheckbox = view.findViewById(R.id.feedback_privacy_check_box);
                 Button viewPrivacyButton = view.findViewById(R.id.feedback_view_privacy_button);
-                viewPrivacyButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(MainActivity.this, FeedbackPrivacyActivity.class);
-                        startActivity(intent);
-                    }
+                viewPrivacyButton.setOnClickListener(v -> {
+                    Intent intent = new Intent(MainActivity.this, FeedbackPrivacyActivity.class);
+                    startActivity(intent);
                 });
             }
 

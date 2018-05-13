@@ -3,24 +3,17 @@ package com.github.vatbub.hearingaid;
 import android.content.Context;
 import android.support.annotation.RawRes;
 import android.util.SparseArray;
-
 import com.crashlytics.android.Crashlytics;
-
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.HashMap;
-import java.util.Map;
-
 import ru.noties.markwon.Markwon;
 import ru.noties.markwon.SpannableConfiguration;
 import ru.noties.markwon.renderer.SpannableRenderer;
 import ru.noties.markwon.spans.SpannableTheme;
+
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Wrapping class to prerender markdown to html
@@ -52,29 +45,25 @@ public class MarkdownRenderer {
     }
 
     public CharSequence getCachedRenderResult(@RawRes int markdownFile) throws IOException {
-        ResultStatus resultStatus = resultStatusArray.get(markdownFile, ResultStatus.NOT_STARTED);
-        if (resultStatus == ResultStatus.NOT_STARTED)
+        if (resultStatusArray.get(markdownFile, ResultStatus.NOT_STARTED) == ResultStatus.NOT_STARTED)
             return renderSynchronously(markdownFile);
 
 
-        while (resultStatus != ResultStatus.READY)
+        while (resultStatusArray.get(markdownFile, ResultStatus.NOT_STARTED) != ResultStatus.READY)
             System.out.println("Waiting for rendering to finish...");
 
         return results.get(markdownFile);
     }
 
     public void prerender(@RawRes final int markdownFile) {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    renderSynchronously(markdownFile);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Crashlytics.logException(e);
-                }
+        new Thread(() -> {
+            try {
+                renderSynchronously(markdownFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
-        }.start();
+        }).start();
     }
 
     private void createSpannableConfiguration() {

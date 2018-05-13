@@ -1,8 +1,5 @@
 package com.github.vatbub.hearingaid;
 
-import android.support.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
@@ -29,12 +26,7 @@ public class RemoteConfig {
 
         remoteConfig.setDefaults(defaults);
         Task<Void> fetchTask = remoteConfig.fetch();
-        fetchTask.addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                remoteConfig.activateFetched();
-            }
-        });
+        fetchTask.addOnCompleteListener(task -> remoteConfig.activateFetched());
     }
 
     /**

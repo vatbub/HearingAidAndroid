@@ -19,9 +19,9 @@ public class ProfileViewHolder extends RecyclerView.ViewHolder {
     public ProfileViewHolder(View itemView) {
         super(itemView);
         setItemView(itemView);
-        setDeleteButton(itemView.<ImageButton>findViewById(R.id.deleteButton));
-        setDragButton(itemView.<ImageButton>findViewById(R.id.dragButton));
-        setProfileNameTextView(itemView.<EditText>findViewById(R.id.profileNameTextView));
+        setDeleteButton(itemView.findViewById(R.id.deleteButton));
+        setDragButton(itemView.findViewById(R.id.dragButton));
+        setProfileNameTextView(itemView.findViewById(R.id.profileNameTextView));
     }
 
     public EditText getProfileNameTextView() {

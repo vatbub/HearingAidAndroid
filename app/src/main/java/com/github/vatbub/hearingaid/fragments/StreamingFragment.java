@@ -26,15 +26,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.TextView;
-
 import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.common.view.motd.PlatformIndependentMOTD;
-import com.github.vatbub.hearingaid.AndroidMOTDFileOutputStreamProvider;
-import com.github.vatbub.hearingaid.BottomSheetQueue;
-import com.github.vatbub.hearingaid.Constants;
-import com.github.vatbub.hearingaid.ProfileManager;
-import com.github.vatbub.hearingaid.R;
-import com.github.vatbub.hearingaid.RemoteConfig;
+import com.github.vatbub.hearingaid.*;
 import com.github.vatbub.hearingaid.backend.HearingAidPlaybackService;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.ohoussein.playpause.PlayPauseView;
@@ -121,20 +115,6 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
         // permission granted
         connectMediaBrowser();
         startStreamAfterConnectingToMediaBrowserService = true;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // if (superpoweredInitialized && isStreamingEnabled())
-        // onForeground();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        // if (superpoweredInitialized)
-        // onBackground();
     }
 
     @SuppressWarnings("RedundantIfStatement")

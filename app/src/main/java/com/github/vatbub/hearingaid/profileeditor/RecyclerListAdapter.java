@@ -2,7 +2,6 @@ package com.github.vatbub.hearingaid.profileeditor;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -68,24 +67,18 @@ public class RecyclerListAdapter extends android.support.v7.widget.RecyclerView.
                 profile.setProfileName(s.toString());
             }
         });
-        holder.getDeleteButton().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (getItemCount() == 1) {
-                    Toast.makeText(getCallingContext(), R.string.profile_editor_delete_button_unable_to_delete, Toast.LENGTH_LONG).show();
-                    return;
-                }
+        holder.getDeleteButton().setOnClickListener(v -> {
+            if (getItemCount() == 1) {
+                Toast.makeText(getCallingContext(), R.string.profile_editor_delete_button_unable_to_delete, Toast.LENGTH_LONG).show();
+                return;
+            }
 
-                deleteItemWithAlert(holder.getAdapterPosition());
-            }
+            deleteItemWithAlert(holder.getAdapterPosition());
         });
-        holder.getDragButton().setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN)
-                    getItemTouchHelper().startDrag(holder);
-                return false;
-            }
+        holder.getDragButton().setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN)
+                getItemTouchHelper().startDrag(holder);
+            return false;
         });
     }
 
@@ -133,22 +126,9 @@ public class RecyclerListAdapter extends android.support.v7.widget.RecyclerView.
         alertDialogBuilder
                 .setMessage(String.format(getCallingContext().getString(R.string.profile_editor_delete_profile_alert_message), profileName))
                 .setCancelable(true)
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        RecyclerListAdapter.this.notifyItemChanged(position);
-                    }
-                })
-                .setPositiveButton(R.string.profile_editor_delete_profile_alert_button_delete, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        deleteItem(position);
-                    }
-                })
-                .setNegativeButton(R.string.profile_editor_delete_profile_button_cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
+                .setOnDismissListener(dialog -> RecyclerListAdapter.this.notifyItemChanged(position))
+                .setPositiveButton(R.string.profile_editor_delete_profile_alert_button_delete, (dialog, id) -> deleteItem(position))
+                .setNegativeButton(R.string.profile_editor_delete_profile_button_cancel, (dialog, id) -> dialog.cancel());
 
         // create alert dialog
         AlertDialog alertDialog = alertDialogBuilder.create();

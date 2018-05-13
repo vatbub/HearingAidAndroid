@@ -3,9 +3,7 @@ package com.github.vatbub.hearingaid.com.github.vatbub.hearingaid;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.test.InstrumentationRegistry;
-
 import com.github.vatbub.hearingaid.ProfileManager;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -54,7 +52,7 @@ public class ProfileManagerTest {
         ProfileManager.getInstance(context).getChangeListeners().add(new ProfileManager.ProfileManagerListener() {
             @Override
             public void onProfileApplied(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
-                Assert.assertEquals(null, oldProfile);
+                Assert.assertNull(oldProfile);
                 Assert.assertEquals(profile, newProfile);
                 changeListenerCalled[0] = true;
             }
@@ -93,7 +91,7 @@ public class ProfileManagerTest {
         ProfileManager.getInstance(context).getChangeListeners().add(new ProfileManager.ProfileManagerListener() {
             @Override
             public void onProfileApplied(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
-                Assert.assertEquals(null, oldProfile);
+                Assert.assertNull(oldProfile);
                 Assert.assertEquals(profile, newProfile);
                 changeListenerCalled[0] = true;
             }
@@ -144,7 +142,7 @@ public class ProfileManagerTest {
         ProfileManager.getInstance(context).getChangeListeners().add(new ProfileManager.ProfileManagerListener() {
             @Override
             public void onProfileApplied(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
-                Assert.assertEquals(null, oldProfile);
+                Assert.assertNull(oldProfile);
                 Assert.assertEquals(profile1, newProfile);
 
                 ProfileManager.getInstance(context).getChangeListeners().remove(this);
@@ -354,7 +352,7 @@ public class ProfileManagerTest {
         ProfileManager.getInstance(context).getChangeListeners().add(new ProfileManager.ProfileManagerListener() {
             @Override
             public void onProfileApplied(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
-                Assert.assertEquals(null, oldProfile);
+                Assert.assertNull(oldProfile);
                 Assert.assertEquals(profile, newProfile);
                 changeListenerCalledCount[0]++;
             }
@@ -388,10 +386,10 @@ public class ProfileManagerTest {
         Assert.assertEquals(ProfileManager.EQ_ENABLED_DEFAULT_SETTING, profile.isEqEnabled());
 
         profile.setEqEnabled(true);
-        Assert.assertEquals(true, profile.isEqEnabled());
+        Assert.assertTrue(profile.isEqEnabled());
 
         profile.setEqEnabled(false);
-        Assert.assertEquals(false, profile.isEqEnabled());
+        Assert.assertFalse(profile.isEqEnabled());
     }
 
     @Test

@@ -240,20 +240,17 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
                 onPlay();
             }
         };
-        private AudioManager.OnAudioFocusChangeListener onAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
-            @Override
-            public void onAudioFocusChange(int focusChange) {
-                switch (focusChange) {
-                    case AudioManager.AUDIOFOCUS_LOSS:
-                        onStop();
-                        break;
-                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                        onPause();
-                        break;
-                    case AudioManager.AUDIOFOCUS_GAIN:
-                        onPlay();
-                }
+        private AudioManager.OnAudioFocusChangeListener onAudioFocusChangeListener = focusChange -> {
+            switch (focusChange) {
+                case AudioManager.AUDIOFOCUS_LOSS:
+                    onStop();
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                    onPause();
+                    break;
+                case AudioManager.AUDIOFOCUS_GAIN:
+                    onPlay();
             }
         };
 

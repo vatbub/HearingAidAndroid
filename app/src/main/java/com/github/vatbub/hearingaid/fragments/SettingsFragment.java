@@ -2,34 +2,15 @@ package com.github.vatbub.hearingaid.fragments;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatCheckBox;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.SeekBar;
-import android.widget.Spinner;
-import android.widget.Switch;
-import android.widget.TextView;
-
-import com.github.vatbub.hearingaid.CrashlyticsManager;
-import com.github.vatbub.hearingaid.FeedbackPrivacyActivity;
-import com.github.vatbub.hearingaid.MainActivity;
-import com.github.vatbub.hearingaid.ProfileManager;
-import com.github.vatbub.hearingaid.R;
-import com.github.vatbub.hearingaid.RemoteConfig;
+import android.view.*;
+import android.widget.*;
+import com.github.vatbub.hearingaid.*;
 import com.github.vatbub.hearingaid.profileeditor.ProfileEditorActivity;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar;
@@ -106,37 +87,28 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
 
     private void initButtonHandlers() {
         Switch eqSwitch = findViewById(R.id.eq_on_off_switch);
-        eqSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                ProfileManager.Profile currentProfile = ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile();
-                if (currentProfile != null)
-                    currentProfile.setEqEnabled(checked);
+        eqSwitch.setOnCheckedChangeListener((compoundButton, checked) -> {
+            ProfileManager.Profile currentProfile = ProfileManager.getInstance(getActivity()).getCurrentlyActiveProfile();
+            if (currentProfile != null)
+                currentProfile.setEqEnabled(checked);
 
-                updateEQViewEnabledStatus(checked);
+            updateEQViewEnabledStatus(checked);
 
-                StreamingFragment streamingFragment = (StreamingFragment) getActivity().getSupportFragmentManager().findFragmentByTag("streamingFragment");
-                if (streamingFragment != null)
-                    streamingFragment.notifyEQEnabledSettingChanged();
-            }
+            StreamingFragment streamingFragment = (StreamingFragment) getActivity().getSupportFragmentManager().findFragmentByTag("streamingFragment");
+            if (streamingFragment != null)
+                streamingFragment.notifyEQEnabledSettingChanged();
         });
 
         AppCompatCheckBox crashReportsEnabledCheckBox = findViewById(R.id.enableCrashReportsCheckBox);
-        crashReportsEnabledCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                CrashlyticsManager.getInstance(getContext()).setCrashlyticsEnabled(isChecked);
-                showRestartDialog();
-            }
+        crashReportsEnabledCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            CrashlyticsManager.getInstance(getContext()).setCrashlyticsEnabled(isChecked);
+            showRestartDialog();
         });
 
         Button viewPrivacyStatementButton = findViewById(R.id.fragment_settings_view_privacy_button);
-        viewPrivacyStatementButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), FeedbackPrivacyActivity.class);
-                startActivity(intent);
-            }
+        viewPrivacyStatementButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), FeedbackPrivacyActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -150,16 +122,8 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
         alertDialogBuilder
                 .setMessage(R.string.fragment_settings_restart_alert_message)
                 .setCancelable(true)
-                .setPositiveButton(R.string.fragment_settings_restart_alert_restart_button, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        restartApp();
-                    }
-                })
-                .setNegativeButton(R.string.fragment_settings_restart_alert_cancel_button, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
+                .setPositiveButton(R.string.fragment_settings_restart_alert_restart_button, (dialog, id) -> restartApp())
+                .setNegativeButton(R.string.fragment_settings_restart_alert_cancel_button, (dialog, id) -> dialog.cancel());
 
         // create alert dialog
         AlertDialog alertDialog = alertDialogBuilder.create();
@@ -247,12 +211,9 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
     private void animateSeekbar(final SeekBar seekBar, int toValue) {
         ValueAnimator anim = ValueAnimator.ofInt(seekBar.getProgress(), toValue);
         anim.setDuration(400);
-        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                int animProgress = (Integer) animation.getAnimatedValue();
-                seekBar.setProgress(animProgress);
-            }
+        anim.addUpdateListener(animation -> {
+            int animProgress = (Integer) animation.getAnimatedValue();
+            seekBar.setProgress(animProgress);
         });
         anim.start();
     }
