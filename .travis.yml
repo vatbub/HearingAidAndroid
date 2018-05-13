@@ -1,4 +1,7 @@
 language: android
+branches:
+  only:
+  - master
 android:
   components:
   - build-tools-26.0.2
