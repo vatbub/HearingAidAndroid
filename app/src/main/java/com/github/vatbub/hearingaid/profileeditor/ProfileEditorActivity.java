@@ -10,7 +10,10 @@ import android.support.v7.widget.Toolbar;
 import com.github.vatbub.hearingaid.ProfileManager;
 import com.github.vatbub.hearingaid.R;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ProfileEditorActivity extends AppCompatActivity implements ProfileManager.ProfileManagerListener {
@@ -60,15 +63,40 @@ public class ProfileEditorActivity extends AppCompatActivity implements ProfileM
 
     private String getNameForNewProfile() {
         String nameTemplate = getString(R.string.profile_editor_new_profile_default_name);
-        Pattern nameRegex = Pattern.compile(nameTemplate.replace("%1$d", "[0-9]*"));
+        Pattern numberRegex = Pattern.compile("[0-9]+");
+        Pattern nameRegex = Pattern.compile(nameTemplate.replace("%1$d", numberRegex.pattern()));
         List<ProfileManager.Profile> profiles = ProfileManager.getInstance(this).listProfiles();
-        int counter = 1;
+
+        ArrayList<Long> numbers = new ArrayList<>(profiles.size());
 
         for (ProfileManager.Profile profile : profiles) {
-            if (nameRegex.matcher(profile.getProfileName()).matches())
-                counter++;
+            if (nameRegex.matcher(profile.getProfileName()).matches()) {
+                Matcher matcher = numberRegex.matcher(profile.getProfileName());
+                if (matcher.find())
+                    numbers.add(Long.parseLong(matcher.group(0)));
+            }
         }
-        return String.format(nameTemplate, counter);
+
+        Collections.sort(numbers);
+
+
+        long finalProfileNumber = numbers.get(numbers.size() - 1) + 1;
+        long previousValue = -1;
+        int skipCounter = 0;
+        for (int i = 0; i < numbers.size(); i++) {
+            if (numbers.get(i) == previousValue) {
+                skipCounter++;
+                continue;
+            }
+
+            if (numbers.get(i) != i + 1 - skipCounter) {
+                finalProfileNumber = i + 1 - skipCounter;
+                break;
+            }
+            previousValue = numbers.get(i);
+        }
+
+        return String.format(nameTemplate, finalProfileNumber);
     }
 
     @Override
