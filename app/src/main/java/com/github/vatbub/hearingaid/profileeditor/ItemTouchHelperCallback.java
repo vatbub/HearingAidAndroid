@@ -122,6 +122,8 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
                     (float) itemView.getRight(), (float) itemView.getBottom(), paintForViewUnderSwipe);
             c.drawBitmap(deleteIconUnderSwipe, (float) itemView.getRight() - convertDpToPx(16) - deleteIconUnderSwipe.getWidth(), (float) itemView.getTop() + ((float) itemView.getBottom() - (float) itemView.getTop() - deleteIconUnderSwipe.getHeight()) / 2, paintForViewUnderSwipe);
         }
+
+        itemView.setTranslationX(dX);
     }
 
     private int convertDpToPx(int dp) {
