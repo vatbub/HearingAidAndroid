@@ -18,7 +18,6 @@ import com.github.vatbub.hearingaid.R;
  */
 
 public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
-    public static final float ALPHA_FULL = 1.0f;
     private OnMoveAndSwipedListener moveAndSwipedListener;
     private Context callingContext;
     private Paint paintForViewUnderSwipe;
