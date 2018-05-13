@@ -34,7 +34,7 @@ public class RecyclerListAdapter extends android.support.v7.widget.RecyclerView.
         setCallingContext(callingContext);
         setParentView(parentView);
 
-        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(this);
+        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(this, getCallingContext());
         setItemTouchHelper(new ItemTouchHelper(callback));
         getItemTouchHelper().attachToRecyclerView(getParentView());
 
