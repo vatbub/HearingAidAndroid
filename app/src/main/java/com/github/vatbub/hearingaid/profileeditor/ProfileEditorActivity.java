@@ -80,20 +80,25 @@ public class ProfileEditorActivity extends AppCompatActivity implements ProfileM
         Collections.sort(numbers);
 
 
-        long finalProfileNumber = numbers.get(numbers.size() - 1) + 1;
-        long previousValue = -1;
-        int skipCounter = 0;
-        for (int i = 0; i < numbers.size(); i++) {
-            if (numbers.get(i) == previousValue) {
-                skipCounter++;
-                continue;
-            }
+        long finalProfileNumber;
+        if (numbers.size() == 0) {
+            finalProfileNumber = 1;
+        } else {
+            finalProfileNumber = numbers.get(numbers.size() - 1) + 1;
+            long previousValue = -1;
+            int skipCounter = 0;
+            for (int i = 0; i < numbers.size(); i++) {
+                if (numbers.get(i) == previousValue) {
+                    skipCounter++;
+                    continue;
+                }
 
-            if (numbers.get(i) != i + 1 - skipCounter) {
-                finalProfileNumber = i + 1 - skipCounter;
-                break;
+                if (numbers.get(i) != i + 1 - skipCounter) {
+                    finalProfileNumber = i + 1 - skipCounter;
+                    break;
+                }
+                previousValue = numbers.get(i);
             }
-            previousValue = numbers.get(i);
         }
 
         return String.format(nameTemplate, finalProfileNumber);
