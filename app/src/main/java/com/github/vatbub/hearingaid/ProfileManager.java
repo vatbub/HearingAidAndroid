@@ -10,9 +10,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 /**
- * Manages the settings profiles (EQ on/off, eq setting, ...)
+ * Manages the settings profiles (EQ on/off, eq setting, ...).<br>
+ * <br>
+ * Instances of this class are always tied to the calling {@link Context}. All instances use the same SharedPreferences,
+ * therefore, all changes performed in one instance of this class will affect the data returned by all other instances.
+ * Only data which is kept in the RAM is specific to each instance. Read the Javadoc of the getters to see which data is
+ * shared across instances and which isn't.<br>
+ * <br>
+ * This class is threadsafe.
  */
-
 public class ProfileManager {
     public static final String SETTINGS_SHARED_PREFERENCES_NAME = "hearingAidSettings";
     public static final String PROFILE_NAME_PREF_KEY = "profileName";
@@ -33,6 +39,17 @@ public class ProfileManager {
         setCallingContext(callingContext);
     }
 
+    /**
+     * Gets the instance associated with the specified context. Calling {@code getInstance(context)} multiple times
+     * while supplying the same context will result in the same {@link ProfileManager} to be returned (singleton behaviour).<br>
+     * <br>
+     * <b>IMPORTANT:</b> The {@link ProfileManager} class only stores minimal information in RAM, most of its information is
+     * instantly written to/read from the application's {@link SharedPreferences}. Nonetheless, please call {@link #resetInstance(Context)}
+     * once the specified context is recycled to clean up memory.
+     *
+     * @param callingContext The context to get the {@link ProfileManager} for.
+     * @return The {@link ProfileManager} for the specified context.
+     */
     public static ProfileManager getInstance(@NotNull Context callingContext) {
         synchronized (instances) {
             if (!instances.containsKey(callingContext))
@@ -42,6 +59,14 @@ public class ProfileManager {
         }
     }
 
+    /**
+     * Resets the instance for the specified context. That means that all RAM memory used by that instance is released.
+     * The next call to {@link #getInstance(Context)} will create a new instance for the specified context.
+     * Call this method when the supplied context is about to be recycled.
+     *
+     * @param callingActivity The context to reset the instance for.
+     * @return The id of the currently active {@link Profile}
+     */
     public static int resetInstance(Context callingActivity) {
         synchronized (instances) {
             int res = -1;
@@ -63,10 +88,21 @@ public class ProfileManager {
         return res;
     }
 
+    /**
+     * Returns the {@link ProfileManagerListener}s currently registered for this {@link ProfileManager}.
+     * The content of this list is not shared across instances. Nevertheless, all listeners will listen for changes in any instance.
+     *
+     * @return the {@link ProfileManagerListener}s currently registered for this {@link ProfileManager}.
+     */
     public List<ProfileManagerListener> getChangeListeners() {
         return changeListeners;
     }
 
+    /**
+     * Returns the currently active {@link Profile}. This data is <i>NOT</i> shared across instances.
+     *
+     * @return the currently active {@link Profile}.
+     */
     @Nullable
     public Profile getCurrentlyActiveProfile() {
         return currentlyActiveProfile;
@@ -76,6 +112,12 @@ public class ProfileManager {
         this.currentlyActiveProfile = currentlyActiveProfile;
     }
 
+    /**
+     * Returns a list of all available {@link Profile}s. This data <i>is</i> shared across instances.
+     * This data <i>is</i> shared across instances.
+     *
+     * @return a list of all available {@link Profile}s.
+     */
     public List<Profile> listProfiles() {
         List<Profile> res = new ArrayList<>();
         for (int id : getIDs()) {
@@ -85,6 +127,13 @@ public class ProfileManager {
         return res;
     }
 
+    /**
+     * Sets the sorting order of profiles. {@link #listProfiles()} will return the profiles in that order.
+     * This data <i>is</i> shared across instances.
+     *
+     * @param newOrder The new ordering of the profiles. NOTE: {@code newOrder} must contain all available profiles and
+     *                 may not contain any extra profiles (i. e. its contents must be identical to {@link #listProfiles()} except for the order)
+     */
     public void setOrder(List<Profile> newOrder) {
         List<Profile> currentOrder = listProfiles();
         if (!ListUtils.getInstance().isListEqualsWithoutOrder(currentOrder, newOrder))
@@ -97,10 +146,20 @@ public class ProfileManager {
             changeListener.onSortOrderChanged(currentOrder, newOrder);
     }
 
+    /**
+     * Applies the profile with the specified id. This data is <i>NOT</i> shared across instances.
+     *
+     * @param id The id of the profile to apply.
+     */
     public void applyProfile(int id) {
         applyProfile(new Profile(id));
     }
 
+    /**
+     * Applies the specified profile. This data is <i>NOT</i> shared across instances.
+     *
+     * @param profileToBeApplied The profile to be applied.
+     */
     public void applyProfile(@Nullable Profile profileToBeApplied) {
         Profile previousProfile = getCurrentlyActiveProfile();
 
@@ -114,6 +173,12 @@ public class ProfileManager {
         }
     }
 
+    /**
+     * Creates a new profile with the specified name. This data <i>is</i> shared across instances.
+     *
+     * @param profileName The name of the profile to create.
+     * @return The new profile.
+     */
     public Profile createProfile(String profileName) {
         Profile res = new Profile(profileName);
         for (ProfileManagerListener changeListener : getChangeListenersForAllInstances()) {
@@ -122,6 +187,11 @@ public class ProfileManager {
         return res;
     }
 
+    /**
+     * Deletes the specified profile. This data <i>is</i> shared across instances.
+     *
+     * @param profile The profile to be deleted.
+     */
     public void deleteProfile(Profile profile) {
         if (profile.isActive())
             applyProfile(null);
@@ -136,6 +206,11 @@ public class ProfileManager {
         setIDs(ids);
     }
 
+    /**
+     * Returns the context tied to this instance.
+     *
+     * @return the context tied to this instance.
+     */
     @NotNull
     public Context getCallingContext() {
         return callingContext;
@@ -180,6 +255,12 @@ public class ProfileManager {
         return getCallingContext().getSharedPreferences(SETTINGS_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
 
+    /**
+     * Returns the position of the specified profile in {@link #listProfiles()}
+     *
+     * @param profile The profile to get the position for.
+     * @return The position of the specified profile in {@link #listProfiles()}
+     */
     public int getPosition(Profile profile) {
         List<Profile> profiles = listProfiles();
         for (int i = 0; i < profiles.size(); i++) {
@@ -211,14 +292,35 @@ public class ProfileManager {
         return profiles.get(profiles.size() - 1).getSortPosition() + 1;
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    /**
+     * Checks whether the specified id points to an existing profile. This data is <i>NOT</i> shared across instances.
+     *
+     * @param id The id to check.
+     * @return {@code true} if the specified profile exists, {@code false} otherwise.
+     */
     public boolean profileExists(int id) {
         return getIDs().contains(id);
     }
 
+    /**
+     * Listens to changes in the profile manager.<br>
+     * <b>IMPORTANT NOTE:</b> {@code ProfileManagerListener}s are specific to each instance. However, all listeners will listen for changes in all instances.
+     * This ensures that any listener will be notified about any change in the data.
+     */
     public interface ProfileManagerListener {
+        /**
+         * Called <i>after</i> a new {@link Profile} has been applied.
+         *
+         * @param oldProfile The profile that was previously applied
+         * @param newProfile The newly applied profile.
+         */
         void onProfileApplied(@Nullable Profile oldProfile, @Nullable Profile newProfile);
 
+        /**
+         * Called <i>after</i> a new {@link Profile} has been created.
+         *
+         * @param newProfile The newly created profile.
+         */
         void onProfileCreated(Profile newProfile);
 
         /**
@@ -228,6 +330,12 @@ public class ProfileManager {
          */
         void onProfileDeleted(Profile deletedProfile);
 
+        /**
+         * Called <i>after</i> a new sort order has been applied using {@link #setOrder(List)}.
+         *
+         * @param previousOrder The previous order.
+         * @param newOrder      The new order.
+         */
         void onSortOrderChanged(List<Profile> previousOrder, List<Profile> newOrder);
     }
 
@@ -235,6 +343,18 @@ public class ProfileManager {
         void setSetting(SharedPreferences.Editor editor);
     }
 
+    /**
+     * Represents a settings profile. Data retrieved from and supplied to this class is instantly read from/written to
+     * permanent memory, no additional serialization required.<br>
+     * <br>
+     * <b>IMPORTANT NOTE:</b> The {@code Profile} class stores all of its data in the SharedPreferences.
+     * Hence, multiple instances of the {@code Profile} class will all modify the same data as long as they
+     * point to the same profile id.
+     *
+     * @see #getId()
+     * @see #createProfile(String)
+     * @see #deleteProfile(Profile)
+     */
     public class Profile implements Comparable<Profile> {
         private int id;
 
@@ -270,10 +390,22 @@ public class ProfileManager {
                 throw new IndexOutOfBoundsException("The profile with the id " + id + " does not exist anymore or has never existed. Maybe it was deleted in the meanwhile?");
         }
 
+        /**
+         * Convenience method, same as {@link #profileExists(int)}
+         *
+         * @return See {@link #profileExists(int)}
+         */
         public boolean exists() {
             return profileExists(getId());
         }
 
+        /**
+         * Returns the sorting position of this profile. Usually, you don't need to call this method directly as
+         * {@link #listProfiles()} already sorts the profiles according to the sort order specified here.
+         * @return the sorting position of this profile.
+         * @see #listProfiles()
+         * @see #setOrder(List)
+         */
         public int getSortPosition() {
             throwIfProfileDoesNotExist();
             return getPrefs().getInt(generateProfilePrefKey(PROFILE_SORT_PREF_KEY), -1);
@@ -283,20 +415,32 @@ public class ProfileManager {
             setIntegerSetting(PROFILE_SORT_PREF_KEY, sortPosition);
         }
 
+        /**
+         * Returns an unmodifiable list of equalizer settings.
+         * @return an unmodifiable list of equalizer settings.
+         */
         public List<Float> getEQSettings() {
             throwIfProfileDoesNotExist();
             return Collections.unmodifiableList(getModifiableEQSettings());
         }
 
+        /**
+         * Sets the equalizer settings.
+         * @param eqSettings The settings to save
+         */
         public void setEQSettings(List<Float> eqSettings) {
             throwIfProfileDoesNotExist();
             deleteAllEqSettings();
 
             for (int i = 0; i < eqSettings.size(); i++) {
-                setEQSettings(i, eqSettings.get(i));
+                setEQSetting(i, eqSettings.get(i));
             }
         }
 
+        /**
+         * Returns a modifiable list of equalizer settings. <b>IMPORTANT:</b> Call {@link EQSettingsList#apply()} to save your modifications.
+         * @return a modifiable list of equalizer settings.
+         */
         public EQSettingsList getModifiableEQSettings() {
             throwIfProfileDoesNotExist();
             EQSettingsList res = new EQSettingsList();
@@ -307,7 +451,13 @@ public class ProfileManager {
             return res;
         }
 
-        public void setEQSettings(int index, float value) {
+        /**
+         * Sets one particular equalizer setting. <b>IMPORTANT: </b> Cannot create new eq settings, use {@link #setEQSettings(List)} to do so.
+         *
+         * @param index The index of the eq setting to modify.
+         * @param value The new value.
+         */
+        public void setEQSetting(int index, float value) {
             throwIfProfileDoesNotExist();
             int eqCount = getEQSettings().size();
             if (eqCount > index)
@@ -354,11 +504,19 @@ public class ProfileManager {
             return res;
         }
 
+        /**
+         * Returns whether the user enabled the equalizer.
+         * @return whether the user enabled the equalizer.
+         */
         public boolean isEqEnabled() {
             throwIfProfileDoesNotExist();
             return getPrefs().getBoolean(generateProfilePrefKey(EQ_ENABLED_PREF_KEY), EQ_ENABLED_DEFAULT_SETTING);
         }
 
+        /**
+         * Saves whether the user wants the equalizer to be enabled.
+         * @param eqEnabled The new value.
+         */
         public void setEqEnabled(boolean eqEnabled) {
             setBooleanSetting(EQ_ENABLED_PREF_KEY, eqEnabled);
         }
@@ -381,10 +539,18 @@ public class ProfileManager {
             setFloatSetting(HIGHER_HEARING_THRESHOLD_PREF_KEY, higherHearingThreshold);
         }
 
+        /**
+         * Returns the name of the profile.
+         * @return the name of the profile.
+         */
         public String getProfileName() {
             return getPrefs().getString(generateProfilePrefKey(PROFILE_NAME_PREF_KEY), null);
         }
 
+        /**
+         * Sets the name of this profile. Profiles may have duplicate names and may contain any characters which can be represented by a java string.
+         * @param profileName The profile name to set
+         */
         public void setProfileName(String profileName) {
             setStringSetting(PROFILE_NAME_PREF_KEY, profileName);
         }
@@ -435,6 +601,10 @@ public class ProfileManager {
             deleteSetting(PROFILE_NAME_PREF_KEY);
         }
 
+        /**
+         * Returns {@code true} if this profile is the currently active profile in the related ProfileManager.
+         * @return {@code true} if this profile is the currently active profile in the related ProfileManager.
+         */
         public boolean isActive() {
             return getCurrentlyActiveProfile() != null && getCurrentlyActiveProfile().equals(this);
         }
