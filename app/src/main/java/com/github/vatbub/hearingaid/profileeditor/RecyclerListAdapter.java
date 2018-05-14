@@ -50,8 +50,9 @@ public class RecyclerListAdapter extends android.support.v7.widget.RecyclerView.
     @Override
     public void onBindViewHolder(@NonNull final ProfileViewHolder holder, int position) {
         final ProfileManager.Profile profile = ProfileManager.getInstance(getCallingContext()).listProfiles().get(position);
+        holder.removeAllTextWatchersFromProfileNameTextView();
         holder.getProfileNameTextView().setText(profile.getProfileName());
-        holder.getProfileNameTextView().addTextChangedListener(new TextWatcher() {
+        holder.addTextWatcherToProfileNameTextBox(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -64,7 +65,8 @@ public class RecyclerListAdapter extends android.support.v7.widget.RecyclerView.
 
             @Override
             public void afterTextChanged(Editable s) {
-                profile.setProfileName(s.toString());
+                if (profile.exists())
+                    profile.setProfileName(s.toString());
             }
         });
         holder.getDeleteButton().setOnClickListener(v -> {
@@ -145,7 +147,6 @@ public class RecyclerListAdapter extends android.support.v7.widget.RecyclerView.
         ProfileManager.getInstance(getCallingContext()).deleteProfile(profile);
         notifyItemRemoved(position);
     }
-
 
     public ItemTouchHelper getItemTouchHelper() {
         return itemTouchHelper;
