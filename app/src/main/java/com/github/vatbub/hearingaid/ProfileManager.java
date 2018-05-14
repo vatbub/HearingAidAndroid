@@ -211,6 +211,7 @@ public class ProfileManager {
         return profiles.get(profiles.size() - 1).getSortPosition() + 1;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean profileExists(int id) {
         return getIDs().contains(id);
     }
@@ -230,6 +231,10 @@ public class ProfileManager {
         void onSortOrderChanged(List<Profile> previousOrder, List<Profile> newOrder);
     }
 
+    private interface SetSettingRunnable {
+        void setSetting(SharedPreferences.Editor editor);
+    }
+
     public class Profile implements Comparable<Profile> {
         private int id;
 
@@ -240,8 +245,8 @@ public class ProfileManager {
          */
         private Profile(String profileName) {
             setId(getNextProfileId());
-            setSortPosition(getNextSortPos());
             saveProfile(this);
+            setSortPosition(getNextSortPos());
             setProfileName(profileName);
         }
 
@@ -251,28 +256,40 @@ public class ProfileManager {
          * @param id The id of the profile to load.
          */
         public Profile(int id) {
-            if (!profileExists(id))
-                throw new IndexOutOfBoundsException();
+            throwIfProfileDoesNotExist(id);
 
             setId(id);
         }
 
+        private void throwIfProfileDoesNotExist() {
+            throwIfProfileDoesNotExist(getId());
+        }
+
+        private void throwIfProfileDoesNotExist(int id) {
+            if (!profileExists(id))
+                throw new IndexOutOfBoundsException("The profile with the id " + id + " does not exist anymore or has never existed. Maybe it was deleted in the meanwhile?");
+        }
+
+        public boolean exists() {
+            return profileExists(getId());
+        }
+
         public int getSortPosition() {
+            throwIfProfileDoesNotExist();
             return getPrefs().getInt(generateProfilePrefKey(PROFILE_SORT_PREF_KEY), -1);
         }
 
         private void setSortPosition(int sortPosition) {
-            SharedPreferences prefs = getPrefs();
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putInt(generateProfilePrefKey(PROFILE_SORT_PREF_KEY), sortPosition);
-            editor.apply();
+            setIntegerSetting(PROFILE_SORT_PREF_KEY, sortPosition);
         }
 
         public List<Float> getEQSettings() {
+            throwIfProfileDoesNotExist();
             return Collections.unmodifiableList(getModifiableEQSettings());
         }
 
         public void setEQSettings(List<Float> eqSettings) {
+            throwIfProfileDoesNotExist();
             deleteAllEqSettings();
 
             for (int i = 0; i < eqSettings.size(); i++) {
@@ -281,6 +298,7 @@ public class ProfileManager {
         }
 
         public EQSettingsList getModifiableEQSettings() {
+            throwIfProfileDoesNotExist();
             EQSettingsList res = new EQSettingsList();
             SharedPreferences prefs = getPrefs();
             for (int i = 0; prefs.contains(generateEqPrefKey(i)); i++) {
@@ -290,6 +308,7 @@ public class ProfileManager {
         }
 
         public void setEQSettings(int index, float value) {
+            throwIfProfileDoesNotExist();
             int eqCount = getEQSettings().size();
             if (eqCount > index)
                 throw new ArrayIndexOutOfBoundsException("EQ index was out of range: index = " + index + ", current eq count = " + eqCount);
@@ -301,14 +320,17 @@ public class ProfileManager {
         }
 
         private String generateEqPrefKey(int index) {
+            throwIfProfileDoesNotExist();
             return generateProfilePrefKey(EQ_SETTING_PREF_KEY) + "_" + index;
         }
 
         private String generateProfilePrefKey(String prefKey) {
+            throwIfProfileDoesNotExist();
             return getId() + "." + prefKey;
         }
 
-        public void deleteAllEqSettings() {
+        private void deleteAllEqSettings() {
+            throwIfProfileDoesNotExist();
             boolean cont = true;
             for (int i = 0; cont; i++) {
                 cont = deleteEqSetting(i);
@@ -322,6 +344,7 @@ public class ProfileManager {
          * @return {@code true} if the setting was actually deleted, {@code false} if not (e. g. because it was never defined).
          */
         private boolean deleteEqSetting(int index) {
+            throwIfProfileDoesNotExist();
             SharedPreferences prefs = getPrefs();
             boolean res = prefs.contains(generateEqPrefKey(index));
             SharedPreferences.Editor editor = prefs.edit();
@@ -332,65 +355,30 @@ public class ProfileManager {
         }
 
         public boolean isEqEnabled() {
-            SharedPreferences prefs = getPrefs();
-            return prefs.getBoolean(generateProfilePrefKey(EQ_ENABLED_PREF_KEY), EQ_ENABLED_DEFAULT_SETTING);
+            throwIfProfileDoesNotExist();
+            return getPrefs().getBoolean(generateProfilePrefKey(EQ_ENABLED_PREF_KEY), EQ_ENABLED_DEFAULT_SETTING);
         }
 
         public void setEqEnabled(boolean eqEnabled) {
-            SharedPreferences prefs = getPrefs();
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean(generateProfilePrefKey(EQ_ENABLED_PREF_KEY), eqEnabled);
-            editor.apply();
+            setBooleanSetting(EQ_ENABLED_PREF_KEY, eqEnabled);
         }
 
         public float getLowerHearingThreshold() {
+            throwIfProfileDoesNotExist();
             return getPrefs().getFloat(generateProfilePrefKey(LOWER_HEARING_THRESHOLD_PREF_KEY), -1);
         }
 
         public void setLowerHearingThreshold(float lowerHearingThreshold) {
-            SharedPreferences prefs = getPrefs();
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putFloat(generateProfilePrefKey(LOWER_HEARING_THRESHOLD_PREF_KEY), lowerHearingThreshold);
-            editor.apply();
-        }
-
-        public void deleteLowerHearingThreshold() {
-            SharedPreferences prefs = getPrefs();
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.remove(generateProfilePrefKey(LOWER_HEARING_THRESHOLD_PREF_KEY));
-            editor.apply();
+            setFloatSetting(LOWER_HEARING_THRESHOLD_PREF_KEY, lowerHearingThreshold);
         }
 
         public float getHigherHearingThreshold() {
+            throwIfProfileDoesNotExist();
             return getPrefs().getFloat(generateProfilePrefKey(HIGHER_HEARING_THRESHOLD_PREF_KEY), -1);
         }
 
         public void setHigherHearingThreshold(float higherHearingThreshold) {
-            SharedPreferences prefs = getPrefs();
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putFloat(generateProfilePrefKey(HIGHER_HEARING_THRESHOLD_PREF_KEY), higherHearingThreshold);
-            editor.apply();
-        }
-
-        public void deleteHigherHearingThreshold() {
-            SharedPreferences prefs = getPrefs();
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.remove(generateProfilePrefKey(HIGHER_HEARING_THRESHOLD_PREF_KEY));
-            editor.apply();
-        }
-
-        public void deleteEqEnabled() {
-            SharedPreferences prefs = getPrefs();
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.remove(generateProfilePrefKey(EQ_ENABLED_PREF_KEY));
-            editor.apply();
-        }
-
-        public void deleteSortPosition() {
-            SharedPreferences prefs = getPrefs();
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.remove(generateProfilePrefKey(PROFILE_SORT_PREF_KEY));
-            editor.apply();
+            setFloatSetting(HIGHER_HEARING_THRESHOLD_PREF_KEY, higherHearingThreshold);
         }
 
         public String getProfileName() {
@@ -398,9 +386,40 @@ public class ProfileManager {
         }
 
         public void setProfileName(String profileName) {
+            setStringSetting(PROFILE_NAME_PREF_KEY, profileName);
+        }
+
+        private void deleteSetting(String settingPrefKey) {
+            throwIfProfileDoesNotExist();
             SharedPreferences prefs = getPrefs();
             SharedPreferences.Editor editor = prefs.edit();
-            editor.putString(generateProfilePrefKey(PROFILE_NAME_PREF_KEY), profileName);
+            editor.remove(generateProfilePrefKey(settingPrefKey));
+            editor.apply();
+        }
+
+        private void setFloatSetting(String prefKey, float value) {
+            setSetting(editor -> editor.putFloat(generateProfilePrefKey(prefKey), value));
+        }
+
+        @SuppressWarnings("SameParameterValue")
+        private void setStringSetting(String prefKey, String value) {
+            setSetting(editor -> editor.putString(generateProfilePrefKey(prefKey), value));
+        }
+
+        @SuppressWarnings("SameParameterValue")
+        private void setBooleanSetting(String prefKey, boolean value) {
+            setSetting(editor -> editor.putBoolean(generateProfilePrefKey(prefKey), value));
+        }
+
+        @SuppressWarnings("SameParameterValue")
+        private void setIntegerSetting(String prefKey, int value) {
+            setSetting(editor -> editor.putInt(generateProfilePrefKey(prefKey), value));
+        }
+
+        private void setSetting(SetSettingRunnable setSettingRunnable) {
+            throwIfProfileDoesNotExist();
+            SharedPreferences.Editor editor = getPrefs().edit();
+            setSettingRunnable.setSetting(editor);
             editor.apply();
         }
 
@@ -409,10 +428,11 @@ public class ProfileManager {
          */
         private void delete() {
             deleteAllEqSettings();
-            deleteEqEnabled();
-            deleteLowerHearingThreshold();
-            deleteHigherHearingThreshold();
-            deleteSortPosition();
+            deleteSetting(LOWER_HEARING_THRESHOLD_PREF_KEY);
+            deleteSetting(EQ_ENABLED_PREF_KEY);
+            deleteSetting(HIGHER_HEARING_THRESHOLD_PREF_KEY);
+            deleteSetting(PROFILE_SORT_PREF_KEY);
+            deleteSetting(PROFILE_NAME_PREF_KEY);
         }
 
         public boolean isActive() {
