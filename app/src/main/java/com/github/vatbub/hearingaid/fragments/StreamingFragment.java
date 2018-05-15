@@ -424,6 +424,11 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                             intent.setData(Uri.parse(motd.getEntry().getUri()));
                             startActivity(intent);
                         });
+
+                        Button closeButton = findViewById(R.id.motd_close);
+                        closeButton.setOnClickListener(view -> {
+                            mMOTDBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                        });
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -23,6 +23,7 @@
     <string name="fragment_streaming_more_than">mehr als</string>
     <string name="fragment_streaming_up_to">bis zu</string>
     <string name="fragment_streaming_motd_read_more">Weiterlesen</string>
+    <string name="fragment_streaming_motd_close">Schliessen</string>
     <string name="share_message">Mit dieser App konnte ich wieder hören: %1$s</string>
     <string name="share_screen_title">Teile diese App mit deinen Freunden</string>
     <string name="intro_activity_label">Willkommen</string>
