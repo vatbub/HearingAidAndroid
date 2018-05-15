@@ -13,7 +13,7 @@
             android:layout_height="wrap_content"
             android:background="@android:color/background_light"
             android:clipToPadding="true"
-            android:elevation="7dp"
+            android:elevation="8dp"
             app:behavior_hideable="true"
             app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
