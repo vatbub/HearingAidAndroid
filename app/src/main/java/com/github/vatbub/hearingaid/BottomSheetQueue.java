@@ -55,7 +55,7 @@ public class BottomSheetQueue extends PriorityQueue<BottomSheetQueue.BottomSheet
             if (isEmpty()) return;
             if (getCurrentBottomSheet() == null)
                 showNextSheet();
-            else if (getCurrentBottomSheet().compareTo(peek()) < 0) {
+            else if (getCurrentBottomSheet().compareTo(peek()) > 0) {
                 BottomSheetBehaviourWrapper currentSheet = getCurrentBottomSheet();
                 currentSheet.getBottomSheetCallback().onRescheduled();
                 showNextSheet();
@@ -218,11 +218,11 @@ public class BottomSheetQueue extends PriorityQueue<BottomSheetQueue.BottomSheet
         @Override
         public int compareTo(@NonNull BottomSheetBehaviourWrapper that) {
             if (this.getPriority().getNumericPriority() < that.getPriority().getNumericPriority())
-                return -1;
+                return 1;
             else if (this.getPriority().getNumericPriority() == that.getPriority().getNumericPriority())
                 return 0;
 
-            return 1;
+            return -1;
         }
 
         public BottomSheetPriority getPriority() {
