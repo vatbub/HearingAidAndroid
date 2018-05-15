@@ -250,7 +250,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                 comparisonString = getString(R.string.fragment_streaming_more_than);
 
             ((TextView) findViewById(R.id.tv_low_latency)).setText(getString(R.string.fragment_streaming_latency_message, comparisonString));
-            bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mLatencyBottomSheetBehavior));
+            bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mLatencyBottomSheetBehavior, BottomSheetBehavior.STATE_EXPANDED, BottomSheetQueue.BottomSheetPriority.LOW));
         }
     }
 
@@ -407,7 +407,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                                         @Override
                                         public void onPageFinished(WebView view, String url) {
                                             super.onPageFinished(view, url);
-                                            bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mMOTDBottomSheetBehavior, BottomSheetBehavior.STATE_COLLAPSED, BottomSheetQueue.BottomSheetPriority.HIGH, additionalCallbacks));
+                                            bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mMOTDBottomSheetBehavior, BottomSheetBehavior.STATE_COLLAPSED, BottomSheetQueue.BottomSheetPriority.NORMAL, additionalCallbacks));
                                         }
                                     });
 
@@ -417,15 +417,12 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                         }
 
                         Button readMoreButton = findViewById(R.id.motd_read_more);
-                        readMoreButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                mMOTDBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                        readMoreButton.setOnClickListener(view -> {
+                            mMOTDBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-                                Intent intent = new Intent(Intent.ACTION_VIEW);
-                                intent.setData(Uri.parse(motd.getEntry().getUri()));
-                                startActivity(intent);
-                            }
+                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                            intent.setData(Uri.parse(motd.getEntry().getUri()));
+                            startActivity(intent);
                         });
                     }
                 } catch (Exception e) {
