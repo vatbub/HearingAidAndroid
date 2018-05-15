@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.media.AudioDeviceInfo;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -43,7 +45,9 @@ import static android.content.pm.PackageManager.PERMISSION_DENIED;
 public class StreamingFragment extends CustomFragment implements ProfileManager.ProfileManagerListener {
     private static final String SHARED_PREFERENCES_FILE_NAME = "com.github.vatbub.hearingaid.fragments.StreamingFragment.Preferences";
     private static final String NEVER_SHOW_LOW_LATENCY_MESSAGE_AGAIN_PREF_KEY = "doNotShowLowLatencyMessage";
+    private static final String NEVER_SHOW_WIRED_HEADPHONES_MESSAGE_AGAIN_PREF_KEY = "doNotShowWiredHeadphonesMessage";
 
+    private BottomSheetBehavior mWiredHeadphonesBottomSheetBehavior;
     private BottomSheetBehavior mLatencyBottomSheetBehavior;
     private BottomSheetBehavior mMOTDBottomSheetBehavior;
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
@@ -207,6 +211,10 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
         mLatencyBottomSheetBehavior = BottomSheetBehavior.from(lowLatencyBottomSheet);
         mLatencyBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
+        View wiredHeadphonesBottomSheet = findViewById(R.id.connect_headphones_bottom_sheet);
+        mWiredHeadphonesBottomSheetBehavior = BottomSheetBehavior.from(wiredHeadphonesBottomSheet);
+        mWiredHeadphonesBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
         View motdBottomSheet = findViewById(R.id.motd_bottom_sheet);
         mMOTDBottomSheetBehavior = BottomSheetBehavior.from(motdBottomSheet);
         mMOTDBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -247,49 +255,90 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
     }
 
     public void initButtonHandlers() {
-        mPlayPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Since this is a play/pause button, you'll need to test the current state
-                // and choose the action accordingly
-
-                if (permissionMissing()) {
-                    requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 1);
-                } else {
-                    setStreaming(!isStreamingEnabled());
-                }
+        mPlayPause.setOnClickListener(view -> {
+            if (permissionMissing()) {
+                requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 1);
+            } else {
+                setStreaming(!isStreamingEnabled());
             }
         });
 
-        findViewById(R.id.learn_more_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mLatencyBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        findViewById(R.id.learn_more_button).setOnClickListener(view -> {
+            mLatencyBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-                String url = FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.LATENCY_MORE_INFO_URL);
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(url));
-                startActivity(intent);
-            }
+            String url = FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.LATENCY_MORE_INFO_URL);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(url));
+            startActivity(intent);
         });
 
-        findViewById(R.id.dont_show_again_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mLatencyBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        findViewById(R.id.low_latency_dont_show_again_button).setOnClickListener(view -> {
+            mLatencyBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-                SharedPreferences.Editor editor = getSharedPreferences().edit();
-                editor.putBoolean(NEVER_SHOW_LOW_LATENCY_MESSAGE_AGAIN_PREF_KEY, true);
-                editor.apply();
-            }
+            SharedPreferences.Editor editor = getSharedPreferences().edit();
+            editor.putBoolean(NEVER_SHOW_LOW_LATENCY_MESSAGE_AGAIN_PREF_KEY, true);
+            editor.apply();
+        });
+
+        findViewById(R.id.wired_headphones_play_anyway_button).setOnClickListener(view -> {
+            mWiredHeadphonesBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            setStreaming(true, true);
+        });
+
+        findViewById(R.id.wired_headphones_dont_show_again_button).setOnClickListener(view -> {
+            mWiredHeadphonesBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+            SharedPreferences.Editor editor = getSharedPreferences().edit();
+            editor.putBoolean(NEVER_SHOW_WIRED_HEADPHONES_MESSAGE_AGAIN_PREF_KEY, true);
+            editor.apply();
         });
     }
 
+    private boolean isConnectedViaBluetooth() {
+        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            AudioDeviceInfo[] audioDevices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
+            for (AudioDeviceInfo deviceInfo : audioDevices) {
+                if (deviceInfo.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP
+                        || deviceInfo.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return audioManager.isBluetoothScoOn() || audioManager.isBluetoothA2dpOn();
+        }
+    }
+
     public void setStreaming(boolean streaming) {
+        setStreaming(streaming, false);
+    }
+
+    public void setStreaming(boolean streaming, boolean forceStreaming) {
         if (streaming) {
-            MediaControllerCompat.getMediaController(getActivity()).getTransportControls().play();
+            if (forceStreaming || getSharedPreferences().getBoolean(NEVER_SHOW_WIRED_HEADPHONES_MESSAGE_AGAIN_PREF_KEY, false) || isHeadphonesPlugged()) {
+                MediaControllerCompat.getMediaController(getActivity()).getTransportControls().play();
+                return;
+            }
+            bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mWiredHeadphonesBottomSheetBehavior, BottomSheetBehavior.STATE_EXPANDED, BottomSheetQueue.BottomSheetPriority.HIGH));
         } else {
             MediaControllerCompat.getMediaController(getActivity()).getTransportControls().pause();
+        }
+    }
+
+    private boolean isHeadphonesPlugged() {
+        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            AudioDeviceInfo[] audioDevices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
+            for (AudioDeviceInfo deviceInfo : audioDevices) {
+                if (deviceInfo.getType() == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
+                        || deviceInfo.getType() == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return audioManager.isWiredHeadsetOn();
         }
     }
 

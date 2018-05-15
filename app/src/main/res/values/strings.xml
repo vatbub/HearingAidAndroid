@@ -90,4 +90,7 @@
     <string name="profile_editor_delete_profile_button_cancel">Cancel</string>
     <string name="profile_editor_new_profile_default_name">New profile %1$d</string>
     <string name="profile_editor_delete_button_unable_to_delete">Cannot delete the last profile</string>
+    <string name="fragment_streaming_wired_headphones_dont_show_again_button">Don\'t show again</string>
+    <string name="fragment_streaming_wired_headphones_play_anyway_button">Play anyway</string>
+    <string name="fragment_streaming_wired_headphones_reason_message">We recommend using a wired headset for best performance.</string>
 </resources>

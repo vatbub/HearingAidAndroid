@@ -85,4 +85,7 @@
     <string name="profile_editor_delete_profile_button_cancel">Abbrechen</string>
     <string name="profile_editor_new_profile_default_name">Neues Profil %1$d</string>
     <string name="profile_editor_delete_button_unable_to_delete">Das letzte Profil kann nicht gelöscht werden</string>
+    <string name="fragment_streaming_wired_headphones_dont_show_again_button">Nicht mehr anzeigen</string>
+    <string name="fragment_streaming_wired_headphones_play_anyway_button">Dennoch einschalten</string>
+    <string name="fragment_streaming_wired_headphones_reason_message">Wir empfehlen die Benutzung eines Kabelkopfhörers für das beste Erlebnis.</string>
 </resources>
