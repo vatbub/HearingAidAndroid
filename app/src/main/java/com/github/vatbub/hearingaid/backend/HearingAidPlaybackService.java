@@ -3,6 +3,7 @@ package com.github.vatbub.hearingaid.backend;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +26,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.hearingaid.Constants;
+import com.github.vatbub.hearingaid.MainActivity;
 import com.github.vatbub.hearingaid.R;
 
 import java.util.List;
@@ -145,7 +147,9 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
         else
             notificationBuilder.setContentText(getString(R.string.fragment_streaming_playpause_notification_content_not_running));
 
-        notificationBuilder.setContentIntent(mMediaSession.getController().getSessionActivity())
+        Intent contentIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingContextIntent = PendingIntent.getActivity(this, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        notificationBuilder.setContentIntent(pendingContextIntent)
                 // .setDeleteIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_STOP))
                 .setColor(ContextCompat.getColor(this, R.color.colorPrimary));
 

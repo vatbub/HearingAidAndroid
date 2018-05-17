@@ -77,7 +77,6 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                         // Get the token for the MediaSession
                         MediaSessionCompat.Token token = mMediaBrowser.getSessionToken();
 
-                        // Create a MediaControllerCompat
                         MediaControllerCompat mediaController = new MediaControllerCompat(getContext(), // Context
                                 token);
 

@@ -36,9 +36,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" />
+                android:name=".MainActivity"
+                android:label="@string/app_name"
+                android:launchMode="singleInstance"
+                android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".IntroActivity"
             android:label="@string/intro_activity_label" />
