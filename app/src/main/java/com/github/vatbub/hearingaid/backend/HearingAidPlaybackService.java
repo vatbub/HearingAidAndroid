@@ -3,8 +3,10 @@ package com.github.vatbub.hearingaid.backend;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
@@ -59,7 +61,6 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
                                 PlaybackStateCompat.ACTION_STOP);
         updatePlayerState(false);
 
-        // MySessionCallback() has methods that handle callbacks from a media controller
         mMediaSession.setCallback(new HearingAidMediaSessionCallback());
 
         // Set the session's token so that client activities can communicate with it.
@@ -87,54 +88,18 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
         mMediaSession.setPlaybackState(mStateBuilder.build());
     }
 
-    /**
-     * Called to get the root information for browsing by a particular client.
-     * <p>
-     * The implementation should verify that the client package has permission
-     * to access browse media information before returning the root id; it
-     * should return null if the client is not allowed to access this
-     * information.
-     * </p>
-     *
-     * @param clientPackageName The package name of the application which is
-     *                          requesting access to browse media.
-     * @param clientUid         The uid of the application which is requesting access to
-     *                          browse media.
-     * @param rootHints         An optional bundle of service-specific arguments to send
-     *                          to the media browse service when connecting and retrieving the
-     *                          root id for browsing, or null if none. The contents of this
-     *                          bundle may affect the information returned when browsing.
-     * @return The {@link BrowserRoot} for accessing this app's content or null.
-     * @see BrowserRoot#EXTRA_RECENT
-     * @see BrowserRoot#EXTRA_OFFLINE
-     * @see BrowserRoot#EXTRA_SUGGESTED
-     */
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        MediaButtonReceiver.handleIntent(mMediaSession, intent);
+        return super.onStartCommand(intent, flags, startId);
+    }
+
     @Nullable
     @Override
     public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
         return new BrowserRoot(EMPTY_MEDIA_ROOT_ID, null);
     }
 
-    /**
-     * Called to get information about the children of a media item.
-     * <p>
-     * Implementations must call {@link Result#sendResult result.sendResult}
-     * with the list of children. If loading the children will be an expensive
-     * operation that should be performed on another thread,
-     * {@link Result#detach result.detach} may be called before returning from
-     * this function, and then {@link Result#sendResult result.sendResult}
-     * called when the loading is complete.
-     * </p><p>
-     * In case the media item does not have any children, call {@link Result#sendResult}
-     * with an empty list. When the given {@code parentId} is invalid, implementations must
-     * call {@link Result#sendResult result.sendResult} with {@code null}, which will invoke
-     * {@link MediaBrowserCompat.SubscriptionCallback#onError}.
-     * </p>
-     *
-     * @param parentId The id of the parent media item whose children are to be
-     *                 queried.
-     * @param result   The Result to send the list of children to.
-     */
     @Override
     public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
         //  Browsing not allowed
@@ -157,14 +122,18 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-            String channelName = getString(R.string.fragment_streaming_playpause_notification_channel_name);
-            String channelDescription = getString(R.string.fragment_streaming_playpause_notification_channel_description);
-            int importance = NotificationManager.IMPORTANCE_LOW;
+            if (notificationManager == null) {
+                Crashlytics.log(Log.WARN, LOG_TAG, "notificationManager is null, not creating the notification channel...");
+            } else {
+                String channelName = getString(R.string.fragment_streaming_playpause_notification_channel_name);
+                String channelDescription = getString(R.string.fragment_streaming_playpause_notification_channel_description);
+                int importance = NotificationManager.IMPORTANCE_LOW;
 
-            NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, importance);
-            notificationChannel.setDescription(channelDescription);
-            notificationChannel.enableVibration(false);
-            notificationManager.createNotificationChannel(notificationChannel);
+                NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, importance);
+                notificationChannel.setDescription(channelDescription);
+                notificationChannel.enableVibration(false);
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
         }
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId)
@@ -176,21 +145,20 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
         else
             notificationBuilder.setContentText(getString(R.string.fragment_streaming_playpause_notification_content_not_running));
 
-        notificationBuilder// .setContentIntent(mMediaSession.getController().getSessionActivity())
-                .setDeleteIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_STOP))
+        notificationBuilder.setContentIntent(mMediaSession.getController().getSessionActivity())
+                // .setDeleteIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_STOP))
                 .setColor(ContextCompat.getColor(this, R.color.colorPrimary));
 
-        PendingIntent pendingIntent = retrievePlaybackAction(isPlaying);
         if (isPlaying) {
             notificationBuilder.addAction(new NotificationCompat.Action(
                     R.drawable.ic_media_pause_light,
                     getString(R.string.fragment_streaming_playpause_notification_pause_action_name),
-                    pendingIntent));
+                    MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_PAUSE)));
         } else {
             notificationBuilder.addAction(new NotificationCompat.Action(
                     R.drawable.ic_media_play_light,
                     getString(R.string.fragment_streaming_playpause_notification_play_action_name),
-                    pendingIntent));
+                    MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_PLAY)));
         }
         // Take advantage of MediaStyle features
         notificationBuilder.setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
@@ -203,21 +171,6 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
                         PlaybackStateCompat.ACTION_STOP)));
 
         return notificationBuilder.build();
-    }
-
-    private PendingIntent retrievePlaybackAction(boolean isPlaying) {
-        Intent action;
-        PendingIntent pendingIntent;
-        final ComponentName serviceName = new ComponentName(this, HearingAidPlaybackService.class);
-        // Play and pause
-        if (isPlaying)
-            action = new Intent(ACTION_PAUSE);
-        else
-            action = new Intent(ACTION_PLAY);
-        action.setComponent(serviceName);
-        pendingIntent = PendingIntent.getService(this, 1, action, 0);
-        return pendingIntent;
-
     }
 
     private class HearingAidMediaSessionCallback extends MediaSessionCompat.Callback {
@@ -290,6 +243,8 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
 
                 result = audioManager.requestAudioFocus(audioFocusRequest);
             } else {
+                // ignore deprecation as this branch is only executed on SDK levels below 26
+                //noinspection deprecation
                 result = audioManager.requestAudioFocus(onAudioFocusChangeListener,
                         // Use the music stream.
                         streamType,
@@ -334,6 +289,8 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (notificationManager != null)
                 notificationManager.notify(notificationId, createPlayerNotification(false));
+            else
+                Crashlytics.log(Log.WARN, LOG_TAG, "notificationManager was null, not updating the notification in onPause()");
         }
 
         @Override
@@ -348,11 +305,25 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
                 audioManager.abandonAudioFocusRequest(audioFocusRequest);
             else
+                // ignore deprecation as this branch is only executed on SDK levels below 26
+                //noinspection deprecation
                 audioManager.abandonAudioFocus(onAudioFocusChangeListener);
 
             try {
                 unregisterReceiver(becomingNoisyReceiver);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
+
+            try {
                 unregisterReceiver(actionPauseReceiver);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
+
+            try {
                 unregisterReceiver(actionPlayReceiver);
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
