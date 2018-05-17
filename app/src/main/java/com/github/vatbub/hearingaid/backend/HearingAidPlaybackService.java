@@ -281,9 +281,13 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             onPlayPause(false);
             updatePlayerState(false);
 
-            // unregister BECOME_NOISY BroadcastReceiver
-            unregisterReceiver(becomingNoisyReceiver);
-            // Take the service out of the foreground, retain the notification
+            try {
+                unregisterReceiver(becomingNoisyReceiver);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            }
+
             stopForeground(false);
 
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
