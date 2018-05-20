@@ -68,6 +68,15 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                     }
                 }
             };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        MediaControllerCompat mediaControllerCompat = MediaControllerCompat.getMediaController(getActivity());
+        if (mediaControllerCompat != null)
+            mediaControllerCompat.getTransportControls().stop();
+    }
+
     private boolean startStreamAfterConnectingToMediaBrowserService;
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallbacks =
             new MediaBrowserCompat.ConnectionCallback() {
