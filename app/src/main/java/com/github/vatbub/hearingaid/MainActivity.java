@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         CrashlyticsManager.getInstance(this).configureCrashlytics();
         prerenderMarkdown();
+        setTheme(R.style.AppTheme_NoActionBar);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -90,40 +91,20 @@ public class MainActivity extends AppCompatActivity
 
         RemoteConfig.initConfig();
 
-        //  Declare a new thread to do a preference check
         Thread t = new Thread(() -> {
-            //  Initialize SharedPreferences
             SharedPreferences getPrefs = PreferenceManager
                     .getDefaultSharedPreferences(getBaseContext());
+            if (!getPrefs.getBoolean("firstStart", true))
+                return;
 
-            //  Create a new boolean and preference and set it to true
-            boolean isFirstStart = getPrefs.getBoolean("firstStart", true);
-
-            //  If the activity has never started before...
-            if (isFirstStart) {
-
-                //  Launch app intro
-                final Intent i = new Intent(MainActivity.this, IntroActivity.class);
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        startActivity(i);
-                    }
-                });
-
-                //  Make a new preferences editor
-                SharedPreferences.Editor e = getPrefs.edit();
-
-                //  Edit preference to make it false because we don't want this to run again
-                e.putBoolean("firstStart", false);
-
-                //  Apply changes
-                e.apply();
-            }
+            //  Launch app intro
+            final Intent i = new Intent(MainActivity.this, IntroActivity.class);
+            runOnUiThread(() -> startActivity(i));
+            SharedPreferences.Editor e = getPrefs.edit();
+            e.putBoolean("firstStart", false);
+            e.apply();
         });
 
-        // Start the thread
         t.start();
     }
 
