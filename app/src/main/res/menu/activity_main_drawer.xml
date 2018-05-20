@@ -28,9 +28,13 @@
                 android:icon="@drawable/ic_menu_share"
                 android:title="@string/nav_share" />
             <item
-                android:id="@+id/nav_feedback"
-                android:icon="@drawable/ic_menu_send"
-                android:title="@string/nav_feedback" />
+                    android:id="@+id/nav_feedback"
+                    android:icon="@drawable/ic_menu_send"
+                    android:title="@string/nav_feedback"/>
+            <item
+                    android:id="@+id/nav_github"
+                    android:icon="@drawable/ic_github_logo"
+                    android:title="@string/nav_github"/>
         </menu>
     </item>
 

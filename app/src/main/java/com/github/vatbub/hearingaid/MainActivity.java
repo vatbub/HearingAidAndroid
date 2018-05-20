@@ -3,6 +3,7 @@ package com.github.vatbub.hearingaid;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.IdRes;
@@ -197,6 +198,9 @@ public class MainActivity extends AppCompatActivity
             openFragment(CustomFragment.FragmentTag.PRIVACY_FRAGMENT);
         } else if (id == R.id.nav_about) {
             openFragment(CustomFragment.FragmentTag.ABOUT_FRAGMENT);
+        } else if (id == R.id.nav_github) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.GIT_HUB_URL)));
+            startActivity(browserIntent);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

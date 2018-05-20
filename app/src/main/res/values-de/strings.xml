@@ -9,6 +9,7 @@
     <string name="nav_legal_stuff">Legales</string>
     <string name="nav_share">Teilen</string>
     <string name="nav_feedback">Feedback</string>
+    <string name="nav_github">GitHub</string>
     <string name="nav_communicate">Kommunizieren</string>
     <string name="fragment_privacy_title">Datenschutz</string>
     <string name="fragment_streaming_title">Hörgerät</string>
