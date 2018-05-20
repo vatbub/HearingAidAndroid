@@ -41,6 +41,8 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
     private final int notificationId = 6392634;
     private MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
+    private AudioFocusLossInformation audioFocusLossInformation;
+    private boolean playing;
 
     @Override
     public void onCreate() {
@@ -61,7 +63,7 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
                                 PlaybackStateCompat.ACTION_PLAY_PAUSE |
                                 PlaybackStateCompat.ACTION_PAUSE |
                                 PlaybackStateCompat.ACTION_STOP);
-        updatePlayerState(false);
+        setPlaying(false, true);
 
         mMediaSession.setCallback(new HearingAidMediaSessionCallback());
 
@@ -79,15 +81,6 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
         if (buffersizeString == null) buffersizeString = "512";
 
         HearingAidAudioProcessor(Integer.parseInt(samplerateString), Integer.parseInt(buffersizeString));
-    }
-
-    private void updatePlayerState(boolean isPlaying) {
-        if (isPlaying)
-            mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 1);
-        else
-            mStateBuilder.setState(PlaybackStateCompat.STATE_STOPPED, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 0);
-
-        mMediaSession.setPlaybackState(mStateBuilder.build());
     }
 
     @Override
@@ -177,6 +170,61 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
         return notificationBuilder.build();
     }
 
+    public AudioFocusLossInformation getAudioFocusLossInformation() {
+        return audioFocusLossInformation;
+    }
+
+    private void setAudioFocusLossInformation(AudioFocusLossInformation audioFocusLossInformation) {
+        this.audioFocusLossInformation = audioFocusLossInformation;
+    }
+
+    public boolean isPlaying() {
+        return playing;
+    }
+
+    public void setPlaying(boolean playing) {
+        setPlaying(playing, false);
+    }
+
+    private void setPlaying(boolean playing, boolean omitNativeCall) {
+        this.playing = playing;
+
+        if (playing)
+            mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 1);
+        else
+            mStateBuilder.setState(PlaybackStateCompat.STATE_STOPPED, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 0);
+
+        mMediaSession.setPlaybackState(mStateBuilder.build());
+        if (!omitNativeCall)
+            onPlayPause(playing);
+    }
+
+    public static class AudioFocusLossInformation {
+        private int audioFocusLossType;
+        private boolean playedBeforeLoss;
+
+        public AudioFocusLossInformation(int audioFocusLossType, boolean wasPlayingBeforeLoss) {
+            setAudioFocusLossType(audioFocusLossType);
+            setWasPlayingBeforeLoss(wasPlayingBeforeLoss);
+        }
+
+        public int getAudioFocusLossType() {
+            return audioFocusLossType;
+        }
+
+        public void setAudioFocusLossType(int audioFocusLossType) {
+            this.audioFocusLossType = audioFocusLossType;
+        }
+
+        public boolean wasPlayingBeforeLoss() {
+            return playedBeforeLoss;
+        }
+
+        public void setWasPlayingBeforeLoss(boolean playedBeforeLoss) {
+            this.playedBeforeLoss = playedBeforeLoss;
+        }
+    }
+
     private class HearingAidMediaSessionCallback extends MediaSessionCompat.Callback {
         private AudioFocusRequest audioFocusRequest;
         private BroadcastReceiver becomingNoisyReceiver = new BroadcastReceiver() {
@@ -200,14 +248,18 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
         private AudioManager.OnAudioFocusChangeListener onAudioFocusChangeListener = focusChange -> {
             switch (focusChange) {
                 case AudioManager.AUDIOFOCUS_LOSS:
+                    setAudioFocusLossInformation(new AudioFocusLossInformation(focusChange, isPlaying()));
                     onStop();
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                    onPause();
+                    setAudioFocusLossInformation(new AudioFocusLossInformation(focusChange, isPlaying()));
+                    if (isPlaying())
+                        onPause();
                     break;
                 case AudioManager.AUDIOFOCUS_GAIN:
-                    onPlay();
+                    if (getAudioFocusLossInformation() == null || getAudioFocusLossInformation().wasPlayingBeforeLoss())
+                        onPlay();
             }
         };
 
@@ -261,10 +313,9 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             startService(new Intent(HearingAidPlaybackService.this, HearingAidPlaybackService.class));
 
             mMediaSession.setActive(true);
-            updatePlayerState(true);
+            setPlaying(true);
 
             // Superpowered
-            onPlayPause(true);
             onForeground();
 
             IntentFilter becomingNoisyIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
@@ -282,8 +333,7 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
         public void onPause() {
             super.onPause();
 
-            onPlayPause(false);
-            updatePlayerState(false);
+            setPlaying(false);
 
             try {
                 unregisterReceiver(becomingNoisyReceiver);
@@ -341,9 +391,8 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             stopSelf();
             mMediaSession.setActive(false);
 
-            onPlayPause(false);
+            setPlaying(false);
             onBackground();
-            updatePlayerState(false);
 
             stopForeground(true);
         }
