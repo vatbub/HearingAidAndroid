@@ -22,6 +22,7 @@
 
     <style name="SplashTheme" parent="AppTheme.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_screen</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
     </style>
 
 </resources>
