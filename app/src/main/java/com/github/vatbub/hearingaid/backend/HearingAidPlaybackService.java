@@ -239,12 +239,6 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
                 onPause();
             }
         };
-        private BroadcastReceiver actionPlayReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                onPlay();
-            }
-        };
         private AudioManager.OnAudioFocusChangeListener onAudioFocusChangeListener = focusChange -> {
             switch (focusChange) {
                 case AudioManager.AUDIOFOCUS_LOSS:
@@ -260,6 +254,12 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
                 case AudioManager.AUDIOFOCUS_GAIN:
                     if (getAudioFocusLossInformation() == null || getAudioFocusLossInformation().wasPlayingBeforeLoss())
                         onPlay();
+            }
+        };
+        private BroadcastReceiver actionPlayReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                onPlay();
             }
         };
 
@@ -361,11 +361,12 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             }
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
-                audioManager.abandonAudioFocusRequest(audioFocusRequest);
-            else
-                // ignore deprecation as this branch is only executed on SDK levels below 26
-                //noinspection deprecation
-                audioManager.abandonAudioFocus(onAudioFocusChangeListener);
+                if (audioFocusRequest != null)
+                    audioManager.abandonAudioFocusRequest(audioFocusRequest);
+                else
+                    // ignore deprecation as this branch is only executed on SDK levels below 26
+                    //noinspection deprecation
+                    audioManager.abandonAudioFocus(onAudioFocusChangeListener);
 
             try {
                 unregisterReceiver(becomingNoisyReceiver);
