@@ -93,7 +93,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
 
             updateEQViewEnabledStatus(checked);
 
-            StreamingFragment streamingFragment = (StreamingFragment) getActivity().getSupportFragmentManager().findFragmentByTag("streamingFragment");
+            StreamingFragment streamingFragment = (StreamingFragment) getActivity().getSupportFragmentManager().findFragmentByTag(FragmentTag.STREAMING_FRAGMENT.toString());
             if (streamingFragment != null)
                 streamingFragment.notifyEQEnabledSettingChanged();
         });
