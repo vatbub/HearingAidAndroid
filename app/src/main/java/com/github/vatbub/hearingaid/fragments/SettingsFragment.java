@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SettingsFragment extends CustomFragment implements ProfileManager.ProfileManagerListener, AdapterView.OnItemSelectedListener {
-    public static final int numberOfChannels = 6;
     private ArrayAdapter<ProfileManager.Profile> profileAdapter;
 
     public SettingsFragment() {
@@ -144,6 +143,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
     private void initFrequencyLabelsAndSeekbars() {
         double lowerFreq = FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.MIN_EQ_FREQUENCY);
         double higherFreq = FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.MAX_EQ_FREQUENCY);
+        double numberOfChannels = FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.NUMBER_OF_EQ_BINS);
         double hzPerChannel = (higherFreq - lowerFreq) / numberOfChannels;
         final int[] textViewIds = {R.id.text_view_bin_1, R.id.text_view_bin_2, R.id.text_view_bin_3, R.id.text_view_bin_4, R.id.text_view_bin_5, R.id.text_view_bin_6};
 

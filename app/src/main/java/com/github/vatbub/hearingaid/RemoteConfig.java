@@ -22,6 +22,7 @@ public class RemoteConfig {
         defaults.put(Keys.GIT_HUB_URL, "https://github.com/vatbub/HearingAidAndroid");
         defaults.put(Keys.MIN_EQ_FREQUENCY, 16);
         defaults.put(Keys.MAX_EQ_FREQUENCY, 21000);
+        defaults.put(Keys.NUMBER_OF_EQ_BINS, 6);
         defaults.put(Keys.EMAIL_FEEDBACK_TO_ADDRESS, "feedback@fredplus10.me");
         defaults.put(Keys.EMAIL_FEEDBACK_SUBJECT, "[Feedback HearingAidAndroid]");
 
@@ -41,6 +42,7 @@ public class RemoteConfig {
         public static final String GIT_HUB_URL = "gitHubURL";
         public static final String MIN_EQ_FREQUENCY = "minEqFrequency";
         public static final String MAX_EQ_FREQUENCY = "maxEqFrequency";
+        public static final String NUMBER_OF_EQ_BINS = "numberOfEqBins";
         public static final String EMAIL_FEEDBACK_TO_ADDRESS = "githubFeedbackToAddress";
         public static final String EMAIL_FEEDBACK_SUBJECT = "emailFeedbackSubject";
     }
