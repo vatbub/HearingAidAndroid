@@ -6,11 +6,29 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatCheckBox;
-import android.view.*;
-import android.widget.*;
-import com.github.vatbub.hearingaid.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.SeekBar;
+import android.widget.Spinner;
+import android.widget.Switch;
+import android.widget.TextView;
+
+import com.github.vatbub.hearingaid.CrashlyticsManager;
+import com.github.vatbub.hearingaid.FeedbackPrivacyActivity;
+import com.github.vatbub.hearingaid.MainActivity;
+import com.github.vatbub.hearingaid.ProfileManager;
+import com.github.vatbub.hearingaid.R;
+import com.github.vatbub.hearingaid.RemoteConfig;
 import com.github.vatbub.hearingaid.profileeditor.ProfileEditorActivity;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar;
@@ -184,6 +202,12 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
         }
 
         ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile().setEQSettings(eqSettings);
+
+        FragmentActivity activity = getActivity();
+        if (activity == null) return;
+        StreamingFragment streamingFragment = (StreamingFragment) activity.getSupportFragmentManager().findFragmentByTag(FragmentTag.STREAMING_FRAGMENT.toString());
+        if (streamingFragment != null)
+            streamingFragment.notifyEQValuesChanged();
     }
 
     private void loadEqSettings() {

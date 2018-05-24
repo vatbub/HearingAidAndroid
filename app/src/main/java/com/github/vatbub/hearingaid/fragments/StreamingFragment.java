@@ -28,9 +28,15 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.common.view.motd.PlatformIndependentMOTD;
-import com.github.vatbub.hearingaid.*;
+import com.github.vatbub.hearingaid.AndroidMOTDFileOutputStreamProvider;
+import com.github.vatbub.hearingaid.BottomSheetQueue;
+import com.github.vatbub.hearingaid.Constants;
+import com.github.vatbub.hearingaid.ProfileManager;
+import com.github.vatbub.hearingaid.R;
+import com.github.vatbub.hearingaid.RemoteConfig;
 import com.github.vatbub.hearingaid.backend.HearingAidPlaybackService;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.ohoussein.playpause.PlayPauseView;
@@ -458,14 +464,37 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
         if (mediaController == null) return;
 
         Bundle params = new Bundle();
-        params.putBoolean(Constants.EQ_CHANGED_RESULT, currentProfile.isEqEnabled());
+        params.putBoolean(Constants.EQ_ENABLED_CHANGED_RESULT, currentProfile.isEqEnabled());
 
         mediaController.sendCommand(Constants.CUSTOM_COMMAND_NOTIFY_EQ_ENABLED_CHANGED, params, null);
+    }
+
+    public void notifyEQValuesChanged() {
+        if (getContext() == null) return;
+        ProfileManager.Profile currentProfile = ProfileManager.getInstance(getContext()).getCurrentlyActiveProfile();
+        if (currentProfile == null) return;
+        Activity activity = getActivity();
+        if (activity == null) return;
+        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(activity);
+        if (mediaController == null) return;
+
+        List<Float> eqList = currentProfile.getEQSettings();
+        float[] eqArray = new float[eqList.size()];
+        for (int i = 0; i < eqList.size(); i++)
+            eqArray[i] = eqList.get(i);
+
+        Bundle params = new Bundle();
+        params.putFloatArray(Constants.EQ_CHANGED_RESULT, eqArray);
+        params.putFloat(Constants.EQ_MIN_FREQUENCY_RESULT, (float) FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.MIN_EQ_FREQUENCY));
+        params.putFloat(Constants.EQ_MAX_FREQUENCY_RESULT, (float) FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.MAX_EQ_FREQUENCY));
+
+        mediaController.sendCommand(Constants.CUSTOM_COMMAND_NOTIFY_EQ_CHANGED, params, null);
     }
 
     @Override
     public void onProfileApplied(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
         notifyEQEnabledSettingChanged();
+        notifyEQValuesChanged();
     }
 
     @Override
@@ -481,8 +510,5 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
     @Override
     public void onSortOrderChanged(List<ProfileManager.Profile> previousOrder, List<ProfileManager.Profile> newOrder) {
         // no op
-    }
-
-    private class HearingAidConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
     }
 }

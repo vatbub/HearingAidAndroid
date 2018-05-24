@@ -56,10 +56,6 @@ HearingAidAudioProcessor::HearingAidAudioProcessor(unsigned int samplerate,
     onPlayPause(false);
 }
 
-HearingAidAudioProcessor::~HearingAidAudioProcessor() {
-    delete audioSystem;
-}
-
 bool HearingAidAudioProcessor::process(short int *output, unsigned int numberOfSamples) {
     // return if eq is disabled
     if (!eqEnabled)
@@ -75,9 +71,30 @@ bool HearingAidAudioProcessor::process(short int *output, unsigned int numberOfS
                                                         phaseRight)) {
         // You can work with frequency domain data from this point.
 
+        /*for (float *i1 = magnitudeLeft; i1 <= magnitudeLeft + 80; i1++) {
+            int w = 1;
+        }
+
+        for (float *i2 = magnitudeRight; i2 <= magnitudeRight + 80; i2++) {
+            int w = 1;
+        }*/
+
         // This is just a quick example: we remove the magnitude of the first 20 bins, meaning total bass cut between 0-430 Hz.
         // memset(magnitudeLeft, 0, 80);
         // memset(magnitudeRight, 0, 80);
+
+        int floatsToProcess = static_cast<int>(max_frequency / bucket_size);
+        for (float *ptr = magnitudeLeft; ptr < magnitudeLeft + floatsToProcess; ptr++) {
+            *ptr = *ptr * get_eq_index_for_frequency(magnitudeLeft, ptr);
+        }
+
+        for (float *ptr = magnitudeRight; ptr < magnitudeRight + floatsToProcess; ptr++) {
+            *ptr = *ptr * get_eq_index_for_frequency(magnitudeRight, ptr);
+        }
+
+        // max bin: 3720
+        // max eq value: 400
+        // max bin in floats: 930
 
         // We are done working with frequency domain data. Let's go back to the time domain.
 
@@ -134,10 +151,6 @@ void HearingAidAudioProcessor::stop() {
     audioSystem->stop();
 }
 
-void HearingAidAudioProcessor::enableEQ(bool eqEnabled) {
-    this->eqEnabled = eqEnabled;
-}
-
 extern "C" JNIEXPORT void
 Java_com_github_vatbub_hearingaid_backend_HearingAidPlaybackService_HearingAidAudioProcessor(
         JNIEnv *javaEnvironment, jobject __unused obj, jint samplerate,
@@ -172,4 +185,38 @@ extern "C" JNIEXPORT void
 Java_com_github_vatbub_hearingaid_backend_HearingAidPlaybackService_eqEnabled(
         JNIEnv *__unused javaEnvironment, jobject __unused obj, jboolean eqEnabled) {
     jniInstance->enableEQ(eqEnabled);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_github_vatbub_hearingaid_backend_HearingAidPlaybackService_setEQ(JNIEnv *env,
+                                                                          jobject instance,
+                                                                          jfloatArray eqValues_) {
+    jfloat *eqValues = env->GetFloatArrayElements(eqValues_, NULL);
+
+    jsize arraySize = env->GetArrayLength(eqValues_);
+
+    jniInstance->setEQ(eqValues, arraySize);
+
+    env->ReleaseFloatArrayElements(eqValues_, eqValues, 0);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_github_vatbub_hearingaid_backend_HearingAidPlaybackService_setMinFrequency(JNIEnv *env,
+                                                                                    jobject instance,
+                                                                                    jfloat minFrequency) {
+
+    jniInstance->set_min_frequency(minFrequency);
+
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_github_vatbub_hearingaid_backend_HearingAidPlaybackService_setMaxFrequency(JNIEnv *env,
+                                                                                    jobject instance,
+                                                                                    jfloat maxFrequency) {
+
+    jniInstance->set_max_frequency(maxFrequency);
+
 }

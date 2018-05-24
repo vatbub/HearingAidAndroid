@@ -24,6 +24,7 @@ import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
+
 import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.hearingaid.Constants;
 import com.github.vatbub.hearingaid.MainActivity;
@@ -31,7 +32,10 @@ import com.github.vatbub.hearingaid.R;
 
 import java.util.List;
 
-import static com.github.vatbub.hearingaid.Constants.*;
+import static com.github.vatbub.hearingaid.Constants.ACTION_PAUSE;
+import static com.github.vatbub.hearingaid.Constants.ACTION_PLAY;
+import static com.github.vatbub.hearingaid.Constants.EMPTY_MEDIA_ROOT_ID;
+import static com.github.vatbub.hearingaid.Constants.LOG_TAG;
 
 public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
     static {
@@ -110,6 +114,12 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
     private native void onForeground();
 
     private native void eqEnabled(boolean eqEnabled);
+
+    private native void setEQ(float[] eqValues);
+
+    private native void setMinFrequency(float minFrequency);
+
+    private native void setMaxFrequency(float maxFrequency);
 
     private Notification createPlayerNotification(boolean isPlaying) {
         String channelId = "hearingAidPlayPauseNotificationChannel";
@@ -267,8 +277,13 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
         public void onCommand(String command, Bundle extras, ResultReceiver cb) {
             super.onCommand(command, extras, cb);
 
-            if (Constants.CUSTOM_COMMAND_NOTIFY_EQ_ENABLED_CHANGED.equalsIgnoreCase(command) && extras != null && extras.containsKey(Constants.EQ_CHANGED_RESULT))
-                eqEnabled(extras.getBoolean(Constants.EQ_CHANGED_RESULT));
+            if (Constants.CUSTOM_COMMAND_NOTIFY_EQ_ENABLED_CHANGED.equalsIgnoreCase(command) && extras != null && extras.containsKey(Constants.EQ_ENABLED_CHANGED_RESULT))
+                eqEnabled(extras.getBoolean(Constants.EQ_ENABLED_CHANGED_RESULT));
+            else if (Constants.CUSTOM_COMMAND_NOTIFY_EQ_CHANGED.equalsIgnoreCase(command) && extras != null && extras.containsKey(Constants.EQ_CHANGED_RESULT) && extras.containsKey(Constants.EQ_MIN_FREQUENCY_RESULT) && extras.containsKey(Constants.EQ_MAX_FREQUENCY_RESULT)) {
+                setEQ(extras.getFloatArray(Constants.EQ_CHANGED_RESULT));
+                setMinFrequency(extras.getFloat(Constants.EQ_MIN_FREQUENCY_RESULT));
+                setMaxFrequency(extras.getFloat(Constants.EQ_MAX_FREQUENCY_RESULT));
+            }
         }
 
         @Override
