@@ -24,6 +24,7 @@ import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
+
 import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.hearingaid.Constants;
 import com.github.vatbub.hearingaid.MainActivity;
@@ -31,7 +32,10 @@ import com.github.vatbub.hearingaid.R;
 
 import java.util.List;
 
-import static com.github.vatbub.hearingaid.Constants.*;
+import static com.github.vatbub.hearingaid.Constants.ACTION_PAUSE;
+import static com.github.vatbub.hearingaid.Constants.ACTION_PLAY;
+import static com.github.vatbub.hearingaid.Constants.EMPTY_MEDIA_ROOT_ID;
+import static com.github.vatbub.hearingaid.Constants.LOG_TAG;
 
 public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
     static {
@@ -141,6 +145,7 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             notificationBuilder.setContentText(getString(R.string.fragment_streaming_playpause_notification_content_not_running));
 
         Intent contentIntent = new Intent(this, MainActivity.class);
+        contentIntent.putExtra(Constants.INTENT_COMING_FROM_NOTIFICATION_EXTRA_KEY, true);
         PendingIntent pendingContextIntent = PendingIntent.getActivity(this, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         notificationBuilder.setContentIntent(pendingContextIntent)
                 // .setDeleteIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_STOP))

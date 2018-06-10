@@ -24,18 +24,28 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.SeekBar;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.hearingaid.fragments.CustomFragment;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+
 import org.rm3l.maoni.Maoni;
 import org.rm3l.maoni.common.contract.Handler;
 import org.rm3l.maoni.common.model.Feedback;
 import org.rm3l.maoni.email.MaoniEmailListener;
-import ru.noties.markwon.Markwon;
 
 import java.io.IOException;
 import java.util.List;
+
+import ru.noties.markwon.Markwon;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback, ProfileManager.ProfileManagerListener, AdapterView.OnItemSelectedListener {
@@ -340,6 +350,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
         System.out.println("Nothing selected");
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (intent.getBooleanExtra(Constants.INTENT_COMING_FROM_NOTIFICATION_EXTRA_KEY, false))
+            // go to the streaming fragment
+            openFragment(CustomFragment.FragmentTag.STREAMING_FRAGMENT);
     }
 
     public void startFeedbackActivity() {
