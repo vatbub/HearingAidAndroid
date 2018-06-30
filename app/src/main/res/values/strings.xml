@@ -95,4 +95,5 @@
     <string name="fragment_streaming_wired_headphones_dont_show_again_button">Don\'t show again</string>
     <string name="fragment_streaming_wired_headphones_play_anyway_button">Play anyway</string>
     <string name="fragment_streaming_wired_headphones_reason_message">We recommend using a wired headset for best performance.</string>
+    <string name="fragment_settings_version_text_view">Version: %1$s\nVersion code: %2$d</string>
 </resources>

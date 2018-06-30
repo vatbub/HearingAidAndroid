@@ -37,6 +37,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        initVersionLabel();
         updateEqSwitch();
         loadEqSettings();
         updateCrashlyticsCheckBox();
@@ -257,6 +258,9 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
         initProfileAdapter();
     }
 
+    private void initVersionLabel() {
+        ((TextView) findViewById(R.id.version_text_view)).setText(String.format(getString(R.string.fragment_settings_version_text_view), BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE));
+    }
 
     private void updateEqSwitch() {
         Switch eqSwitch = findViewById(R.id.eq_on_off_switch);
