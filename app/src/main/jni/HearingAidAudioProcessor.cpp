@@ -63,12 +63,11 @@ bool HearingAidAudioProcessor::process(short int *output, unsigned int numberOfS
     if (!eqEnabled)
         return true;
 
-    float *inputBufferFloat = NULL;
-    float *outputBufferFloat = NULL;
+    float *inputBufferFloat;
     SuperpoweredShortIntToFloat(output, inputBufferFloat,
                                 numberOfSamples); // Converting the 16-bit integer samples to 32-bit floating point.
-    superpoweredEq->process(inputBufferFloat, outputBufferFloat, numberOfSamples);
-    SuperpoweredFloatToShortInt(outputBufferFloat, output,
+    superpoweredEq->process(inputBufferFloat, inputBufferFloat, numberOfSamples);
+    SuperpoweredFloatToShortInt(inputBufferFloat, output,
                                 numberOfSamples);
 
     return true;
