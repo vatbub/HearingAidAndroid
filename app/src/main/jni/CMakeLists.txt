@@ -14,6 +14,7 @@ add_library(
 	SHARED
 	${CPP_FILES}
 	${PATH_TO_SUPERPOWERED}/AndroidIO/SuperpoweredAndroidAudioIO.cpp
+	${PATH_TO_SUPERPOWERED}/SuperpoweredNBandEQ.cpp
 )
 
 include_directories(src/main/jni)

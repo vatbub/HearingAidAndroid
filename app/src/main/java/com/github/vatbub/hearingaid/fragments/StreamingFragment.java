@@ -158,10 +158,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
         if (getContext() == null) return;
         if (mMediaBrowser != null) return;
 
-        mMediaBrowser = new MediaBrowserCompat(getContext(),
-                new ComponentName(getContext(), HearingAidPlaybackService.class),
-                mConnectionCallbacks,
-                null); // optional Bundle
+        mMediaBrowser = new MediaBrowserCompat(getContext(), new ComponentName(getContext(), HearingAidPlaybackService.class), mConnectionCallbacks, null);
     }
 
     private void connectMediaBrowser() {
@@ -485,8 +482,6 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
 
         Bundle params = new Bundle();
         params.putFloatArray(Constants.EQ_CHANGED_RESULT, eqArray);
-        params.putFloat(Constants.EQ_MIN_FREQUENCY_RESULT, (float) FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.MIN_EQ_FREQUENCY));
-        params.putFloat(Constants.EQ_MAX_FREQUENCY_RESULT, (float) FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.MAX_EQ_FREQUENCY));
 
         mediaController.sendCommand(Constants.CUSTOM_COMMAND_NOTIFY_EQ_CHANGED, params, null);
     }

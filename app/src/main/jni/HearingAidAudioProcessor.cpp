@@ -5,20 +5,20 @@
 #include <SLES/OpenSLES_AndroidConfiguration.h>
 #include <SLES/OpenSLES.h>
 #include <jni.h>
-#include <SuperpoweredSimple.h>
 #include <string.h>
 #include "HearingAidAudioProcessor.h"
 #include <SuperpoweredFrequencyDomain.h>
 #include <malloc.h>
 #include <SuperpoweredCPU.h>
+#include <SuperpoweredSimple.h>
 
 static HearingAidAudioProcessor *jniInstance = NULL;
 
-static SuperpoweredFrequencyDomain *frequencyDomain;
-static float *magnitudeLeft, *magnitudeRight, *phaseLeft, *phaseRight, *fifoOutput, *inputBufferFloat;
-static int fifoOutputFirstSample, fifoOutputLastSample, stepSize, fifoCapacity;
+// static SuperpoweredFrequencyDomain *frequencyDomain;
+// static float *magnitudeLeft, *magnitudeRight, *phaseLeft, *phaseRight, *fifoOutput, *inputBufferFloat;
+// static int fifoOutputFirstSample, fifoOutputLastSample, stepSize, fifoCapacity;
 
-#define FFT_LOG_SIZE 11 // 2^11 = 2048
+// #define FFT_LOG_SIZE 11 // 2^11 = 2048
 
 static bool
 audioProcessing(void *clientdata, short int *audioIO, int numberOfSamples, int samplerate) {
@@ -27,8 +27,8 @@ audioProcessing(void *clientdata, short int *audioIO, int numberOfSamples, int s
 }
 
 HearingAidAudioProcessor::HearingAidAudioProcessor(unsigned int samplerate,
-                                                   unsigned int buffersize) {
-    frequencyDomain = new SuperpoweredFrequencyDomain(
+                                                   unsigned int buffersize, float *frequencies) {
+    /* frequencyDomain = new SuperpoweredFrequencyDomain(
             FFT_LOG_SIZE); // This will do the main "magic".
     stepSize = frequencyDomain->fftSize /
                4; // The default overlap ratio is 4:1, so we will receive this amount of samples from the frequency domain in one step.
@@ -45,7 +45,7 @@ HearingAidAudioProcessor::HearingAidAudioProcessor(unsigned int samplerate,
                    100; // Let's make the fifo's size 100 times more than the step size, so we save memory bandwidth.
     fifoOutput = (float *) malloc(fifoCapacity * sizeof(float) * 2 + 128);
 
-    inputBufferFloat = (float *) malloc(buffersize * sizeof(float) * 2 + 128);
+    inputBufferFloat = (float *) malloc(buffersize * sizeof(float) * 2 + 128); */
 
     audioSystem = new SuperpoweredAndroidAudioIO(samplerate, buffersize, true, true,
                                                  audioProcessing, this,
@@ -53,6 +53,8 @@ HearingAidAudioProcessor::HearingAidAudioProcessor(unsigned int samplerate,
                                                  SL_ANDROID_RECORDING_PRESET_UNPROCESSED,
             // SL_ANDROID_RECORDING_PRESET_VOICE_COMMUNICATION,
                                                  SL_ANDROID_STREAM_MEDIA, 0);
+
+    superpoweredEq = new SuperpoweredNBandEQ(samplerate, frequencies);
     onPlayPause(false);
 }
 
@@ -61,9 +63,19 @@ bool HearingAidAudioProcessor::process(short int *output, unsigned int numberOfS
     if (!eqEnabled)
         return true;
 
+    float *inputBufferFloat = NULL;
+    float *outputBufferFloat = NULL;
     SuperpoweredShortIntToFloat(output, inputBufferFloat,
                                 numberOfSamples); // Converting the 16-bit integer samples to 32-bit floating point.
-    frequencyDomain->addInput(inputBufferFloat,
+    superpoweredEq->process(inputBufferFloat, outputBufferFloat, numberOfSamples);
+    SuperpoweredFloatToShortInt(outputBufferFloat, output,
+                                numberOfSamples);
+
+    return true;
+
+    /*
+    SuperpoweredShortIntToFloat(output, inputBufferFloat,
+                                numberOfSamples); // Converting the 16-bit integer samples to 32-bit floating point.frequencyDomain->addInput(inputBufferFloat,
                               numberOfSamples); // Input goes to the frequency domain.
 
     // In the frequency domain we are working with 1024 magnitudes and phases for every channel (left, right), if the fft size is 2048.
@@ -71,7 +83,7 @@ bool HearingAidAudioProcessor::process(short int *output, unsigned int numberOfS
                                                         phaseRight)) {
         // You can work with frequency domain data from this point.
 
-        /*for (float *i1 = magnitudeLeft; i1 <= magnitudeLeft + 80; i1++) {
+        for (float *i1 = magnitudeLeft; i1 <= magnitudeLeft + 80; i1++) {
             int w = 1;
         }
 
@@ -79,10 +91,11 @@ bool HearingAidAudioProcessor::process(short int *output, unsigned int numberOfS
             int w = 1;
         }*/
 
-        // This is just a quick example: we remove the magnitude of the first 20 bins, meaning total bass cut between 0-430 Hz.
-        // memset(magnitudeLeft, 0, 80);
-        // memset(magnitudeRight, 0, 80);
+    // This is just a quick example: we remove the magnitude of the first 20 bins, meaning total bass cut between 0-430 Hz.
+    // memset(magnitudeLeft, 0, 80);
+    // memset(magnitudeRight, 0, 80);
 
+    /*
         int floatsToProcess = static_cast<int>(max_frequency / bucket_size);
         for (float *ptr = magnitudeLeft; ptr < magnitudeLeft + floatsToProcess; ptr++) {
             *ptr = *ptr * get_eq_index_for_frequency(magnitudeLeft, ptr);
@@ -123,7 +136,7 @@ bool HearingAidAudioProcessor::process(short int *output, unsigned int numberOfS
                                     numberOfSamples);
         fifoOutputFirstSample += numberOfSamples;
         return true;
-    } else return false;
+    } else return false; */
 }
 
 void HearingAidAudioProcessor::onPlayPause(bool play) {
@@ -154,10 +167,14 @@ void HearingAidAudioProcessor::stop() {
 extern "C" JNIEXPORT void
 Java_com_github_vatbub_hearingaid_backend_HearingAidPlaybackService_HearingAidAudioProcessor(
         JNIEnv *javaEnvironment, jobject __unused obj, jint samplerate,
-        jint buffersize/*, jstring apkPath, jint fileAoffset, jint fileAlength, jint fileBoffset, jint fileBlength*/) {
+        jint buffersize,
+        jfloatArray frequencies/*, jstring apkPath, jint fileAoffset, jint fileAlength, jint fileBoffset, jint fileBlength*/) {
     // const char *path = javaEnvironment->GetStringUTFChars(apkPath, JNI_FALSE);
+
     jniInstance = new HearingAidAudioProcessor((unsigned int) samplerate,
-                                               (unsigned int) buffersize);
+                                               (unsigned int) buffersize,
+                                               javaEnvironment->GetFloatArrayElements(frequencies,
+                                                                                      NULL));
     // javaEnvironment->ReleaseStringUTFChars(apkPath, path);
 }
 
@@ -188,35 +205,13 @@ Java_com_github_vatbub_hearingaid_backend_HearingAidPlaybackService_eqEnabled(
 }
 
 extern "C"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wsign-conversion"
 JNIEXPORT void JNICALL
 Java_com_github_vatbub_hearingaid_backend_HearingAidPlaybackService_setEQ(JNIEnv *env,
                                                                           jobject instance,
-                                                                          jfloatArray eqValues_) {
-    jfloat *eqValues = env->GetFloatArrayElements(eqValues_, NULL);
-
-    jsize arraySize = env->GetArrayLength(eqValues_);
-
-    jniInstance->setEQ(eqValues, arraySize);
-
-    env->ReleaseFloatArrayElements(eqValues_, eqValues, 0);
+                                                                          jint index,
+                                                                          jfloat gainDecibels) {
+    jniInstance->get_superpowered_eq()->setBand(index, gainDecibels);
 }
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_github_vatbub_hearingaid_backend_HearingAidPlaybackService_setMinFrequency(JNIEnv *env,
-                                                                                    jobject instance,
-                                                                                    jfloat minFrequency) {
-
-    jniInstance->set_min_frequency(minFrequency);
-
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_github_vatbub_hearingaid_backend_HearingAidPlaybackService_setMaxFrequency(JNIEnv *env,
-                                                                                    jobject instance,
-                                                                                    jfloat maxFrequency) {
-
-    jniInstance->set_max_frequency(maxFrequency);
-
-}
+#pragma clang diagnostic pop

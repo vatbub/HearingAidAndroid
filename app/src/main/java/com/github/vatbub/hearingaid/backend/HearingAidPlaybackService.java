@@ -29,6 +29,8 @@ import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.hearingaid.Constants;
 import com.github.vatbub.hearingaid.MainActivity;
 import com.github.vatbub.hearingaid.R;
+import com.github.vatbub.hearingaid.RemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import java.util.List;
 
@@ -84,7 +86,23 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
         if (samplerateString == null) samplerateString = "44100";
         if (buffersizeString == null) buffersizeString = "512";
 
-        HearingAidAudioProcessor(Integer.parseInt(samplerateString), Integer.parseInt(buffersizeString));
+        double lowerFreq = FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.MIN_EQ_FREQUENCY);
+        double higherFreq = FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.MAX_EQ_FREQUENCY);
+        double numberOfChannels = FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.NUMBER_OF_EQ_BINS);
+        double hzPerChannel = (higherFreq - lowerFreq) / numberOfChannels;
+        float[] frequencies = new float[(int) numberOfChannels];
+
+        for (int channel = 1; channel <= numberOfChannels; channel++) {
+            double meanBinFreq = lowerFreq + (channel - 0.5) * hzPerChannel;
+            // double higherBinFreq = lowerFreq + channel * hzPerChannel;
+            frequencies[channel - 1] = (float) meanBinFreq;
+        }
+
+        HearingAidAudioProcessor(Integer.parseInt(samplerateString), Integer.parseInt(buffersizeString), frequencies);
+    }
+
+    private void getFrequenciesArray() {
+
     }
 
     @Override
@@ -105,7 +123,7 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
         result.sendResult(null);
     }
 
-    private native void HearingAidAudioProcessor(int samplerate, int buffersize);
+    private native void HearingAidAudioProcessor(int samplerate, int buffersize, float[] frequencies);
 
     private native void onPlayPause(boolean play);
 
@@ -115,11 +133,7 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
 
     private native void eqEnabled(boolean eqEnabled);
 
-    private native void setEQ(float[] eqValues);
-
-    private native void setMinFrequency(float minFrequency);
-
-    private native void setMaxFrequency(float maxFrequency);
+    private native void setEQ(int index, float gainDecibels);
 
     private Notification createPlayerNotification(boolean isPlaying) {
         String channelId = "hearingAidPlayPauseNotificationChannel";
@@ -279,10 +293,13 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
 
             if (Constants.CUSTOM_COMMAND_NOTIFY_EQ_ENABLED_CHANGED.equalsIgnoreCase(command) && extras != null && extras.containsKey(Constants.EQ_ENABLED_CHANGED_RESULT))
                 eqEnabled(extras.getBoolean(Constants.EQ_ENABLED_CHANGED_RESULT));
-            else if (Constants.CUSTOM_COMMAND_NOTIFY_EQ_CHANGED.equalsIgnoreCase(command) && extras != null && extras.containsKey(Constants.EQ_CHANGED_RESULT) && extras.containsKey(Constants.EQ_MIN_FREQUENCY_RESULT) && extras.containsKey(Constants.EQ_MAX_FREQUENCY_RESULT)) {
-                setEQ(extras.getFloatArray(Constants.EQ_CHANGED_RESULT));
-                setMinFrequency(extras.getFloat(Constants.EQ_MIN_FREQUENCY_RESULT));
-                setMaxFrequency(extras.getFloat(Constants.EQ_MAX_FREQUENCY_RESULT));
+            else if (Constants.CUSTOM_COMMAND_NOTIFY_EQ_CHANGED.equalsIgnoreCase(command) && extras != null && extras.containsKey(Constants.EQ_CHANGED_RESULT)) {
+                float[] gains = extras.getFloatArray(Constants.EQ_CHANGED_RESULT);
+                if (gains == null)
+                    throw new IllegalArgumentException("com.github.hearingaid.eqChangedResult must be a float array");
+                for (int i = 0; i < gains.length; i++) {
+                    setEQ(i, gains[i]);
+                }
             }
         }
 
