@@ -477,8 +477,11 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
 
         List<Float> eqList = currentProfile.getEQSettings();
         float[] eqArray = new float[eqList.size()];
+        float minDecibels = -90;
+        float maxDecibels = -21;
+
         for (int i = 0; i < eqList.size(); i++)
-            eqArray[i] = eqList.get(i);
+            eqArray[i] = eqList.get(i) * (maxDecibels - minDecibels) + minDecibels;
 
         Bundle params = new Bundle();
         params.putFloatArray(Constants.EQ_CHANGED_RESULT, eqArray);
