@@ -1,0 +1,109 @@
+<?xml version="1.0" standalone="no" ?>
+<!DOCTYPE project PUBLIC "-//audacityproject-1.3.0//DTD//EN" "http://audacity.sourceforge.net/xml/audacityproject-1.3.0.dtd" >
+<project xmlns="http://audacity.sourceforge.net/xml/" projname="EQTests_data" version="1.3.0" audacityversion="2.1.3" sel0="0.0000000000" sel1="10.6086167800" vpos="400" h="0.0000000000" zoom="86.1328125000" rate="44100.0" snapto="off" selectionformat="hh:mm:ss + milliseconds" frequencyformat="Hz" bandwidthformat="octaves">
+	<tags/>
+	<wavetrack name="piano (g&apos;)" channel="0" linked="1" mute="0" solo="0" height="150" minimized="0" isSelected="0" rate="44100" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="309120">
+				<waveblock start="0">
+					<simpleblockfile filename="e000077e.au" len="262144" min="-1.0" max="0.999969" rms="0.18055"/>
+				</waveblock>
+				<waveblock start="262144">
+					<simpleblockfile filename="e00001bd.au" len="46976" min="0.001099" max="0.034912" rms="0.016883"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<wavetrack name="piano (g&apos;)" channel="1" linked="0" mute="0" solo="0" height="150" minimized="0" isSelected="0" rate="44100" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="309120">
+				<waveblock start="0">
+					<simpleblockfile filename="e0000753.au" len="262144" min="-1.0" max="0.999969" rms="0.18277"/>
+				</waveblock>
+				<waveblock start="262144">
+					<simpleblockfile filename="e000031a.au" len="46976" min="0.012177" max="0.045868" rms="0.026962"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<wavetrack name="sawtooth wave (g&apos;)" channel="0" linked="1" mute="0" solo="0" height="150" minimized="0" isSelected="0" rate="44100" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="402560">
+				<waveblock start="0">
+					<simpleblockfile filename="e0000f2f.au" len="262144" min="-1.0" max="0.999969" rms="0.687606"/>
+				</waveblock>
+				<waveblock start="262144">
+					<simpleblockfile filename="e00003d2.au" len="140416" min="-1.0" max="0.999969" rms="0.463864"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<wavetrack name="sawtooth wave (g&apos;)" channel="1" linked="0" mute="0" solo="0" height="150" minimized="0" isSelected="0" rate="44100" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="402560">
+				<waveblock start="0">
+					<simpleblockfile filename="e0000be9.au" len="262144" min="-1.0" max="0.999969" rms="0.68907"/>
+				</waveblock>
+				<waveblock start="262144">
+					<simpleblockfile filename="e0000798.au" len="140416" min="-1.0" max="0.999969" rms="0.467444"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<wavetrack name="App eq off Sawtooth (g&apos;)" channel="0" linked="1" mute="0" solo="0" height="150" minimized="0" isSelected="0" rate="44100" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="416640">
+				<waveblock start="0">
+					<simpleblockfile filename="e00001bb.au" len="262144" min="-0.019104" max="0.074402" rms="0.024055"/>
+				</waveblock>
+				<waveblock start="262144">
+					<simpleblockfile filename="e0000577.au" len="154496" min="-0.015961" max="0.074341" rms="0.02106"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<wavetrack name="App eq off Sawtooth (g&apos;)" channel="1" linked="0" mute="0" solo="0" height="150" minimized="0" isSelected="0" rate="44100" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="416640">
+				<waveblock start="0">
+					<simpleblockfile filename="e0000995.au" len="262144" min="0.007813" max="0.050598" rms="0.027297"/>
+				</waveblock>
+				<waveblock start="262144">
+					<simpleblockfile filename="e000074b.au" len="154496" min="0.008514" max="0.049713" rms="0.026992"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<wavetrack name="App eq on kill 2-9 kHZ Sawtooth (g&apos;)" channel="0" linked="1" mute="0" solo="0" height="150" minimized="0" isSelected="1" rate="44100" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="467840">
+				<waveblock start="0">
+					<simpleblockfile filename="e0000629.au" len="262144" min="-0.015656" max="0.072998" rms="0.023226"/>
+				</waveblock>
+				<waveblock start="262144">
+					<simpleblockfile filename="e000026d.au" len="205696" min="-0.01474" max="0.073517" rms="0.02103"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<wavetrack name="App eq on kill 2-9 kHZ Sawtooth (g&apos;)" channel="1" linked="0" mute="0" solo="0" height="150" minimized="0" isSelected="1" rate="44100" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="467840">
+				<waveblock start="0">
+					<simpleblockfile filename="e0000bc2.au" len="262144" min="0.004791" max="0.056702" rms="0.027287"/>
+				</waveblock>
+				<waveblock start="262144">
+					<simpleblockfile filename="e0000e61.au" len="205696" min="0.00589" max="0.056366" rms="0.027043"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+</project>
