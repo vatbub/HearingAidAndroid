@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.github.vatbub.hearingaid.BuildConfig;
 import com.github.vatbub.hearingaid.FeedbackPrivacyActivity;
 import com.github.vatbub.hearingaid.MainActivity;
 import com.github.vatbub.hearingaid.ProfileManager;
