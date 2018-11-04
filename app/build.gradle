@@ -86,7 +86,14 @@ dependencies {
     implementation 'com.android.support:mediarouter-v7:27.1.1'
     implementation 'com.github.ohoussein.playpauseview:playpauseview:1.0.2'
     implementation 'com.github.vatbub:common.view.motd.core:0.1.6-SNAPSHOT'
-    implementation 'com.github.vatbub:common.core:0.1.6-SNAPSHOT'
+    implementation ('com.github.vatbub:common.core:0.1.6-SNAPSHOT'){
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'com.amazonaws', module: 'aws-java-sdk-s3'
+    }
+    implementation ('com.google.guava:guava:26.0-android'){
+        exclude group: 'com.google.guava', module: 'listenablefuture'
+    }
+    implementation 'com.amazonaws:aws-android-sdk-s3:2.7.7'
     implementation 'com.github.apl-devs:appintro:v4.2.2'
     implementation 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.7.2'
     implementation 'com.android.support:gridlayout-v7:27.1.1'
