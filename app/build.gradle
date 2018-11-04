@@ -97,8 +97,3 @@ dependencies {
     implementation 'ru.noties:markwon:1.0.3'
     implementation 'com.android.support:cardview-v7:27.1.1'
 }
-
-
-
-
-apply plugin: 'com.google.gms.google-services'
