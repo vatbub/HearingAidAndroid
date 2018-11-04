@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Common.useAndroidImplementation(this);
-        RemoteConfig.initConfig();
+        RemoteConfig.initConfig(this);
 
         prerenderMarkdown();
         setTheme(R.style.AppTheme_NoActionBar);
