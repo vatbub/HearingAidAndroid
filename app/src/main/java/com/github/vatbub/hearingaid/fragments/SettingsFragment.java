@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.github.vatbub.hearingaid.FeedbackPrivacyActivity;
 import com.github.vatbub.hearingaid.MainActivity;
 import com.github.vatbub.hearingaid.ProfileManager;
+import com.github.vatbub.hearingaid.R;
 import com.github.vatbub.hearingaid.RemoteConfig;
 import com.github.vatbub.hearingaid.profileeditor.ProfileEditorActivity;
 import com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar;
