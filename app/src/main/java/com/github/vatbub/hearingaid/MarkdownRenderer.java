@@ -66,7 +66,7 @@ public class MarkdownRenderer {
                 renderSynchronously(markdownFile);
             } catch (IOException e) {
                 e.printStackTrace();
-                // TODO: Implement Bugsnag
+                BugsnagWrapper.notify(e);
             }
         }).start();
     }

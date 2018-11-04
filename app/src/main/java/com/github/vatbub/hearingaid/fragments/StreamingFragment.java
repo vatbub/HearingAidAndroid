@@ -32,6 +32,7 @@ import android.widget.TextView;
 import com.github.vatbub.common.view.motd.PlatformIndependentMOTD;
 import com.github.vatbub.hearingaid.AndroidMOTDFileOutputStreamProvider;
 import com.github.vatbub.hearingaid.BottomSheetQueue;
+import com.github.vatbub.hearingaid.BugsnagWrapper;
 import com.github.vatbub.hearingaid.Constants;
 import com.github.vatbub.hearingaid.ProfileManager;
 import com.github.vatbub.hearingaid.R;
@@ -93,7 +94,8 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                         if (startStreamAfterConnectingToMediaBrowserService)
                             setStreaming(true);
                     } catch (RemoteException e) {
-                        // TODO: Implement Bugsnag
+                        e.printStackTrace();
+                        BugsnagWrapper.notify(e);
                     }
                 }
 
@@ -404,7 +406,8 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                                             try {
                                                 motd.markAsRead();
                                             } catch (IOException | ClassNotFoundException e) {
-                                                // TODO: Implement Bugsnag
+                                                e.printStackTrace();
+                                                BugsnagWrapper.notify(e);
                                             }
                                         }
                                     }
@@ -443,7 +446,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                     });
                 } catch (Exception e) {
                     e.printStackTrace();
-                    // TODO: Implement Bugsnag
+                    BugsnagWrapper.notify(e);
                 }
             }
         });

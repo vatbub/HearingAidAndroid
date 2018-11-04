@@ -218,8 +218,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void prerenderMarkdown() {
-        // Crashlytics.log(Log.INFO, Constants.LOG_TAG, "Prerendering markdown...");
-        // TODO: Implement Bugsnag
+        BugsnagWrapper.leaveBreadcrumb("Prerendering markdown...");
         MarkdownRenderer.getInstance(this).prerender(R.raw.privacy);
         MarkdownRenderer.getInstance(this).prerender(R.raw.about);
     }

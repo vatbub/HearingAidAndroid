@@ -23,6 +23,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.github.vatbub.hearingaid.BuildConfig;
+import com.github.vatbub.hearingaid.CustomApplication;
 import com.github.vatbub.hearingaid.FeedbackPrivacyActivity;
 import com.github.vatbub.hearingaid.MainActivity;
 import com.github.vatbub.hearingaid.ProfileManager;
@@ -56,16 +57,15 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
         initVersionLabel();
         updateEqSwitch();
         loadEqSettings();
-        updateCrashlyticsCheckBox();
+        updateCrashReportingCheckBox();
 
         initButtonHandlers();
         initFrequencyLabelsAndSeekbars();
     }
 
-    private void updateCrashlyticsCheckBox() {
+    private void updateCrashReportingCheckBox() {
         AppCompatCheckBox crashReportsEnabledCheckBox = findViewById(R.id.enableCrashReportsCheckBox);
-        // crashReportsEnabledCheckBox.setChecked(CrashlyticsManager.getInstance(getContext()).isCrashlyticsEnabled());
-        // TODO: Implement Bugsnag
+        crashReportsEnabledCheckBox.setChecked(CustomApplication.isBugSnagEnabled(getContext()));
     }
 
     @Override
@@ -118,8 +118,11 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
 
         AppCompatCheckBox crashReportsEnabledCheckBox = findViewById(R.id.enableCrashReportsCheckBox);
         crashReportsEnabledCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            // TODO: Implement Bugsnag
-            showRestartDialog();
+            CustomApplication.setBugSnagEnabled(getContext(), isChecked);
+            if (isChecked)
+                CustomApplication.initializeBugSnag(getContext());
+            else
+                showRestartDialog();
         });
 
         Button viewPrivacyStatementButton = findViewById(R.id.fragment_settings_view_privacy_button);

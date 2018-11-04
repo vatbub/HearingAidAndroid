@@ -17,7 +17,7 @@ public class FeedbackPrivacyActivity extends AppCompatActivity {
             MainActivity.displayMarkdown(this, R.raw.privacy, R.id.activity_feedback_privacy_markdown_view);
         } catch (IOException e) {
             e.printStackTrace();
-            // TODO: Implement Bugsnag
+            BugsnagWrapper.notify(e);
         }
     }
 

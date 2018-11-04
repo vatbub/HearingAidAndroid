@@ -26,7 +26,8 @@ public class RemoteConfig {
             copyDefaultConfigToUserMemoryIfNotPresent(context);
             config = new Config(new URL("https://raw.githubusercontent.com/vatbub/HearingAidAndroid/master/app/src/main/assets/" + defaultConfigFileName), getCopyOfDefaultConfig(context).toURI().toURL(), true, "remote_config.properties", true);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            BugsnagWrapper.notify(e);
         }
     }
 

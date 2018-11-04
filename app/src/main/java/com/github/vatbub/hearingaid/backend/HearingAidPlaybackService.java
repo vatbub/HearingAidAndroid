@@ -24,6 +24,7 @@ import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
+import com.github.vatbub.hearingaid.BugsnagWrapper;
 import com.github.vatbub.hearingaid.Constants;
 import com.github.vatbub.hearingaid.MainActivity;
 import com.github.vatbub.hearingaid.R;
@@ -120,8 +121,7 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
             if (notificationManager == null) {
-                // Crashlytics.log(Log.WARN, LOG_TAG, "notificationManager is null, not creating the notification channel...");
-                // TODO: Implement Bugsnag
+                BugsnagWrapper.leaveBreadcrumb("notificationManager is null, not creating the notification channel...");
             } else {
                 String channelName = getString(R.string.fragment_streaming_playpause_notification_channel_name);
                 String channelDescription = getString(R.string.fragment_streaming_playpause_notification_channel_description);
@@ -243,6 +243,12 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
                 onPause();
             }
         };
+        private BroadcastReceiver actionPlayReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                onPlay();
+            }
+        };
         private AudioManager.OnAudioFocusChangeListener onAudioFocusChangeListener = focusChange -> {
             switch (focusChange) {
                 case AudioManager.AUDIOFOCUS_LOSS:
@@ -260,12 +266,6 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
                         onPlay();
             }
         };
-        private BroadcastReceiver actionPlayReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                onPlay();
-            }
-        };
 
         @Override
         public void onCommand(String command, Bundle extras, ResultReceiver cb) {
@@ -280,8 +280,7 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             super.onPlay();
             AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             if (audioManager == null) {
-                // Crashlytics.log(Log.WARN, LOG_TAG, "AudioManager was null, not executing MediaSession.onPlay()");
-                // TODO: Implement Bugsnag
+                BugsnagWrapper.leaveBreadcrumb("AudioManager was null, not executing MediaSession.onPlay()");
                 return;
             }
             // Request audio focus for playback, this registers the afChangeListener
@@ -344,7 +343,7 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
                 unregisterReceiver(becomingNoisyReceiver);
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
-                // TODO: Implement Bugsnag
+                BugsnagWrapper.notify(e);
             }
 
             stopForeground(false);
@@ -352,9 +351,8 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (notificationManager != null)
                 notificationManager.notify(notificationId, createPlayerNotification(false));
-            // else
-            // Crashlytics.log(Log.WARN, LOG_TAG, "notificationManager was null, not updating the notification in onPause()");
-            // TODO: Implement Bugsnag
+            else
+                BugsnagWrapper.leaveBreadcrumb("notificationManager was null, not updating the notification in onPause()");
         }
 
         @Override
@@ -362,8 +360,7 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             super.onStop();
             AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             if (audioManager == null) {
-                // Crashlytics.log(Log.WARN, LOG_TAG, "AudioManager was null, not executing MediaSession.onStop()");
-                // TODO: Implement Bugsnag
+                BugsnagWrapper.leaveBreadcrumb("AudioManager was null, not executing MediaSession.onStop()");
                 return;
             }
 
@@ -379,21 +376,21 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
                 unregisterReceiver(becomingNoisyReceiver);
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
-                // TODO: Implement Bugsnag
+                BugsnagWrapper.notify(e);
             }
 
             try {
                 unregisterReceiver(actionPauseReceiver);
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
-                // TODO: Implement Bugsnag
+                BugsnagWrapper.notify(e);
             }
 
             try {
                 unregisterReceiver(actionPlayReceiver);
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
-                // TODO: Implement Bugsnag
+                BugsnagWrapper.notify(e);
             }
 
             stopSelf();
