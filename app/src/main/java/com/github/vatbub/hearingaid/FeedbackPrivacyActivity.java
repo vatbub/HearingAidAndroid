@@ -3,8 +3,6 @@ package com.github.vatbub.hearingaid;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.crashlytics.android.Crashlytics;
-
 import java.io.IOException;
 
 public class FeedbackPrivacyActivity extends AppCompatActivity {
@@ -19,7 +17,7 @@ public class FeedbackPrivacyActivity extends AppCompatActivity {
             MainActivity.displayMarkdown(this, R.raw.privacy, R.id.activity_feedback_privacy_markdown_view);
         } catch (IOException e) {
             e.printStackTrace();
-            Crashlytics.logException(e);
+            // TODO: Implement Bugsnag
         }
     }
 

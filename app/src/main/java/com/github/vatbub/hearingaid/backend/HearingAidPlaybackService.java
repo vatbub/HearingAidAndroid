@@ -23,9 +23,7 @@ import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.hearingaid.Constants;
 import com.github.vatbub.hearingaid.MainActivity;
 import com.github.vatbub.hearingaid.R;
@@ -122,7 +120,8 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
             if (notificationManager == null) {
-                Crashlytics.log(Log.WARN, LOG_TAG, "notificationManager is null, not creating the notification channel...");
+                // Crashlytics.log(Log.WARN, LOG_TAG, "notificationManager is null, not creating the notification channel...");
+                // TODO: Implement Bugsnag
             } else {
                 String channelName = getString(R.string.fragment_streaming_playpause_notification_channel_name);
                 String channelDescription = getString(R.string.fragment_streaming_playpause_notification_channel_description);
@@ -281,7 +280,8 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             super.onPlay();
             AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             if (audioManager == null) {
-                Crashlytics.log(Log.WARN, LOG_TAG, "AudioManager was null, not executing MediaSession.onPlay()");
+                // Crashlytics.log(Log.WARN, LOG_TAG, "AudioManager was null, not executing MediaSession.onPlay()");
+                // TODO: Implement Bugsnag
                 return;
             }
             // Request audio focus for playback, this registers the afChangeListener
@@ -344,7 +344,7 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
                 unregisterReceiver(becomingNoisyReceiver);
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
-                Crashlytics.logException(e);
+                // TODO: Implement Bugsnag
             }
 
             stopForeground(false);
@@ -352,8 +352,9 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (notificationManager != null)
                 notificationManager.notify(notificationId, createPlayerNotification(false));
-            else
-                Crashlytics.log(Log.WARN, LOG_TAG, "notificationManager was null, not updating the notification in onPause()");
+            // else
+            // Crashlytics.log(Log.WARN, LOG_TAG, "notificationManager was null, not updating the notification in onPause()");
+            // TODO: Implement Bugsnag
         }
 
         @Override
@@ -361,7 +362,8 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
             super.onStop();
             AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             if (audioManager == null) {
-                Crashlytics.log(Log.WARN, LOG_TAG, "AudioManager was null, not executing MediaSession.onStop()");
+                // Crashlytics.log(Log.WARN, LOG_TAG, "AudioManager was null, not executing MediaSession.onStop()");
+                // TODO: Implement Bugsnag
                 return;
             }
 
@@ -377,21 +379,21 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
                 unregisterReceiver(becomingNoisyReceiver);
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
-                Crashlytics.logException(e);
+                // TODO: Implement Bugsnag
             }
 
             try {
                 unregisterReceiver(actionPauseReceiver);
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
-                Crashlytics.logException(e);
+                // TODO: Implement Bugsnag
             }
 
             try {
                 unregisterReceiver(actionPlayReceiver);
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
-                Crashlytics.logException(e);
+                // TODO: Implement Bugsnag
             }
 
             stopSelf();

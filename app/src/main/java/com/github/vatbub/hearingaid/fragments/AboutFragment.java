@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.crashlytics.android.Crashlytics;
 import com.github.vatbub.hearingaid.MainActivity;
 import com.github.vatbub.hearingaid.R;
 
@@ -39,7 +38,7 @@ public class AboutFragment extends CustomFragment {
         try {
             MainActivity.displayMarkdown(getActivity(), R.raw.about, R.id.fragment_about_markdown_view);
         } catch (IOException e) {
-            Crashlytics.logException(e);
+            // TODO: Implement Bugsnag
         }
     }
 

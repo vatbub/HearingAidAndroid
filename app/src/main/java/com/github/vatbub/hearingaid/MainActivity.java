@@ -33,9 +33,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
+import com.github.vatbub.common.core.Common;
 import com.github.vatbub.hearingaid.fragments.CustomFragment;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import org.rm3l.maoni.Maoni;
 import org.rm3l.maoni.common.contract.Handler;
@@ -75,7 +74,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        CrashlyticsManager.getInstance(this).configureCrashlytics();
+        Common.useAndroidImplementation(this);
+        RemoteConfig.initConfig();
+
         prerenderMarkdown();
         setTheme(R.style.AppTheme_NoActionBar);
         setContentView(R.layout.activity_main);
@@ -99,8 +100,6 @@ public class MainActivity extends AppCompatActivity
             updateSelectedItem(currentFragmentTag);
             updateTitle(currentFragmentTag);
         }
-
-        RemoteConfig.initConfig();
 
         Thread t = new Thread(() -> {
             SharedPreferences getPrefs = PreferenceManager
@@ -199,7 +198,7 @@ public class MainActivity extends AppCompatActivity
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.putExtra(Intent.EXTRA_TEXT,
-                    getString(R.string.share_message, FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.PLAY_STORE_URL)));
+                    getString(R.string.share_message, RemoteConfig.getConfig().getValue(RemoteConfig.Keys.PLAY_STORE_URL)));
             sendIntent.setType("text/plain");
             startActivity(Intent.createChooser(sendIntent, getString(R.string.share_screen_title)));
         } else if (id == R.id.nav_feedback) {
@@ -209,7 +208,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_about) {
             openFragment(CustomFragment.FragmentTag.ABOUT_FRAGMENT);
         } else if (id == R.id.nav_github) {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.GIT_HUB_URL)));
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(RemoteConfig.getConfig().getValue(RemoteConfig.Keys.GIT_HUB_URL)));
             startActivity(browserIntent);
         }
 
@@ -219,7 +218,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void prerenderMarkdown() {
-        Crashlytics.log(Log.INFO, Constants.LOG_TAG, "Prerendering markdown...");
+        // Crashlytics.log(Log.INFO, Constants.LOG_TAG, "Prerendering markdown...");
+        // TODO: Implement Bugsnag
         MarkdownRenderer.getInstance(this).prerender(R.raw.privacy);
         MarkdownRenderer.getInstance(this).prerender(R.raw.about);
     }
@@ -363,8 +363,8 @@ public class MainActivity extends AppCompatActivity
 
     public void startFeedbackActivity() {
         final SeekBar[] audioLatencySeekbar = new SeekBar[1];
-        MaoniEmailListener listenerForMaoni = new MaoniEmailListener(this, FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.EMAIL_FEEDBACK_SUBJECT),
-                FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.EMAIL_FEEDBACK_TO_ADDRESS)) {
+        MaoniEmailListener listenerForMaoni = new MaoniEmailListener(this, RemoteConfig.getConfig().getValue(RemoteConfig.Keys.EMAIL_FEEDBACK_SUBJECT),
+                RemoteConfig.getConfig().getValue(RemoteConfig.Keys.EMAIL_FEEDBACK_TO_ADDRESS)) {
             @Override
             public boolean onSendButtonClicked(Feedback feedback) {
                 //noinspection UnnecessaryBoxing

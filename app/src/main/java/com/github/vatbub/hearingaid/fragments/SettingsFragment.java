@@ -8,11 +8,25 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatCheckBox;
-import android.view.*;
-import android.widget.*;
-import com.github.vatbub.hearingaid.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.SeekBar;
+import android.widget.Spinner;
+import android.widget.Switch;
+import android.widget.TextView;
+
+import com.github.vatbub.hearingaid.FeedbackPrivacyActivity;
+import com.github.vatbub.hearingaid.MainActivity;
+import com.github.vatbub.hearingaid.ProfileManager;
+import com.github.vatbub.hearingaid.RemoteConfig;
 import com.github.vatbub.hearingaid.profileeditor.ProfileEditorActivity;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar;
 
 import java.util.ArrayList;
@@ -48,7 +62,8 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
 
     private void updateCrashlyticsCheckBox() {
         AppCompatCheckBox crashReportsEnabledCheckBox = findViewById(R.id.enableCrashReportsCheckBox);
-        crashReportsEnabledCheckBox.setChecked(CrashlyticsManager.getInstance(getContext()).isCrashlyticsEnabled());
+        // crashReportsEnabledCheckBox.setChecked(CrashlyticsManager.getInstance(getContext()).isCrashlyticsEnabled());
+        // TODO: Implement Bugsnag
     }
 
     @Override
@@ -101,7 +116,7 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
 
         AppCompatCheckBox crashReportsEnabledCheckBox = findViewById(R.id.enableCrashReportsCheckBox);
         crashReportsEnabledCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            CrashlyticsManager.getInstance(getContext()).setCrashlyticsEnabled(isChecked);
+            // TODO: Implement Bugsnag
             showRestartDialog();
         });
 
@@ -142,9 +157,9 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
     }
 
     private void initFrequencyLabelsAndSeekbars() {
-        double lowerFreq = FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.MIN_EQ_FREQUENCY);
-        double higherFreq = FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.MAX_EQ_FREQUENCY);
-        double numberOfChannels = FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.NUMBER_OF_EQ_BINS);
+        double lowerFreq = Double.parseDouble(RemoteConfig.getConfig().getValue(RemoteConfig.Keys.MIN_EQ_FREQUENCY));
+        double higherFreq = Double.parseDouble(RemoteConfig.getConfig().getValue(RemoteConfig.Keys.MAX_EQ_FREQUENCY));
+        double numberOfChannels = Double.parseDouble(RemoteConfig.getConfig().getValue(RemoteConfig.Keys.NUMBER_OF_EQ_BINS));
         double hzPerChannel = (higherFreq - lowerFreq) / numberOfChannels;
         final int[] textViewIds = {R.id.text_view_bin_1, R.id.text_view_bin_2, R.id.text_view_bin_3, R.id.text_view_bin_4, R.id.text_view_bin_5, R.id.text_view_bin_6};
 
