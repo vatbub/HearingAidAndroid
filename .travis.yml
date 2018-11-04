@@ -22,7 +22,7 @@ before_install:
 - yes | sdkmanager "platforms;android-27"
 #- yes | sdkmanager "ndk-bundle"
 - wget https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip -nv
-- unzip android-ndk-r16b-linux-x86_64.zip -q
+- unzip -q android-ndk-r16b-linux-x86_64.zip
 - mv android-ndk-r16b /usr/local/android-sdk/ndk-bundle
 - yes | sdkmanager "patcher;v4"
 - yes | sdkmanager "cmake;3.6.4111459"
