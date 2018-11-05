@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
+import android.widget.Toast;
 
 import com.bugsnag.android.Bugsnag;
 
@@ -34,13 +34,14 @@ public class CustomApplication extends Application {
 
     public static void initializeBugSnag(Context context) {
         if (isBugSnagInitialized()) return;
-
-        if (isBugSnagInitializable() && isBugSnagEnabled(context)) {
-            Bugsnag.init(context);
-            bugSnagInitialized = true;
-        } else {
-            Log.i(CustomApplication.class.getName(), "Bug snag is not initialized as no api key was found.");
+        if (!isBugSnagInitializable()) {
+            Toast.makeText(context, R.string.bugsnag_api_key_not_specified_error_message, Toast.LENGTH_SHORT).show();
+            return;
         }
+        if (!isBugSnagEnabled(context)) return;
+
+        Bugsnag.init(context);
+        bugSnagInitialized = true;
     }
 
     public static boolean isBugSnagInitialized() {
