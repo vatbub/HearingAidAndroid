@@ -3,6 +3,7 @@ package com.github.vatbub.hearingaid;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -52,7 +53,11 @@ public class CustomApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Bundle metaData = getApplicationInfo().metaData;
+        ApplicationInfo applicationInfo = getApplicationInfo();
+        if (applicationInfo == null) return;
+        Bundle metaData = applicationInfo.metaData;
+        if (metaData == null) return;
+
         String bugSnagApiKey = metaData.getString("com.bugsnag.android.API_KEY");
         bugSnagInitializable = bugSnagApiKey != null && !bugSnagApiKey.equals(BUG_SNAG_API_KEY_NOT_SPECIFIED);
 
