@@ -20,7 +20,8 @@ Yes, we are publishing a scientific paper about the app. Since the app is not fi
 ## Build
 1. Clone the repo
 2. Create a file called `local.properties` according to the instructions below.
-3. Run `gradlew build` (`./gradlew build` on *nix)
+3. Install the Superpowered SDK by running `gradlew installSuperpowered cleanSuperpoweredDownload` (see below for more details)
+4. Run `gradlew build` (`./gradlew build` on *nix)
 
 ### The local properties file
 All Android projects require a file called `local.properties` that contains info about the location of your Android SDK.
@@ -37,6 +38,9 @@ superpowered.dir=/path/to/the/repository/root/Superpowered/
 For `superpowered.dir`, please use `/` much like on Linux and Mac. This is due to `cmake` being weird.
 
 **Note:** All `:` must be escaped, i. e. Windows paths should start like this: `C:\path\\to\\sdk` or `D:\path/to/repo/root/Superpowered/`
+
+### Downloading the Superpowered sdk
+This project uses the superpowered sdk for fast audio processing. To download the sdk, you must run `./gradlew installSuperpowered cleanSuperpoweredDownload`. This will download, unzip and install the sdk. To uninstall the sdk again, run `gradlew deleteSuperpowered`.
 
 ### Why is the build so incredibly slow?
 To be honest, we don't know too much why. It's probably due to `cmake` taking ages to compile the C++ code.

@@ -32,3 +32,39 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+File superpoweredDestinationFolder = new File(rootProject.rootDir, "Superpowered")
+File superpoweredZipDestination = new File(rootProject.rootDir, "SuperpoweredSDK.zip")
+File superpoweredUnzipDestination = new File(rootProject.rootDir, "SuperpoweredSDK_unzip")
+File superpoweredUnzippedSDKSource = superpoweredUnzipDestination.toPath().resolve("SuperpoweredSDK").resolve("Superpowered").toFile()
+
+task downloadSuperpowered {
+    doLast {
+        println "Downloading Superpowered..."
+        ant.get(src: 'https://superpowered.com/SuperpoweredSDK.zip', dest: superpoweredZipDestination.toString(), skipexisting: true)
+        println "Download finished"
+    }
+}
+
+task unzipSuperpowered(dependsOn: downloadSuperpowered, type: Copy) {
+    from zipTree(superpoweredZipDestination)
+    into superpoweredUnzipDestination
+}
+
+task installSuperpowered(dependsOn: unzipSuperpowered, type: Copy) {
+    from superpoweredUnzippedSDKSource
+    into superpoweredDestinationFolder
+}
+
+task cleanSuperpoweredDownload {
+    doLast {
+        delete superpoweredZipDestination
+        delete superpoweredUnzipDestination
+    }
+}
+
+task deleteSuperpowered(dependsOn: cleanSuperpoweredDownload) {
+    doLast {
+        delete superpoweredDestinationFolder
+    }
+}
