@@ -19,6 +19,7 @@ android:
   - m2repository-com-android-support-constraint-constraint-layout-solver-1.0.2
   - m2repository-com-android-support-constraint-constraint-layout-1.0.2
 before_install:
+- chmod +x ./gradlew
 - yes | sdkmanager "platforms;android-27"
 #- yes | sdkmanager "ndk-bundle"
 - wget https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip -nv
@@ -35,7 +36,6 @@ before_install:
 - ./google-cloud-sdk/bin/gcloud auth activate-service-account --key-file HearingAid-d4e4b3143662.json
 - "./gradlew installSuperpowered cleanSuperpoweredDownload"
 script:
-- chmod +x ./gradlew
 - cp ci.local.properties local.properties
 - "./gradlew clean lint assembleAndroidTest build"
 - ./google-cloud-sdk/bin/gcloud firebase test android run --type instrumentation --app ./app/build/outputs/apk/debug/app-debug.apk --test ./app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk --device model=Nexus10,version=21,locale=en,orientation=portrait --device model=Nexus5,version=23,locale=en,orientation=portrait --device model=Nexus6P,version=27,locale=en,orientation=portrait
