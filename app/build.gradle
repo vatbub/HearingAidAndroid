@@ -43,21 +43,23 @@ ext {
 
 
     int page = 1
-    GIT_COMMIT_COUNT = 0
+    int gitHubCommitCount = 0
     int lastResCount = -1
     while (lastResCount != 0) {
         lastResCount = getCommitCountFromGitHub(git.branch.current.name, page)
         page++
         if (lastResCount == -1) {
             println "Unable to get commit count from github, using local repo"
-            GIT_COMMIT_COUNT = git.log(includes: ['HEAD']).size()
+            gitHubCommitCount = 0
             break
         }
 
-        GIT_COMMIT_COUNT = GIT_COMMIT_COUNT + lastResCount
+        gitHubCommitCount = gitHubCommitCount + lastResCount
     }
 
-    println "GitHub returned " + GIT_COMMIT_COUNT + " commits"
+    println "GitHub returned " + gitHubCommitCount + " commits"
+    int localCommitCount = git.log(includes: ['HEAD']).size()
+    GIT_COMMIT_COUNT = Math.max(localCommitCount, gitHubCommitCount)
 }
 
 android {
