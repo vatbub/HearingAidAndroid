@@ -33,7 +33,7 @@ before_install:
 - echo "y" | ./google-cloud-sdk/bin/gcloud components update
 - gcloud config set project hearingaid-c625a
 - ./google-cloud-sdk/bin/gcloud auth activate-service-account --key-file HearingAid-d4e4b3143662.json
-- gradle installSuperpowered cleanSuperpoweredDownload
+- "./gradlew installSuperpowered cleanSuperpoweredDownload"
 script:
 - chmod +x ./gradlew
 - cp ci.local.properties local.properties
