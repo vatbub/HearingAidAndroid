@@ -1,3 +1,5 @@
+import com.jsoniter.JsonIterator
+import com.jsoniter.any.Any
 import org.ajoberstar.grgit.Grgit
 
 apply plugin: 'com.android.application'
@@ -7,14 +9,55 @@ Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 def superpowered_sdk_path = properties.getProperty('superpowered.dir')
 
+private static int getCommitCountFromGitHub(String branch, int page) {
+    URL url = new URL("https://api.github.com/repos/vatbub/HearingAidAndroid/commits?sha=" + branch + "&page=" + page)
+    HttpURLConnection con = (HttpURLConnection) url.openConnection()
+    con.setRequestMethod("GET")
+    int status = con.getResponseCode()
+    if (status != 200) {
+        println "GitHub returned status " + status
+        return -1
+    }
+
+    BufferedReader bufferedReader = new BufferedReader(
+            new InputStreamReader(con.getInputStream()))
+    String inputLine
+    StringBuffer content = new StringBuffer()
+    while ((inputLine = bufferedReader.readLine()) != null) {
+        content.append(inputLine)
+    }
+    bufferedReader.close()
+
+    Any commits = JsonIterator.deserialize(content.toString())
+    return commits.size()
+}
+
 ext {
     // Open the Git repository in the current directory.
     git = Grgit.open(dir: file('..'))
 
     // Get commit id of HEAD.
-    GIT_COMMIT_COUNT = git.log(includes: ['HEAD']).size()
+    // GIT_COMMIT_COUNT = git.log(includes: ['HEAD']).size()
     // Alternative is using abbreviatedId of head() method.
     // revision = git.head().abbreviatedId
+
+
+    int page = 1
+    GIT_COMMIT_COUNT = 0
+    int lastResCount = -1
+    while (lastResCount != 0) {
+        lastResCount = getCommitCountFromGitHub(git.branch.current.name, page)
+        page++
+        if (lastResCount == -1) {
+            println "Unable to get commit count from github, using local repo"
+            GIT_COMMIT_COUNT = git.log(includes: ['HEAD']).size()
+            break
+        }
+
+        GIT_COMMIT_COUNT = GIT_COMMIT_COUNT + lastResCount
+    }
+
+    println "GitHub returned " + GIT_COMMIT_COUNT + " commits"
 }
 
 android {
