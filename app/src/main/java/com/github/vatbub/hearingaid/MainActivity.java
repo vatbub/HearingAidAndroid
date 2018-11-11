@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        } else if (currentFragmentTag == null || getCurrentFragment() == null || !getCurrentFragment().onBackPressed()) {
             try {
                 CustomFragment.FragmentTag fragmentTagAboutToBeOpened = CustomFragment.FragmentTag.valueOf(getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 2).getName());
                 Log.d(getClass().getName(), "Navigating back to fragment: " + fragmentTagAboutToBeOpened);
@@ -238,8 +238,8 @@ public class MainActivity extends AppCompatActivity
             fragmentToUse = CustomFragment.createInstance(tag);
 
         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        if (currentFragmentTag != null && getSupportFragmentManager().findFragmentByTag(currentFragmentTag.toString()) != null)
-            fragmentTransaction.hide(getSupportFragmentManager().findFragmentByTag(currentFragmentTag.toString()));
+        if (currentFragmentTag != null && getCurrentFragment() != null)
+            fragmentTransaction.hide(getCurrentFragment());
 
         if (fragmentFound)
             fragmentTransaction.show(fragmentToUse);
@@ -251,6 +251,10 @@ public class MainActivity extends AppCompatActivity
         currentFragmentTag = tag;
 
         updateTitle(tag);
+    }
+
+    public CustomFragment getCurrentFragment() {
+        return (CustomFragment) getSupportFragmentManager().findFragmentByTag(currentFragmentTag.toString());
     }
 
     private void updateTitle(CustomFragment.FragmentTag fragmentTag) {

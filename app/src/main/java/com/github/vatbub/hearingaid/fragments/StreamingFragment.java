@@ -109,9 +109,16 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                     // The Service has refused our connection
                 }
             };
-
     public StreamingFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        if (bottomSheetBehaviourQueue == null)
+            return super.onBackPressed();
+
+        return bottomSheetBehaviourQueue.handleBackPress();
     }
 
     @Override
@@ -263,7 +270,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                 comparisonString = getString(R.string.fragment_streaming_more_than);
 
             ((TextView) findViewById(R.id.tv_low_latency)).setText(getString(R.string.fragment_streaming_latency_message, comparisonString));
-            bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mLatencyBottomSheetBehavior, BottomSheetBehavior.STATE_EXPANDED, BottomSheetQueue.BottomSheetPriority.LOW));
+            bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mLatencyBottomSheetBehavior, false, BottomSheetBehavior.STATE_EXPANDED, BottomSheetQueue.BottomSheetPriority.LOW));
         }
     }
 
@@ -333,7 +340,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                 MediaControllerCompat.getMediaController(getActivity()).getTransportControls().play();
                 return;
             }
-            bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mWiredHeadphonesBottomSheetBehavior, BottomSheetBehavior.STATE_EXPANDED, BottomSheetQueue.BottomSheetPriority.HIGH));
+            bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mWiredHeadphonesBottomSheetBehavior, true, BottomSheetBehavior.STATE_EXPANDED, BottomSheetQueue.BottomSheetPriority.HIGH));
         } else {
             MediaControllerCompat.getMediaController(getActivity()).getTransportControls().pause();
         }
@@ -422,7 +429,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                                     @Override
                                     public void onPageFinished(WebView view, String url) {
                                         super.onPageFinished(view, url);
-                                        bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mMOTDBottomSheetBehavior, BottomSheetBehavior.STATE_COLLAPSED, BottomSheetQueue.BottomSheetPriority.NORMAL, additionalCallbacks));
+                                        bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mMOTDBottomSheetBehavior, true, BottomSheetBehavior.STATE_COLLAPSED, BottomSheetQueue.BottomSheetPriority.NORMAL, additionalCallbacks));
                                     }
                                 });
 
