@@ -126,7 +126,7 @@ public class BottomSheetQueue extends PriorityQueue<BottomSheetQueue.BottomSheet
     }
 
     public enum BottomSheetPriority {
-        LOW(-100), NORMAL(0), HIGH(100);
+        LOW(-100), LOWER_THAN_NORMAL(-50), NORMAL(0), HIGHER_THAN_NORMAL(50), HIGH(100);
 
         private int numericPriority;
 

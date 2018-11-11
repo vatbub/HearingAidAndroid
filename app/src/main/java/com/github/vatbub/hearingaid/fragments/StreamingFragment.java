@@ -28,12 +28,15 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.vatbub.common.view.motd.PlatformIndependentMOTD;
 import com.github.vatbub.hearingaid.AndroidMOTDFileOutputStreamProvider;
 import com.github.vatbub.hearingaid.BottomSheetQueue;
 import com.github.vatbub.hearingaid.BugsnagWrapper;
 import com.github.vatbub.hearingaid.Constants;
+import com.github.vatbub.hearingaid.CustomApplication;
+import com.github.vatbub.hearingaid.FeedbackPrivacyActivity;
 import com.github.vatbub.hearingaid.ProfileManager;
 import com.github.vatbub.hearingaid.R;
 import com.github.vatbub.hearingaid.RemoteConfig;
@@ -53,6 +56,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
     private static final String NEVER_SHOW_WIRED_HEADPHONES_MESSAGE_AGAIN_PREF_KEY = "doNotShowWiredHeadphonesMessage";
 
     private BottomSheetBehavior mWiredHeadphonesBottomSheetBehavior;
+    private BottomSheetBehavior mDiagnosticDataBottomSheetBehavior;
     private BottomSheetBehavior mLatencyBottomSheetBehavior;
     private BottomSheetBehavior mMOTDBottomSheetBehavior;
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
@@ -227,6 +231,10 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
 
         initButtonHandlers();
 
+        View diagnosticDataBottomSheet = findViewById(R.id.diagnostic_data_bottom_Sheet);
+        mDiagnosticDataBottomSheetBehavior = BottomSheetBehavior.from(diagnosticDataBottomSheet);
+        mDiagnosticDataBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
         View lowLatencyBottomSheet = findViewById(R.id.low_latency_bottom_sheet);
         mLatencyBottomSheetBehavior = BottomSheetBehavior.from(lowLatencyBottomSheet);
         mLatencyBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -242,6 +250,12 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
 
         showMOTDIfApplicable();
         showLatencyBottomSheetIfApplicable();
+        showDiagnosticDataBottomSheetIfApplicable();
+    }
+
+    private void showDiagnosticDataBottomSheetIfApplicable() {
+        if (CustomApplication.hasUserMadeAChoiceForBugsnag(getContext())) return;
+        bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mDiagnosticDataBottomSheetBehavior, false, BottomSheetBehavior.STATE_EXPANDED, BottomSheetQueue.BottomSheetPriority.HIGHER_THAN_NORMAL));
     }
 
     private SharedPreferences getSharedPreferences() {
@@ -281,6 +295,22 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
             } else {
                 setStreaming(!isStreamingEnabled());
             }
+        });
+
+        findViewById(R.id.diagnostic_data_yes_button).setOnClickListener(view -> {
+            Toast.makeText(getContext(), R.string.fragment_streaming_diagnostic_data_change_later_in_settings_toast, Toast.LENGTH_LONG).show();
+            CustomApplication.setBugSnagEnabled(getContext(), true);
+            mDiagnosticDataBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        });
+
+        findViewById(R.id.diagnostic_data_no_button).setOnClickListener(view -> {
+            Toast.makeText(getContext(), R.string.fragment_streaming_diagnostic_data_change_later_in_settings_toast, Toast.LENGTH_LONG).show();
+            CustomApplication.setBugSnagEnabled(getContext(), false);
+            mDiagnosticDataBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        });
+
+        findViewById(R.id.diagnostic_data_privacy_policy_button).setOnClickListener(view -> {
+            startActivity(new Intent(getContext(), FeedbackPrivacyActivity.class));
         });
 
         findViewById(R.id.learn_more_button).setOnClickListener(view -> {

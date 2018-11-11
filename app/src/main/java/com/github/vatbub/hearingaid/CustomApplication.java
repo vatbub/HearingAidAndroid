@@ -33,6 +33,10 @@ public class CustomApplication extends Application {
         return getPrefs(context).getBoolean(BUG_SNAG_ENABLED_KEY, false);
     }
 
+    public static boolean hasUserMadeAChoiceForBugsnag(Context context) {
+        return getPrefs(context).contains(BUG_SNAG_ENABLED_KEY);
+    }
+
     public static void initializeBugSnag(Context context) {
         if (isBugSnagInitialized()) return;
         if (!isBugSnagInitializable()) {

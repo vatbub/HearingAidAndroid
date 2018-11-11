@@ -92,4 +92,9 @@
     <string name="fragment_streaming_wired_headphones_reason_message">Wir empfehlen die Benutzung eines Kabelkopfhörers für das beste Erlebnis.</string>
     <string name="fragment_settings_version_text_view">Version: %1$s\nVersion code: %2$d</string>
     <string name="bugsnag_api_key_not_specified_error_message">Bugsnag API key nicht definiert, überprüfen Sie ihre Build-Umgebung!</string>
+    <string name="fragment_streaming_diagnostic_data_question">Dürfen wir Diagnosedaten (Absturzlogs) von Ihnen erheben?</string>
+    <string name="fragment_streaming_diagnostic_data_yes">Ja</string>
+    <string name="fragment_streaming_diagnostic_data_no">Nein</string>
+    <string name="fragment_streaming_diagnostic_data_privacy_policy">Datenschutzerklärung</string>
+    <string name="fragment_streaming_diagnostic_data_change_later_in_settings_toast">Sie können Ihre Wahl jederzeit in den Einstellungen der App ändern.</string>
 </resources>
