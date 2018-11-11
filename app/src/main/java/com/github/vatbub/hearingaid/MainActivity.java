@@ -165,6 +165,7 @@ public class MainActivity extends AppCompatActivity
                 currentFragmentTag = fragmentTagAboutToBeOpened;
             } catch (ArrayIndexOutOfBoundsException e) {
                 Log.e(getClass().getName(), "onBackPressed: Unable to get the fragment about to be navigated to as there is no fragment in the back stack anymore", e);
+                finish();
             }
         }
     }
