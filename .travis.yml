@@ -20,7 +20,10 @@ android:
   - m2repository-com-android-support-constraint-constraint-layout-1.0.2
 before_install:
 - yes | sdkmanager "platforms;android-27"
-- yes | sdkmanager "ndk-bundle"
+#- yes | sdkmanager "ndk-bundle"
+- wget https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip -nv
+- unzip -q android-ndk-r16b-linux-x86_64.zip
+- mv android-ndk-r16b /usr/local/android-sdk/ndk-bundle
 - yes | sdkmanager "patcher;v4"
 - yes | sdkmanager "cmake;3.6.4111459"
 - yes | sdkmanager "lldb;3.0"
@@ -33,7 +36,7 @@ before_install:
 script:
 - chmod +x ./gradlew
 - cp ci.local.properties local.properties
-- "./gradlew clean lint assembleAndroidTest build"
+- "./gradlew installSuperpowered cleanSuperpoweredDownload clean lint assembleAndroidTest build"
 - ./google-cloud-sdk/bin/gcloud firebase test android run --type instrumentation --app ./app/build/outputs/apk/debug/app-debug.apk --test ./app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk --device model=Nexus10,version=21,locale=en,orientation=portrait --device model=Nexus5,version=23,locale=en,orientation=portrait --device model=Nexus6P,version=27,locale=en,orientation=portrait
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock

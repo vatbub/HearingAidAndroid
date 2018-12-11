@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.crashlytics.android.Crashlytics;
+import com.github.vatbub.hearingaid.BugsnagWrapper;
 import com.github.vatbub.hearingaid.MainActivity;
 import com.github.vatbub.hearingaid.R;
 
@@ -33,7 +33,7 @@ public class PrivacyFragment extends CustomFragment {
             MainActivity.displayMarkdown(getActivity(), R.raw.privacy, R.id.fragment_privacy_markdown_view);
         } catch (IOException e) {
             e.printStackTrace();
-            Crashlytics.logException(e);
+            BugsnagWrapper.notify(e);
         }
     }
 }

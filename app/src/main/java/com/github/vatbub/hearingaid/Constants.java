@@ -14,6 +14,7 @@ public class Constants {
     public static final String EQ_FREQUENCIES_ARRAY = "com.github.hearingaid.eqFrequenciesArray";
     public static final String ACTION_PLAY = "com.github.vatbub.hearingaid.PLAY";
     public static final String ACTION_PAUSE = "com.github.vatbub.hearingaid.PAUSE";
-    public static int PAUSE_REQUEST_CODE = 100;
-    public static int PLAY_REQUEST_CODE = 200;
+    public static final int PAUSE_REQUEST_CODE = 100;
+    public static final int PLAY_REQUEST_CODE = 200;
+    public static final String INTENT_COMING_FROM_NOTIFICATION_EXTRA_KEY = "intentComingFromNotification";
 }

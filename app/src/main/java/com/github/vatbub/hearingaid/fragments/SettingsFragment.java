@@ -23,14 +23,14 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.github.vatbub.hearingaid.CrashlyticsManager;
+import com.github.vatbub.hearingaid.BuildConfig;
+import com.github.vatbub.hearingaid.CustomApplication;
 import com.github.vatbub.hearingaid.FeedbackPrivacyActivity;
 import com.github.vatbub.hearingaid.MainActivity;
 import com.github.vatbub.hearingaid.ProfileManager;
 import com.github.vatbub.hearingaid.R;
 import com.github.vatbub.hearingaid.RemoteConfig;
 import com.github.vatbub.hearingaid.profileeditor.ProfileEditorActivity;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar;
 
 import java.util.ArrayList;
@@ -55,17 +55,18 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        initVersionLabel();
         updateEqSwitch();
         loadEqSettings();
-        updateCrashlyticsCheckBox();
+        updateCrashReportingCheckBox();
 
         initButtonHandlers();
         initFrequencyLabelsAndSeekbars();
     }
 
-    private void updateCrashlyticsCheckBox() {
+    private void updateCrashReportingCheckBox() {
         AppCompatCheckBox crashReportsEnabledCheckBox = findViewById(R.id.enableCrashReportsCheckBox);
-        crashReportsEnabledCheckBox.setChecked(CrashlyticsManager.getInstance(getContext()).isCrashlyticsEnabled());
+        crashReportsEnabledCheckBox.setChecked(CustomApplication.isBugSnagEnabled(getContext()));
     }
 
     @Override
@@ -118,8 +119,11 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
 
         AppCompatCheckBox crashReportsEnabledCheckBox = findViewById(R.id.enableCrashReportsCheckBox);
         crashReportsEnabledCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            CrashlyticsManager.getInstance(getContext()).setCrashlyticsEnabled(isChecked);
-            showRestartDialog();
+            CustomApplication.setBugSnagEnabled(getContext(), isChecked);
+            if (isChecked)
+                CustomApplication.initializeBugSnag(getContext());
+            else
+                showRestartDialog();
         });
 
         Button viewPrivacyStatementButton = findViewById(R.id.fragment_settings_view_privacy_button);
@@ -159,9 +163,9 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
     }
 
     private void initFrequencyLabelsAndSeekbars() {
-        double lowerFreq = FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.MIN_EQ_FREQUENCY);
-        double higherFreq = FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.MAX_EQ_FREQUENCY);
-        double numberOfChannels = FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.NUMBER_OF_EQ_BINS);
+        double lowerFreq = Double.parseDouble(RemoteConfig.getConfig().getValue(RemoteConfig.Keys.MIN_EQ_FREQUENCY));
+        double higherFreq = Double.parseDouble(RemoteConfig.getConfig().getValue(RemoteConfig.Keys.MAX_EQ_FREQUENCY));
+        double numberOfChannels = Double.parseDouble(RemoteConfig.getConfig().getValue(RemoteConfig.Keys.NUMBER_OF_EQ_BINS));
         double hzPerChannel = (higherFreq - lowerFreq) / numberOfChannels;
         final int[] textViewIds = {R.id.text_view_bin_1, R.id.text_view_bin_2, R.id.text_view_bin_3, R.id.text_view_bin_4, R.id.text_view_bin_5, R.id.text_view_bin_6};
 
@@ -281,6 +285,9 @@ public class SettingsFragment extends CustomFragment implements ProfileManager.P
         initProfileAdapter();
     }
 
+    private void initVersionLabel() {
+        ((TextView) findViewById(R.id.version_text_view)).setText(String.format(getString(R.string.fragment_settings_version_text_view), BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE));
+    }
 
     private void updateEqSwitch() {
         Switch eqSwitch = findViewById(R.id.eq_on_off_switch);

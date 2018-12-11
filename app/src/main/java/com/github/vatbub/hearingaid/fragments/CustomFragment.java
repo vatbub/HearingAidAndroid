@@ -11,7 +11,7 @@ import android.view.View;
  * A Fragment that implements a {@code findById} method
  */
 
-public class CustomFragment extends Fragment {
+public abstract class CustomFragment extends Fragment {
     private View createdView;
 
     @Override
@@ -54,6 +54,10 @@ public class CustomFragment extends Fragment {
         }
 
         return null;
+    }
+
+    public boolean onBackPressed() {
+        return false;
     }
 
     public enum FragmentTag {

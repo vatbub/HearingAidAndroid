@@ -6,21 +6,18 @@ buildscript {
         google()
         jcenter()
         maven { url 'https://jitpack.io' }
-        maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.3'
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-        classpath 'com.google.gms:google-services:3.1.2'
+        classpath 'com.android.tools.build:gradle:3.2.1'
 
         // Add dependency for build script,
         // so we can access Git from our
         // build script.
         classpath 'org.ajoberstar:grgit:1.1.0'
 
-        classpath 'io.fabric.tools:gradle:1.24.4'
+        classpath 'com.bugsnag:bugsnag-android-gradle-plugin:3.5.0'
+
+        classpath 'com.jsoniter:jsoniter:0.9.23'
     }
 }
 
@@ -36,4 +33,40 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+File superpoweredDestinationFolder = new File(rootProject.rootDir, "Superpowered")
+File superpoweredZipDestination = new File(rootProject.rootDir, "SuperpoweredSDK.zip")
+File superpoweredUnzipDestination = new File(rootProject.rootDir, "SuperpoweredSDK_unzip")
+File superpoweredUnzippedSDKSource = superpoweredUnzipDestination.toPath().resolve("SuperpoweredSDK").resolve("Superpowered").toFile()
+
+task downloadSuperpowered {
+    doLast {
+        println "Downloading Superpowered..."
+        ant.get(src: 'https://superpowered.com/SuperpoweredSDK.zip', dest: superpoweredZipDestination.toString(), skipexisting: true)
+        println "Download finished"
+    }
+}
+
+task unzipSuperpowered(dependsOn: downloadSuperpowered, type: Copy) {
+    from zipTree(superpoweredZipDestination)
+    into superpoweredUnzipDestination
+}
+
+task installSuperpowered(dependsOn: unzipSuperpowered, type: Copy) {
+    from superpoweredUnzippedSDKSource
+    into superpoweredDestinationFolder
+}
+
+task cleanSuperpoweredDownload {
+    doLast {
+        delete superpoweredZipDestination
+        delete superpoweredUnzipDestination
+    }
+}
+
+task deleteSuperpowered(dependsOn: cleanSuperpoweredDownload) {
+    doLast {
+        delete superpoweredDestinationFolder
+    }
 }

@@ -11,6 +11,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.DisplayMetrics;
 import android.view.View;
+
+import com.github.vatbub.hearingaid.BugsnagWrapper;
 import com.github.vatbub.hearingaid.R;
 
 /**
@@ -30,7 +32,8 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
         try {
             prepareViewsUnderSwipe();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            BugsnagWrapper.notify(e);
         }
     }
 
@@ -105,7 +108,8 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
         try {
             prepareViewsUnderSwipeThread.join();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            BugsnagWrapper.notify(e);
         }
 
         if (dX > 0) {

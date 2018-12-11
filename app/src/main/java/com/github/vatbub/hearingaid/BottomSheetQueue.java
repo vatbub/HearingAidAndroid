@@ -50,6 +50,18 @@ public class BottomSheetQueue extends PriorityQueue<BottomSheetQueue.BottomSheet
         return result;
     }
 
+    /**
+     * Handles back navigation for bottom sheets.
+     *
+     * @return {@code true} if the back press was handled by a bottom sheet, {@code false} if the back press has to be handled by another component
+     */
+    public boolean handleBackPress() {
+        if (getCurrentBottomSheet() == null || !getCurrentBottomSheet().acceptsBackNavigation())
+            return false;
+        getCurrentBottomSheet().getBottomSheetBehavior().setState(BottomSheetBehavior.STATE_HIDDEN);
+        return true;
+    }
+
     private void showNextSheetIfApplicable() {
         synchronized (this) {
             if (isEmpty()) return;
@@ -114,7 +126,7 @@ public class BottomSheetQueue extends PriorityQueue<BottomSheetQueue.BottomSheet
     }
 
     public enum BottomSheetPriority {
-        LOW(-100), NORMAL(0), HIGH(100);
+        LOW(-100), LOWER_THAN_NORMAL(-50), NORMAL(0), HIGHER_THAN_NORMAL(50), HIGH(100);
 
         private int numericPriority;
 
@@ -133,24 +145,30 @@ public class BottomSheetQueue extends PriorityQueue<BottomSheetQueue.BottomSheet
         private BottomSheetCallbackList additionalCallbacks;
         private BottomSheetPriority priority;
         private CustomBottomSheetCallback bottomSheetCallback;
+        private boolean acceptsBackNavigation;
 
         public BottomSheetBehaviourWrapper(BottomSheetBehavior bottomSheetBehavior) {
-            this(bottomSheetBehavior, BottomSheetBehavior.STATE_EXPANDED);
+            this(bottomSheetBehavior, true);
         }
 
-        public BottomSheetBehaviourWrapper(BottomSheetBehavior bottomSheetBehavior, @SuppressWarnings("SameParameterValue") int stateToUseForExpansion) {
-            this(bottomSheetBehavior, stateToUseForExpansion, BottomSheetPriority.NORMAL);
+        public BottomSheetBehaviourWrapper(BottomSheetBehavior bottomSheetBehavior, boolean acceptsBackNavigation) {
+            this(bottomSheetBehavior, acceptsBackNavigation, BottomSheetBehavior.STATE_EXPANDED);
         }
 
-        public BottomSheetBehaviourWrapper(BottomSheetBehavior bottomSheetBehavior, @SuppressWarnings("SameParameterValue") int stateToUseForExpansion, BottomSheetPriority priority) {
-            this(bottomSheetBehavior, stateToUseForExpansion, priority, new BottomSheetCallbackList());
+        public BottomSheetBehaviourWrapper(BottomSheetBehavior bottomSheetBehavior, boolean acceptsBackNavigation, @SuppressWarnings("SameParameterValue") int stateToUseForExpansion) {
+            this(bottomSheetBehavior, acceptsBackNavigation, stateToUseForExpansion, BottomSheetPriority.NORMAL);
         }
 
-        public BottomSheetBehaviourWrapper(BottomSheetBehavior bottomSheetBehavior, int stateToUseForExpansion, BottomSheetPriority priority, BottomSheetCallbackList additionalCallbacks) {
+        public BottomSheetBehaviourWrapper(BottomSheetBehavior bottomSheetBehavior, boolean acceptsBackNavigation, @SuppressWarnings("SameParameterValue") int stateToUseForExpansion, BottomSheetPriority priority) {
+            this(bottomSheetBehavior, acceptsBackNavigation, stateToUseForExpansion, priority, new BottomSheetCallbackList());
+        }
+
+        public BottomSheetBehaviourWrapper(BottomSheetBehavior bottomSheetBehavior, boolean acceptsBackNavigation, int stateToUseForExpansion, BottomSheetPriority priority, BottomSheetCallbackList additionalCallbacks) {
             setBottomSheetBehavior(bottomSheetBehavior);
             setStateToUseForExpansion(stateToUseForExpansion);
             setAdditionalCallbacks(additionalCallbacks);
             setPriority(priority);
+            setAcceptsBackNavigation(acceptsBackNavigation);
         }
 
         public BottomSheetBehavior getBottomSheetBehavior() {
@@ -241,6 +259,14 @@ public class BottomSheetQueue extends PriorityQueue<BottomSheetQueue.BottomSheet
             this.bottomSheetCallback = bottomSheetCallback;
             getBottomSheetBehavior().setBottomSheetCallback(bottomSheetCallback);
         }
+
+        public boolean acceptsBackNavigation() {
+            return acceptsBackNavigation;
+        }
+
+        public void setAcceptsBackNavigation(boolean acceptsBackNavigation) {
+            this.acceptsBackNavigation = acceptsBackNavigation;
+        }
     }
 
     public static class BottomSheetCallbackList extends ArrayList<CustomBottomSheetCallback> {
@@ -278,7 +304,7 @@ public class BottomSheetQueue extends PriorityQueue<BottomSheetQueue.BottomSheet
         }
     }
 
-    public abstract static class CustomBottomSheetCallback extends BottomSheetBehavior.BottomSheetCallback{
+    public abstract static class CustomBottomSheetCallback extends BottomSheetBehavior.BottomSheetCallback {
         public abstract void onRescheduled();
     }
 

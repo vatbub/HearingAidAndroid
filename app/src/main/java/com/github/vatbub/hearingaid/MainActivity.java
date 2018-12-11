@@ -24,18 +24,27 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.*;
-import com.crashlytics.android.Crashlytics;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.SeekBar;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.github.vatbub.common.core.Common;
 import com.github.vatbub.hearingaid.fragments.CustomFragment;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+
 import org.rm3l.maoni.Maoni;
 import org.rm3l.maoni.common.contract.Handler;
 import org.rm3l.maoni.common.model.Feedback;
 import org.rm3l.maoni.email.MaoniEmailListener;
-import ru.noties.markwon.Markwon;
 
 import java.io.IOException;
 import java.util.List;
+
+import ru.noties.markwon.Markwon;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback, ProfileManager.ProfileManagerListener, AdapterView.OnItemSelectedListener {
@@ -65,7 +74,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        CrashlyticsManager.getInstance(this).configureCrashlytics();
+        Common.useAndroidImplementation(this);
+        RemoteConfig.initConfig(this);
+
         prerenderMarkdown();
         setTheme(R.style.AppTheme_NoActionBar);
         setContentView(R.layout.activity_main);
@@ -89,8 +100,6 @@ public class MainActivity extends AppCompatActivity
             updateSelectedItem(currentFragmentTag);
             updateTitle(currentFragmentTag);
         }
-
-        RemoteConfig.initConfig();
 
         Thread t = new Thread(() -> {
             SharedPreferences getPrefs = PreferenceManager
@@ -146,7 +155,7 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        } else if (currentFragmentTag == null || getCurrentFragment() == null || !getCurrentFragment().onBackPressed()) {
             try {
                 CustomFragment.FragmentTag fragmentTagAboutToBeOpened = CustomFragment.FragmentTag.valueOf(getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 2).getName());
                 Log.d(getClass().getName(), "Navigating back to fragment: " + fragmentTagAboutToBeOpened);
@@ -156,6 +165,7 @@ public class MainActivity extends AppCompatActivity
                 currentFragmentTag = fragmentTagAboutToBeOpened;
             } catch (ArrayIndexOutOfBoundsException e) {
                 Log.e(getClass().getName(), "onBackPressed: Unable to get the fragment about to be navigated to as there is no fragment in the back stack anymore", e);
+                finish();
             }
         }
     }
@@ -189,7 +199,7 @@ public class MainActivity extends AppCompatActivity
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.putExtra(Intent.EXTRA_TEXT,
-                    getString(R.string.share_message, FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.PLAY_STORE_URL)));
+                    getString(R.string.share_message, RemoteConfig.getConfig().getValue(RemoteConfig.Keys.PLAY_STORE_URL)));
             sendIntent.setType("text/plain");
             startActivity(Intent.createChooser(sendIntent, getString(R.string.share_screen_title)));
         } else if (id == R.id.nav_feedback) {
@@ -199,7 +209,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_about) {
             openFragment(CustomFragment.FragmentTag.ABOUT_FRAGMENT);
         } else if (id == R.id.nav_github) {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.GIT_HUB_URL)));
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(RemoteConfig.getConfig().getValue(RemoteConfig.Keys.GIT_HUB_URL)));
             startActivity(browserIntent);
         }
 
@@ -209,7 +219,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void prerenderMarkdown() {
-        Crashlytics.log(Log.INFO, Constants.LOG_TAG, "Prerendering markdown...");
+        BugsnagWrapper.leaveBreadcrumb("Prerendering markdown...");
         MarkdownRenderer.getInstance(this).prerender(R.raw.privacy);
         MarkdownRenderer.getInstance(this).prerender(R.raw.about);
     }
@@ -229,8 +239,8 @@ public class MainActivity extends AppCompatActivity
             fragmentToUse = CustomFragment.createInstance(tag);
 
         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        if (currentFragmentTag != null && getSupportFragmentManager().findFragmentByTag(currentFragmentTag.toString()) != null)
-            fragmentTransaction.hide(getSupportFragmentManager().findFragmentByTag(currentFragmentTag.toString()));
+        if (currentFragmentTag != null && getCurrentFragment() != null)
+            fragmentTransaction.hide(getCurrentFragment());
 
         if (fragmentFound)
             fragmentTransaction.show(fragmentToUse);
@@ -242,6 +252,10 @@ public class MainActivity extends AppCompatActivity
         currentFragmentTag = tag;
 
         updateTitle(tag);
+    }
+
+    public CustomFragment getCurrentFragment() {
+        return (CustomFragment) getSupportFragmentManager().findFragmentByTag(currentFragmentTag.toString());
     }
 
     private void updateTitle(CustomFragment.FragmentTag fragmentTag) {
@@ -342,10 +356,19 @@ public class MainActivity extends AppCompatActivity
         System.out.println("Nothing selected");
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (intent.getBooleanExtra(Constants.INTENT_COMING_FROM_NOTIFICATION_EXTRA_KEY, false))
+            // go to the streaming fragment
+            openFragment(CustomFragment.FragmentTag.STREAMING_FRAGMENT);
+    }
+
     public void startFeedbackActivity() {
         final SeekBar[] audioLatencySeekbar = new SeekBar[1];
-        MaoniEmailListener listenerForMaoni = new MaoniEmailListener(this, FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.EMAIL_FEEDBACK_SUBJECT),
-                FirebaseRemoteConfig.getInstance().getString(RemoteConfig.Keys.EMAIL_FEEDBACK_TO_ADDRESS)) {
+        MaoniEmailListener listenerForMaoni = new MaoniEmailListener(this, RemoteConfig.getConfig().getValue(RemoteConfig.Keys.EMAIL_FEEDBACK_SUBJECT),
+                RemoteConfig.getConfig().getValue(RemoteConfig.Keys.EMAIL_FEEDBACK_TO_ADDRESS)) {
             @Override
             public boolean onSendButtonClicked(Feedback feedback) {
                 //noinspection UnnecessaryBoxing

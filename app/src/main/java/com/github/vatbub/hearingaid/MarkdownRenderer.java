@@ -3,17 +3,22 @@ package com.github.vatbub.hearingaid;
 import android.content.Context;
 import android.support.annotation.RawRes;
 import android.util.SparseArray;
-import com.crashlytics.android.Crashlytics;
+
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.HashMap;
+import java.util.Map;
+
 import ru.noties.markwon.Markwon;
 import ru.noties.markwon.SpannableConfiguration;
 import ru.noties.markwon.renderer.SpannableRenderer;
 import ru.noties.markwon.spans.SpannableTheme;
-
-import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Wrapping class to prerender markdown to html
@@ -61,7 +66,7 @@ public class MarkdownRenderer {
                 renderSynchronously(markdownFile);
             } catch (IOException e) {
                 e.printStackTrace();
-                Crashlytics.logException(e);
+                BugsnagWrapper.notify(e);
             }
         }).start();
     }
