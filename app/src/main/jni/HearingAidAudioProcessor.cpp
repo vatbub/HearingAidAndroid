@@ -58,6 +58,8 @@ HearingAidAudioProcessor::HearingAidAudioProcessor(unsigned int samplerate,
     onPlayPause(false);
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wuninitialized"
 bool HearingAidAudioProcessor::process(short int *output, unsigned int numberOfSamples) {
     // return if eq is disabled
     if (!eqEnabled)
@@ -66,7 +68,9 @@ bool HearingAidAudioProcessor::process(short int *output, unsigned int numberOfS
     float *inputBufferFloat;
     SuperpoweredShortIntToFloat(output, inputBufferFloat,
                                 numberOfSamples); // Converting the 16-bit integer samples to 32-bit floating point.
-    superpoweredEq->process(inputBufferFloat, inputBufferFloat, numberOfSamples);
+    __android_log_print(ANDROID_LOG_INFO, "HearingAid", "????? Before eq... ?????");
+    get_superpowered_eq()->process(inputBufferFloat, inputBufferFloat, numberOfSamples);
+    __android_log_print(ANDROID_LOG_INFO, "HearingAid", "????? After eq... ?????");
     SuperpoweredFloatToShortInt(inputBufferFloat, output,
                                 numberOfSamples);
 
@@ -137,6 +141,8 @@ bool HearingAidAudioProcessor::process(short int *output, unsigned int numberOfS
         return true;
     } else return false; */
 }
+
+#pragma clang diagnostic pop
 
 void HearingAidAudioProcessor::onPlayPause(bool play) {
     if (play)

@@ -27,6 +27,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import com.github.vatbub.hearingaid.BugsnagWrapper;
 import com.github.vatbub.hearingaid.Constants;
 import com.github.vatbub.hearingaid.MainActivity;
+import com.github.vatbub.hearingaid.ProfileManager;
 import com.github.vatbub.hearingaid.R;
 import com.github.vatbub.hearingaid.RemoteConfig;
 
@@ -97,10 +98,44 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
         }
 
         HearingAidAudioProcessor(Integer.parseInt(samplerateString), Integer.parseInt(buffersizeString), frequencies);
+        ProfileManager.Profile currentProfile = ProfileManager.getInstance(this).getCurrentlyActiveProfile();
+        handleProfileChange(currentProfile);
+
+        ProfileManager.getInstance(this).getChangeListeners().add(new ProfileManager.ProfileManagerListener() {
+            @Override
+            public void onProfileApplied(@Nullable ProfileManager.Profile oldProfile, @Nullable ProfileManager.Profile newProfile) {
+                handleProfileChange(newProfile);
+            }
+
+            @Override
+            public void onProfileCreated(ProfileManager.Profile newProfile) {
+
+            }
+
+            @Override
+            public void onProfileDeleted(ProfileManager.Profile deletedProfile) {
+
+            }
+
+            @Override
+            public void onSortOrderChanged(List<ProfileManager.Profile> previousOrder, List<ProfileManager.Profile> newOrder) {
+
+            }
+        });
     }
 
-    private void getFrequenciesArray() {
+    private void handleProfileChange(@Nullable ProfileManager.Profile currentProfile) {
+        if (currentProfile == null) {
+            System.out.println("===== HearingAidPlaybackService: Current profile is null =====");
+            eqEnabled(false);
+            return;
+        }
 
+        System.out.println("===== HearingAidPlaybackService: Applying new profile =====");
+        List<Float> eq = currentProfile.getEQSettings();
+        for (int i = 0; i < eq.size(); i++)
+            setEQ(i, eq.get(i));
+        eqEnabled(currentProfile.isEqEnabled());
     }
 
     @Override

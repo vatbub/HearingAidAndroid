@@ -4,10 +4,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
 import com.github.vatbub.hearingaid.utils.ListUtils;
+
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Manages the settings profiles (EQ on/off, eq setting, ...).<br>
@@ -33,7 +40,7 @@ public class ProfileManager {
     private static final Map<Context, ProfileManager> instances = new HashMap<>();
     private final List<ProfileManagerListener> changeListeners = new ArrayList<>();
     private Context callingContext;
-    private Profile currentlyActiveProfile;
+    private static volatile Profile currentlyActiveProfile;
 
     private ProfileManager(@NotNull Context callingContext) {
         setCallingContext(callingContext);
@@ -109,7 +116,7 @@ public class ProfileManager {
     }
 
     private void setCurrentlyActiveProfile(Profile currentlyActiveProfile) {
-        this.currentlyActiveProfile = currentlyActiveProfile;
+        ProfileManager.currentlyActiveProfile = currentlyActiveProfile;
     }
 
     /**

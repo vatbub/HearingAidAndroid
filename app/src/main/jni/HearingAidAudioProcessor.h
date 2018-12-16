@@ -9,6 +9,7 @@
 #include <AndroidIO/SuperpoweredAndroidAudioIO.h>
 #include <SuperpoweredNBandEQ.h>
 #include <cmath>
+#include <android/log.h>
 
 class HearingAidAudioProcessor {
 public:
@@ -25,10 +26,12 @@ public:
 
     void enableEQ(bool eqEnabled) {
         this->eqEnabled = eqEnabled;
-        superpoweredEq->enable(eqEnabled);
+        __android_log_print(ANDROID_LOG_VERBOSE, "HearingAid", "!!!!! Before enable()... !!!!!");
+        get_superpowered_eq()->enable(eqEnabled);
+        __android_log_print(ANDROID_LOG_INFO, "HearingAid", "!!!!! After enable()... !!!!!");
     }
 
-    SuperpoweredNBandEQ *get_superpowered_eq() {
+    inline SuperpoweredNBandEQ *get_superpowered_eq() {
         return superpoweredEq;
     }
 
