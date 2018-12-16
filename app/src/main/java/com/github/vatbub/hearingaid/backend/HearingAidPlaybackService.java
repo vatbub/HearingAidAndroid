@@ -29,7 +29,6 @@ import com.github.vatbub.hearingaid.Constants;
 import com.github.vatbub.hearingaid.MainActivity;
 import com.github.vatbub.hearingaid.R;
 import com.github.vatbub.hearingaid.RemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import java.util.List;
 
@@ -85,9 +84,9 @@ public class HearingAidPlaybackService extends MediaBrowserServiceCompat {
         if (samplerateString == null) samplerateString = "44100";
         if (buffersizeString == null) buffersizeString = "512";
 
-        double lowerFreq = FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.MIN_EQ_FREQUENCY);
-        double higherFreq = FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.MAX_EQ_FREQUENCY);
-        double numberOfChannels = FirebaseRemoteConfig.getInstance().getDouble(RemoteConfig.Keys.NUMBER_OF_EQ_BINS);
+        double lowerFreq = Double.parseDouble(RemoteConfig.getConfig().getValue(RemoteConfig.Keys.MIN_EQ_FREQUENCY));
+        double higherFreq = Double.parseDouble(RemoteConfig.getConfig().getValue(RemoteConfig.Keys.MAX_EQ_FREQUENCY));
+        double numberOfChannels = Double.parseDouble(RemoteConfig.getConfig().getValue(RemoteConfig.Keys.NUMBER_OF_EQ_BINS));
         double hzPerChannel = (higherFreq - lowerFreq) / numberOfChannels;
         float[] frequencies = new float[(int) numberOfChannels];
 
