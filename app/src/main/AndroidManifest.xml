@@ -10,7 +10,7 @@
     <application
         android:name=".CustomApplication"
         android:allowBackup="true"
-        android:extractNativeLibs="false"
+        android:extractNativeLibs="true"
         android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
