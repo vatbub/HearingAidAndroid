@@ -153,5 +153,5 @@ dependencies {
     }
     implementation 'ru.noties:markwon:1.0.3'
     implementation 'com.android.support:cardview-v7:27.1.1'
-    implementation 'com.bugsnag:bugsnag-android-ndk:4.9.1'
+    implementation 'com.bugsnag:bugsnag-android-ndk:5.5.0'
 }
