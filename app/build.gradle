@@ -133,7 +133,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'com.android.support:mediarouter-v7:27.1.1'
+    implementation 'com.android.support:mediarouter-v7:28.0.0'
     implementation 'com.github.ohoussein.playpauseview:playpauseview:1.0.2'
     implementation 'com.github.vatbub:common.view.motd.core:0.1.6-SNAPSHOT'
     implementation('com.github.vatbub:common.core:0.1.6-SNAPSHOT') {
