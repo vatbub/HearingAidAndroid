@@ -144,7 +144,7 @@ dependencies {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
     implementation 'com.amazonaws:aws-android-sdk-s3:2.7.7'
-    implementation 'com.github.apl-devs:appintro:v4.2.2'
+    implementation 'com.github.apl-devs:appintro:6.1.0'
     implementation 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.7.2'
     implementation 'com.android.support:gridlayout-v7:27.1.1'
     androidTestImplementation 'org.hamcrest:hamcrest-library:1.3'
