@@ -13,7 +13,7 @@ buildscript {
         // Add dependency for build script,
         // so we can access Git from our
         // build script.
-        classpath 'org.ajoberstar:grgit:1.1.0'
+        classpath 'org.ajoberstar:grgit:2.3.0'
 
         classpath 'com.bugsnag:bugsnag-android-gradle-plugin:3.5.0'
 
