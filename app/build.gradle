@@ -140,7 +140,7 @@ dependencies {
         exclude group: 'com.google.guava', module: 'guava'
         exclude group: 'com.amazonaws', module: 'aws-java-sdk-s3'
     }
-    implementation('com.google.guava:guava:26.0-android') {
+    implementation('com.google.guava:guava:31.0.1-android') {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
     implementation 'com.amazonaws:aws-android-sdk-s3:2.7.7'
