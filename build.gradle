@@ -15,7 +15,7 @@ buildscript {
         // build script.
         classpath 'org.ajoberstar:grgit:1.1.0'
 
-        classpath 'com.bugsnag:bugsnag-android-gradle-plugin:3.5.0'
+        classpath 'com.bugsnag:bugsnag-android-gradle-plugin:7.2.1'
 
         classpath 'com.jsoniter:jsoniter:0.9.23'
     }
