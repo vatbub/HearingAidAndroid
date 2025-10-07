@@ -4,30 +4,36 @@ buildscript {
 
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         maven { url 'https://jitpack.io' }
+        // Add this line
+        maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
 
-        // Add dependency for build script,
-        // so we can access Git from our
-        // build script.
+        classpath 'com.android.tools.build:gradle:3.6.4'
+        classpath 'com.bugsnag:bugsnag-android-gradle-plugin:5.7.6'
+        //classpath 'com.android.tools.build:gradle:3.2.1'
+        //classpath 'com.android.tools.build:gradle:3.2.1'
         classpath 'org.ajoberstar:grgit:1.1.0'
-
-        classpath 'com.bugsnag:bugsnag-android-gradle-plugin:3.5.0'
-
+        // The version you are using might be old, but adding the repo should fix the resolution error
+        // classpath 'com.bugsnag:bugsnag-android-gradle-plugin:4.2.1'
         classpath 'com.jsoniter:jsoniter:0.9.23'
+        
+        //classpath '''com.android.tools.build:gradle:3.2.1'''
+        //classpath '''org.ajoberstar:grgit:1.1.0'''
+        //classpath '''com.bugsnag:bugsnag-android-gradle-plugin:4.2.1'''
+        //classpath '''com.jsoniter:jsoniter:0.9.23'''
     }
 }
 
 allprojects {
     repositories {
         google()
-        jcenter()
-        maven { url 'https://jitpack.io' }
-        maven { url 'https://oss.jfrog.org/artifactory/libs-snapshot' }
-        maven { url 'https://maven.google.com/' }
+        mavenCentral()
+        maven { url '''https://jitpack.io''' }
+        maven { url '''https://oss.jfrog.org/artifactory/libs-snapshot''' }
+        maven { url '''https://maven.google.com/''' }
     }
 }
 
@@ -43,7 +49,7 @@ File superpoweredUnzippedSDKSource = superpoweredUnzipDestination.toPath().resol
 task downloadSuperpowered {
     doLast {
         println "Downloading Superpowered..."
-        ant.get(src: 'https://superpowered.com/SuperpoweredSDK.zip', dest: superpoweredZipDestination.toString(), skipexisting: true)
+        ant.get(src: '''https://superpowered.com/SuperpoweredSDK.zip''', dest: superpoweredZipDestination.toString(), skipexisting: true)
         println "Download finished"
     }
 }

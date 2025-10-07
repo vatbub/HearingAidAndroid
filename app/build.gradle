@@ -10,7 +10,7 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 def superpowered_sdk_path = properties.getProperty('superpowered.dir')
 
 private static int getCommitCountFromGitHub(String branch, int page) {
-    URL url = new URL("https://api.github.com/repos/vatbub/HearingAidAndroid/commits?sha=" + branch + "&page=" + page)
+    URL url = new URL("https://api.github.com/repos/13-Clairvoyance/HearingAidAndroid-superpowered/commits?sha=" + branch + "&page=" + page)
     HttpURLConnection con = (HttpURLConnection) url.openConnection()
     con.setRequestMethod("GET")
     int status = con.getResponseCode()
