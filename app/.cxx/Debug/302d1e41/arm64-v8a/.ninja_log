@@ -1,0 +1,4 @@
+# ninja log v5
+1	208	7930521782276796	CMakeFiles/HearingAidAudioProcessor.dir/HearingAidAudioProcessor.cpp.o	991fb39468900681
+11	247	7930521782687831	CMakeFiles/HearingAidAudioProcessor.dir/0de52c08505c54314096f8bab4f3912d/OpenSource/SuperpoweredAndroidAudioIO.cpp.o	f69b9d3a725b4d5d
+248	397	7930521784162608	C:/Users/evion/OneDrive/to_local_download/Documents/Antigravity/HearingAidAndroid-superpowered/app/build/intermediates/cxx/Debug/302d1e41/obj/arm64-v8a/libHearingAidAudioProcessor.so	cac1103dff14430b

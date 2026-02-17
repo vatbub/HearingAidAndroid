@@ -1,0 +1,1 @@
+C:\Users\evion\OneDrive\to_local_download\Documents\Antigravity\HearingAidAndroid-superpowered\app\src\main\jni\CMakeLists.txt

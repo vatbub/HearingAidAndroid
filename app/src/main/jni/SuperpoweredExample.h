@@ -4,12 +4,13 @@
 #include <math.h>
 #include <pthread.h>
 
-#include "SuperpoweredExample.h"
 #include <SuperpoweredAdvancedAudioPlayer.h>
 #include <SuperpoweredFilter.h>
 #include <SuperpoweredRoll.h>
 #include <SuperpoweredFlanger.h>
-#include <AndroidIO/SuperpoweredAndroidAudioIO.h>
+#include <OpenSource/SuperpoweredAndroidAudioIO.h>
+
+using namespace Superpowered;
 
 #define HEADROOM_DECIBEL 3.0f
 static const float headroom = powf(10.0f, -HEADROOM_DECIBEL * 0.025f);
@@ -30,10 +31,10 @@ public:
 
 private:
     SuperpoweredAndroidAudioIO *audioSystem;
-    SuperpoweredAdvancedAudioPlayer *playerA, *playerB;
-    SuperpoweredRoll *roll;
-    SuperpoweredFilter *filter;
-    SuperpoweredFlanger *flanger;
+    AdvancedAudioPlayer *playerA, *playerB;
+    Roll *roll;
+    Filter *filter;
+    Flanger *flanger;
     float *stereoBuffer;
     unsigned char activeFx;
     float crossValue, volA, volB;

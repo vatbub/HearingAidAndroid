@@ -1,0 +1,23 @@
+                        -HC:\Users\evion\OneDrive\to_local_download\Documents\Antigravity\HearingAidAndroid-superpowered\app\src\main\jni
+-DCMAKE_SYSTEM_NAME=Android
+-DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+-DCMAKE_SYSTEM_VERSION=21
+-DANDROID_ABI=x86
+-DCMAKE_ANDROID_ARCH_ABI=x86
+-DANDROID_NDK=C:\Users\evion\AppData\Local\Android\Sdk\ndk\27.0.12077973
+-DCMAKE_ANDROID_NDK=C:\Users\evion\AppData\Local\Android\Sdk\ndk\27.0.12077973
+-DCMAKE_TOOLCHAIN_FILE=C:\Users\evion\AppData\Local\Android\Sdk\ndk\27.0.12077973\build\cmake\android.toolchain.cmake
+-DCMAKE_MAKE_PROGRAM=C:\Users\evion\AppData\Local\Android\Sdk\cmake\3.22.1\bin\ninja.exe
+-DCMAKE_C_FLAGS=-O3 -fsigned-char
+-DCMAKE_CXX_FLAGS=-fsigned-char -IC:/Users/evion/OneDrive/to_local_download/Documents/Antigravity/HearingAidAndroid-superpowered/Superpowered
+-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=C:\Users\evion\OneDrive\to_local_download\Documents\Antigravity\HearingAidAndroid-superpowered\app\build\intermediates\cxx\Debug\d1v2j5u5\obj\x86
+-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=C:\Users\evion\OneDrive\to_local_download\Documents\Antigravity\HearingAidAndroid-superpowered\app\build\intermediates\cxx\Debug\d1v2j5u5\obj\x86
+-DCMAKE_BUILD_TYPE=Debug
+-BC:\Users\evion\OneDrive\to_local_download\Documents\Antigravity\HearingAidAndroid-superpowered\app\.cxx\Debug\d1v2j5u5\x86
+-GNinja
+-DANDROID_PLATFORM=android-21
+-DANDROID_TOOLCHAIN=clang
+-DANDROID_ARM_NEON=TRUE
+-DPATH_TO_SUPERPOWERED:STRING=C:/Users/evion/OneDrive/to_local_download/Documents/Antigravity/HearingAidAndroid-superpowered/Superpowered
+                        Build command args: []
+                        Version: 2

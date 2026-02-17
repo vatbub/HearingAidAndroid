@@ -1,7 +1,7 @@
 package com.github.vatbub.hearingaid;
 
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetBehavior;
+import androidx.annotation.NonNull;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -257,7 +257,7 @@ public class BottomSheetQueue extends PriorityQueue<BottomSheetQueue.BottomSheet
 
         private void setBottomSheetCallback(CustomBottomSheetCallback bottomSheetCallback) {
             this.bottomSheetCallback = bottomSheetCallback;
-            getBottomSheetBehavior().setBottomSheetCallback(bottomSheetCallback);
+            getBottomSheetBehavior().addBottomSheetCallback(bottomSheetCallback);
         }
 
         public boolean acceptsBackNavigation() {

@@ -1,7 +1,7 @@
 package com.github.vatbub.hearingaid;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.IOException;
 

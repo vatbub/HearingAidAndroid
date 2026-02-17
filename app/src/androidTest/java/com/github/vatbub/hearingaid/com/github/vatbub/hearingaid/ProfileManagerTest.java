@@ -4,10 +4,11 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.test.InstrumentationRegistry;
 import com.github.vatbub.hearingaid.ProfileManager;
-import org.junit.After;
+
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,13 +22,13 @@ import java.util.List;
 public class ProfileManagerTest {
     private Context context;
 
-    @Before
+    @BeforeEach
     public void setup() {
         context = InstrumentationRegistry.getTargetContext();
         resetProfiles();
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         resetProfiles();
     }
@@ -39,12 +40,12 @@ public class ProfileManagerTest {
         ProfileManager.resetInstance(context);
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void emptyProfileListTest() {
         Assert.assertTrue(ProfileManager.getInstance(context).listProfiles().isEmpty());
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void applyProfileWithIdTest() {
         final boolean[] changeListenerCalled = {false};
         final ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("applyWithIdProfile");
@@ -83,7 +84,7 @@ public class ProfileManagerTest {
         Assert.assertTrue(changeListenerCalled[0]);
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void applyProfileWithProfileObjectTest() {
         final boolean[] changeListenerCalled = {false};
         final ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("applyWithObjectProfile");
@@ -122,7 +123,7 @@ public class ProfileManagerTest {
         Assert.assertTrue(changeListenerCalled[0]);
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void resetInstanceTest() {
         ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("resetInstanceProfile");
         ProfileManager.getInstance(context).applyProfile(profile);
@@ -130,7 +131,7 @@ public class ProfileManagerTest {
         Assert.assertEquals(profile.getId(), resetResult);
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void applyTwoProfilesTest() {
         final boolean[] changeListenerCalled = {false, false};
         final ProfileManager.Profile profile1 = ProfileManager.getInstance(context).createProfile("profile1");
@@ -204,13 +205,13 @@ public class ProfileManagerTest {
         Assert.assertTrue(changeListenerCalled[1]);
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void createProfileTest() {
         ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("createProfileProfile");
         Assert.assertTrue(ProfileManager.getInstance(context).listProfiles().contains(profile));
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void profileSortingTest() {
         int numberOfProfilesToCreate = 10;
         int incrCounter = 0;
@@ -237,7 +238,7 @@ public class ProfileManagerTest {
             Assert.assertEquals(j, resultingList.get(j).getSortPosition());
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void missingElementInNewOrderSortingTest() {
         int numberOfProfilesToCreate = 10;
         List<ProfileManager.Profile> newOrder = new LinkedList<>();
@@ -255,7 +256,7 @@ public class ProfileManagerTest {
         }
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void excessiveElementInNewOrderSortingTest() {
         int numberOfProfilesToCreate = 10;
         List<ProfileManager.Profile> newOrder = new LinkedList<>();
@@ -273,7 +274,7 @@ public class ProfileManagerTest {
         }
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void swapElementInProfilesListSortingTest() {
         int numberOfProfilesToCreate = 10;
         List<ProfileManager.Profile> newOrder = new LinkedList<>();
@@ -292,14 +293,14 @@ public class ProfileManagerTest {
         }
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void deleteProfileTest() {
         ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("deleteProfileProfile");
         ProfileManager.getInstance(context).deleteProfile(profile);
         Assert.assertFalse(ProfileManager.getInstance(context).listProfiles().contains(profile));
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void deleteActiveProfileTest() {
         ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("deleteActiveProfileProfile");
         ProfileManager.getInstance(context).applyProfile(profile);
@@ -307,7 +308,7 @@ public class ProfileManagerTest {
         Assert.assertFalse(profile.isActive());
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void statePersistenceAcrossListCallsTest() {
         ProfileManager.Profile profile1 = ProfileManager.getInstance(context).createProfile("statePersistenceAcrossListCallsProfile1");
         ProfileManager.getInstance(context).applyProfile(profile1);
@@ -319,7 +320,7 @@ public class ProfileManagerTest {
         }
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void getPositionTest() {
         for (int i = 0; i < 5; i++) {
             ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("getPositionProfile" + i);
@@ -327,14 +328,14 @@ public class ProfileManagerTest {
         }
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void getPositionOfIllegalProfileTest() {
         ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("getPositionOfIllegalProfileTestProfile");
         ProfileManager.getInstance(context).deleteProfile(profile);
         Assert.assertEquals(-1, ProfileManager.getInstance(context).getPosition(profile));
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void illegalIdReadTest() {
         try {
             ProfileManager.getInstance(context).new Profile(1);
@@ -344,7 +345,7 @@ public class ProfileManagerTest {
         }
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void applySameProfileAgainTest() {
         final int[] changeListenerCalledCount = {0};
         final ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile("applySameProfileAgainTestProfile");
@@ -392,7 +393,7 @@ public class ProfileManagerTest {
         Assert.assertFalse(profile.isEqEnabled());
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void getProfileNameTest() {
         String name = "getProfileNameTestProfile";
         ProfileManager.Profile profile = ProfileManager.getInstance(context).createProfile(name);

@@ -7,8 +7,6 @@ import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.bugsnag.android.Bugsnag;
-
 public class CustomApplication extends Application {
     private static final String BUG_SNAG_API_KEY_NOT_SPECIFIED = "not_specified";
     private static final String BUG_SNAG_ENABLED_KEY = "bugSnagEnabled";
@@ -38,14 +36,7 @@ public class CustomApplication extends Application {
     }
 
     public static void initializeBugSnag(Context context) {
-        if (isBugSnagInitialized()) return;
-        if (!isBugSnagInitializable()) {
-            Toast.makeText(context, R.string.bugsnag_api_key_not_specified_error_message, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (!isBugSnagEnabled(context)) return;
-
-        Bugsnag.init(context);
+        // Bugsnag is disabled/removed
         bugSnagInitialized = true;
     }
 
@@ -62,8 +53,8 @@ public class CustomApplication extends Application {
         Bundle metaData = applicationInfo.metaData;
         if (metaData == null) return;
 
-        String bugSnagApiKey = metaData.getString("com.bugsnag.android.API_KEY");
-        bugSnagInitializable = bugSnagApiKey != null && !bugSnagApiKey.equals(BUG_SNAG_API_KEY_NOT_SPECIFIED);
+        // Stubbed logic
+        bugSnagInitializable = false;
 
         initializeBugSnag(this);
     }

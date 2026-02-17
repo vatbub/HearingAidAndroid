@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.4.1)
 
+project(HearingAidAndroid)
+
 set(
 	PATH_TO_SUPERPOWERED
 	CACHE STRING ""
@@ -7,13 +9,11 @@ set(
 
 message(${ANDROID_ABI})
 
-file(GLOB CPP_FILES "*.cpp")
-
 add_library(
 	HearingAidAudioProcessor
 	SHARED
-	${CPP_FILES}
-	${PATH_TO_SUPERPOWERED}/AndroidIO/SuperpoweredAndroidAudioIO.cpp
+	HearingAidAudioProcessor.cpp
+	${PATH_TO_SUPERPOWERED}/OpenSource/SuperpoweredAndroidAudioIO.cpp
 )
 
 include_directories(src/main/jni)

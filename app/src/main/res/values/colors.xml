@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#f57f17</color>
-    <color name="colorPrimaryDark">#bc5100</color>
-    <color name="colorAccent">#e65100</color>
-    <color name="motdBackground">#01000000</color>
+    <color name="colorPrimary">#137fec</color>
+    <color name="colorPrimaryDark">#0b5cb5</color>
+    <color name="colorAccent">#10b981</color>
+
+    <!-- ATLAS Design System -->
+    <color name="background_dark">#101922</color>
+    <color name="surface_dark">#192633</color>
+    <color name="surface_border">#233648</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#94a3b8</color>
 </resources>

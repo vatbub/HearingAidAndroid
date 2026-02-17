@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.github.vatbub.hearingaid">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
@@ -24,22 +23,26 @@
             android:value="${bugSnagApiKey}" />
 
         <activity
-                android:name=".MainActivity"
-                android:label="@string/app_name"
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
             android:launchMode="singleTask"
-                android:theme="@style/SplashTheme">
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".IntroActivity"
+            android:exported="false"
             android:label="@string/intro_activity_label" />
-        <activity android:name=".FeedbackPrivacyActivity" />
+        <activity
+            android:name=".FeedbackPrivacyActivity"
+            android:exported="false" />
         <activity
             android:name=".profileeditor.ProfileEditorActivity"
+            android:exported="false"
             android:label="@string/title_activity_profile_editor"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -50,6 +53,7 @@
 
         <service
             android:name=".backend.HearingAidPlaybackService"
+            android:exported="true"
             android:permission="android.permission.RECORD_AUDIO">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
@@ -57,7 +61,9 @@
             </intent-filter>
         </service>
 
-        <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
+        <receiver
+            android:name="android.support.v4.media.session.MediaButtonReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON"/>
             </intent-filter>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Gradient Background -->
+    <item>
+        <shape android:shape="oval">
+            <gradient
+                android:angle="-90"
+                android:endColor="@color/background_dark"
+                android:startColor="@color/surface_dark"
+                android:type="linear" />
+            <stroke
+                android:width="2dp"
+                android:color="@color/surface_border" />
+        </shape>
+    </item>
+    <!-- Inner Glow Simulation -->
+    <item
+        android:bottom="8dp"
+        android:left="8dp"
+        android:right="8dp"
+        android:top="8dp">
+        <shape android:shape="oval">
+            <stroke
+                android:width="4dp"
+                android:color="@color/colorPrimary" />
+        </shape>
+    </item>
+</layer-list>

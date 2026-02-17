@@ -6,7 +6,7 @@
 #define HEARINGAID_HEARINGAIDAUDIOPROCESSOR_H
 
 
-#include <AndroidIO/SuperpoweredAndroidAudioIO.h>
+#include <OpenSource/SuperpoweredAndroidAudioIO.h>
 
 class HearingAidAudioProcessor {
 public:

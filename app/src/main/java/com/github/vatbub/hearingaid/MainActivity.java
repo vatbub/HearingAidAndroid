@@ -5,20 +5,20 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RawRes;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.preference.PreferenceManager;
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RawRes;
+import com.google.android.material.navigation.NavigationView;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Menu;
@@ -33,13 +33,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.vatbub.common.core.Common;
-import com.github.vatbub.hearingaid.fragments.CustomFragment;
 
-import org.rm3l.maoni.Maoni;
-import org.rm3l.maoni.common.contract.Handler;
-import org.rm3l.maoni.common.model.Feedback;
-import org.rm3l.maoni.email.MaoniEmailListener;
+import com.github.vatbub.hearingaid.fragments.CustomFragment;
 
 import java.io.IOException;
 import java.util.List;
@@ -74,7 +69,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Common.useAndroidImplementation(this);
         RemoteConfig.initConfig(this);
 
         prerenderMarkdown();
@@ -366,67 +360,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void startFeedbackActivity() {
-        final SeekBar[] audioLatencySeekbar = new SeekBar[1];
-        MaoniEmailListener listenerForMaoni = new MaoniEmailListener(this, RemoteConfig.getConfig().getValue(RemoteConfig.Keys.EMAIL_FEEDBACK_SUBJECT),
-                RemoteConfig.getConfig().getValue(RemoteConfig.Keys.EMAIL_FEEDBACK_TO_ADDRESS)) {
-            @Override
-            public boolean onSendButtonClicked(Feedback feedback) {
-                //noinspection UnnecessaryBoxing
-                feedback.put("audioLatency", Integer.valueOf(audioLatencySeekbar[0].getProgress()));
-                return super.onSendButtonClicked(feedback);
-            }
-        };
-        Handler myHandlerForMaoni = new Handler() {
-            private CheckBox privacyCheckbox;
-
-            @Override
-            public void onDismiss() {
-
-            }
-
-            @Override
-            public boolean onSendButtonClicked(Feedback feedback) {
-                return true;
-            }
-
-            @Override
-            public void onCreate(View view, Bundle bundle) {
-                audioLatencySeekbar[0] = view.findViewById(R.id.feedback_audio_latency_seekbar);
-                privacyCheckbox = view.findViewById(R.id.feedback_privacy_check_box);
-                Button viewPrivacyButton = view.findViewById(R.id.feedback_view_privacy_button);
-                viewPrivacyButton.setOnClickListener(v -> {
-                    Intent intent = new Intent(MainActivity.this, FeedbackPrivacyActivity.class);
-                    startActivity(intent);
-                });
-            }
-
-            @Override
-            public boolean validateForm(View view) {
-                if (!privacyCheckbox.isChecked()) {
-                    Toast.makeText(MainActivity.this, R.string.feedback_privacy_unchecked_toast, Toast.LENGTH_LONG).show();
-                    return false;
-                }
-                return true;
-            }
-        };
-
-        //The optional file provider authority allows you to
-        //share the screenshot capture file to other apps (depending on your callback implementation)
-        //noinspection UnnecessaryBoxing
-        new Maoni.Builder(null)
-                .withWindowTitle(getString(R.string.feedback_title)) //Set to an empty string to clear it
-                .withMessage(getString(R.string.feedback_message))
-                // .withExtraLayout(R.layout.my_feedback_activity_extra_content)
-                .withHandler(myHandlerForMaoni) //Custom Callback for Maoni
-                .withListener(listenerForMaoni)
-                // .withTheme(R.style.AppTheme)
-                .withExtraLayout(Integer.valueOf(R.layout.feedback_extra_layout))
-                .withFeedbackContentHint(getString(R.string.feedback_hint))
-                .withContentErrorMessage(getString(R.string.feedback_error))
-                .disableLogsCapturingFeature()
-                .disableScreenCapturingFeature()
-                .build()
-                .start(this);
-
+        Toast.makeText(this, "Feedback is currently disabled in this version.", Toast.LENGTH_LONG).show();
     }
 }

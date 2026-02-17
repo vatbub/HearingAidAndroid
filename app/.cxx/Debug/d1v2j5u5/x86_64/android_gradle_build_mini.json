@@ -1,0 +1,27 @@
+{
+  "buildFiles": [
+    "C:\\Users\\evion\\OneDrive\\to_local_download\\Documents\\Antigravity\\HearingAidAndroid-superpowered\\app\\src\\main\\jni\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "C:\\Users\\evion\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "C:\\Users\\evion\\OneDrive\\to_local_download\\Documents\\Antigravity\\HearingAidAndroid-superpowered\\app\\.cxx\\Debug\\d1v2j5u5\\x86_64",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "C:\\Users\\evion\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "C:\\Users\\evion\\OneDrive\\to_local_download\\Documents\\Antigravity\\HearingAidAndroid-superpowered\\app\\.cxx\\Debug\\d1v2j5u5\\x86_64",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "HearingAidAudioProcessor::@6890427a1f51a3e7e1df": {
+      "artifactName": "HearingAidAudioProcessor",
+      "abi": "x86_64",
+      "output": "C:\\Users\\evion\\OneDrive\\to_local_download\\Documents\\Antigravity\\HearingAidAndroid-superpowered\\app\\build\\intermediates\\cxx\\Debug\\d1v2j5u5\\obj\\x86_64\\libHearingAidAudioProcessor.so",
+      "runtimeFiles": []
+    }
+  }
+}

@@ -1,69 +1,76 @@
-# HearingAidAndroid
-This application aims to do one simple task: Record the microphone sound, amplify it and play it back on the user's headphones to act as a simple, yet powerful hearing aid. 
+# ATLAS Hearing Aid
 
-## Download
-Hang on, we've just started. But once the app is in a publishable state, it will be published to the google play store. But for now, you need to clone the repo and build it for yourself in Android Studio.
+ATLAS is a modern, open-source hearing aid application for Android. It transforms your smartphone into a powerful sound amplifier, capturing audio via the microphone, processing it in real-time, and playing it back through wired or Bluetooth headphones.
 
-Our CI publishes the latest development build [here](https://s3.eu-central-1.amazonaws.com/vatbubhearingaidapksandreports/apk/debug/app-debug.apk).
+The app features a **sleek, dark-themed "ATLAS" design system** focused on accessibility, clarity, and ease of use in low-light environments.
 
-## Features
-- [x] Stream the amplified mic sound to the headphones
-- [x] Stream in realtime (~10 ms delay, on supported devices)
-- [ ] Apply an equalizer to match personal hearing loss
-- [ ] Easy setup wizard
+## ✨ Features
 
-(Unchecked items are still on our to do list)
+- **Real-time Amplification:** Low-latency audio streaming from microphone to headphones using the Superpowered SDK.
+- **ATLAS Design System:** A modern, high-contrast dark theme with card-based layouts and intuitive interactions.
+- **Environment Profiles:** Quickly switch between presets like "General," "Restaurant," "Outdoor," and "TV" to adapt to your surroundings.
+- **Volume Boost:** Integrated volume slider for up to +30dB of digital gain.
+- **Noise Monitoring:** Visual dashboard for tracking ambient noise levels (dB).
+- **Safety First:** Automatic feedback suppression and ear safety limits.
 
-## The paper
-Yes, we are publishing a scientific paper about the app. Since the app is not finished yet, the paper isn't neither but you can have a look at its current version in the folder `paper`.
+## 🚧 Status
 
-## Build
-1. Clone the repo
-2. Create a file called `local.properties` according to the instructions below.
-3. Install the Superpowered SDK by running `gradlew installSuperpowered cleanSuperpoweredDownload` (see below for more details)
-4. Run `gradlew build` (`./gradlew build` on *nix)
+**Current Version:** 2.0 (ATLAS Redesign)
 
-### The local properties file
-All Android projects require a file called `local.properties` that contains info about the location of your Android SDK.
-For this project, the `local.properties` file requires additional attention as the app utilizes the _Superpowered SDK_ for fast audio processing.
+- [x] **New Dashboard UI:** Complete overhaul with dark mode, circular toggle, and volume sliders.
+- [x] **Profile Management:** Create, edit, and select hearing profiles.
+- [x] **Real-time Audio Engine:** Core C++ audio processing pipeline is active.
+- [ ] **EQ Visualizer:** Real-time frequency visualization on the dashboard.
+- [ ] **Hearing Test:** Integrated audiogram test to auto-calibrate the EQ (Coming Soon).
 
-The `local.properties` file should be located in the repository root and should look like this:
-```
-ndk.dir=/path/to/ndk/without/a/terminating/slash
-sdk.dir=/path/to/sdk/without/a/terminating/slash
-superpowered.dir=/path/to/the/repository/root/Superpowered/
-```
+## 🛠️ Build & Installation
 
-**Important:** If you use Windows, use `\\` as your path delimiter for `ndk.dir` and `sdk.dir` (instead of the usual `\ `).
-For `superpowered.dir`, please use `/` much like on Linux and Mac. This is due to `cmake` being weird.
+### Prerequisites
 
-**Note:** All `:` must be escaped, i. e. Windows paths should start like this: `C:\path\\to\\sdk` or `D:\path/to/repo/root/Superpowered/`
+- **Android Studio Ladybug (or newer)**
+- **JDK 11 or 17** (Do not use JDK 21 yet as it conflicts with older Gradle versions)
+- **NDK (Side-by-side)** installed via SDK Manager
 
-### Downloading the Superpowered sdk
-This project uses the superpowered sdk for fast audio processing. To download the sdk, you must run `./gradlew installSuperpowered cleanSuperpoweredDownload`. This will download, unzip and install the sdk. To uninstall the sdk again, run `gradlew deleteSuperpowered`.
+### Fix Guide
 
-### Why is the build so incredibly slow?
-To be honest, we don't know too much why. It's probably due to `cmake` taking ages to compile the C++ code.
-All we know for sure is that incremental builds should be faster than the initial build.
+If you encounter build errors related to C++ compilation, deprecated dependencies, or missing libraries, please refer to our **[Build Fix Guide](BUILD_FIX_GUIDE.md)** included in the repository.
 
-**TL;DR** Use the gradle daemon if possible, incremental builds will be faster
+### Quick Start
 
-# Copyright
-## App icon
-<div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+1. **Clone the Repo:**
 
-## Intro graphics
-- Welcome ribbon: <a href='https://www.freepik.com/free-vector/welcome-ribbon_764883.htm'>Designed by Freepik</a>
-- Smartphone: <a href='https://www.freepik.com/free-vector/iphone-comparation-vector_753683.htm'>Designed by Freepik</a>
-- Microphone icon: <a href='https://www.freepik.com/free-vector/microphone-icons-pack_759393.htm'>Designed by Freepik</a>
-- Headphones: <a href='https://www.freepik.com/free-vector/music-studio-equipment_934908.htm'>Designed by Freepik</a>
-- Thumb up: <a href='https://www.freepik.com/free-vector/decorative-thumb-up-in-flat-design_1091175.htm'>Designed by Freepik</a>
+   ```bash
+   git clone https://github.com/vatbub/hearingaid.git
+   ```
 
-## Other icons
-- Notification icon: <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
-- Add icon in the settings: <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
-- Edit icon in the settings: <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
-- Drag icon in the profile editor: <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+2. **Configure SDKs in `local.properties`:**
+   Create a `local.properties` file in the project root with the paths to your generic Android SDK and NDK.
 
-# License
-This application is published under the Apache License v2 (see the license file). It utilizes the [Superpowered Audio Sdk](http://superpowered.com/) whose license can be found [here](http://superpowered.com/license).
+   ```properties
+   sdk.dir=C\:\\Users\\YourUser\\AppData\\Local\\Android\\Sdk
+   ndk.dir=C\:\\Users\\YourUser\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529
+   ```
+
+3. **Install Superpowered SDK:**
+   This project relies on the Superpowered Audio SDK for low-latency performance.
+
+   ```bash
+   ./gradlew installSuperpowered
+   ```
+
+4. **Build & Run:**
+   Open the project in Android Studio and run on a physical device (Emulators cannot record audio reliably).
+
+## 🧩 Architecture
+
+- **Frontend:** Native Android (Java/XML) with custom Views and Drawables for the ATLAS design.
+- **Backend:** Java-based `MediaBrowserServiceCompat` for managing the audio session.
+- **Audio Engine:** C++ layer using JNI and Superpowered SDK for high-performance audio manipulation.
+
+## 📄 License
+
+This application is published under the Apache License v2. It utilizes the [Superpowered Audio SDK](http://superpowered.com/).
+
+---
+
+_Original Project by [vatbub](https://github.com/vatbub/hearingaid). Redesigned with the ATLAS System._

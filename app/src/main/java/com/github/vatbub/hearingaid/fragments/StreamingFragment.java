@@ -12,11 +12,11 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.core.app.ActivityCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -24,16 +24,16 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.Button;
+import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.TextView;
+import android.widget.Spinner;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import android.widget.Toast;
+import android.widget.ImageButton;
 
-import com.github.vatbub.common.view.motd.PlatformIndependentMOTD;
-import com.github.vatbub.hearingaid.AndroidMOTDFileOutputStreamProvider;
 import com.github.vatbub.hearingaid.BottomSheetQueue;
-import com.github.vatbub.hearingaid.BugsnagWrapper;
 import com.github.vatbub.hearingaid.Constants;
 import com.github.vatbub.hearingaid.CustomApplication;
 import com.github.vatbub.hearingaid.FeedbackPrivacyActivity;
@@ -41,11 +41,7 @@ import com.github.vatbub.hearingaid.ProfileManager;
 import com.github.vatbub.hearingaid.R;
 import com.github.vatbub.hearingaid.RemoteConfig;
 import com.github.vatbub.hearingaid.backend.HearingAidPlaybackService;
-import com.ohoussein.playpause.PlayPauseView;
-import com.rometools.rome.feed.synd.SyndContent;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
@@ -58,22 +54,22 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
     private BottomSheetBehavior mWiredHeadphonesBottomSheetBehavior;
     private BottomSheetBehavior mDiagnosticDataBottomSheetBehavior;
     private BottomSheetBehavior mLatencyBottomSheetBehavior;
-    private BottomSheetBehavior mMOTDBottomSheetBehavior;
+    
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private BottomSheetQueue bottomSheetBehaviourQueue;
 
     private MediaBrowserCompat mMediaBrowser;
-    private PlayPauseView mPlayPause;
+    private ImageButton mPlayPause;
     private MediaControllerCompat.Callback controllerCallback =
             new MediaControllerCompat.Callback() {
                 @Override
                 public void onPlaybackStateChanged(PlaybackStateCompat state) {
                     boolean isStreaming = state.getState() == PlaybackStateCompat.STATE_PLAYING;
-                    mPlayPause.change(!isStreaming);
+                    updateButtonUI(isStreaming);
                     if (isStreaming) {
-                        Snackbar.make(findViewById(R.id.fragment_content), R.string.fragment_streaming_snackbar_start_streaming, 3000).show();
+                        Snackbar.make(view.findViewById(R.id.fragment_content), R.string.fragment_streaming_snackbar_start_streaming, 3000).show();
                     } else {
-                        Snackbar.make(findViewById(R.id.fragment_content), R.string.fragment_streaming_snackbar_stop_streaming, 3000).show();
+                        Snackbar.make(view.findViewById(R.id.fragment_content), R.string.fragment_streaming_snackbar_stop_streaming, 3000).show();
                     }
                 }
             };
@@ -99,7 +95,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                             setStreaming(true);
                     } catch (RemoteException e) {
                         e.printStackTrace();
-                        BugsnagWrapper.notify(e);
+                        // Removed Bugsnag usage
                     }
                 }
 
@@ -113,6 +109,8 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
                     // The Service has refused our connection
                 }
             };
+    private View view;
+
     public StreamingFragment() {
         // Required empty public constructor
     }
@@ -204,10 +202,27 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
 
         // Display the initial state
         PlaybackStateCompat playbackState = mediaController.getPlaybackState();
-        mPlayPause.change(playbackState.getState() != PlaybackStateCompat.STATE_PLAYING, false);
+        updateButtonUI(playbackState.getState() == PlaybackStateCompat.STATE_PLAYING);
 
         // Register a Callback to stay in sync
         mediaController.registerCallback(controllerCallback);
+    }
+
+    private void updateButtonUI(boolean isStreaming) {
+        if (mPlayPause == null) return;
+
+        TextView label = view.findViewById(R.id.streaming_status_label);
+        
+        if (isStreaming) {
+            mPlayPause.setBackgroundResource(R.drawable.atlas_circle_active);
+            mPlayPause.setImageResource(android.R.drawable.ic_media_pause);
+            if (label != null) label.setText("Listening...");
+        } else {
+            // Keep it colored but maybe different icon or state
+             mPlayPause.setBackgroundResource(R.drawable.atlas_circle_active); 
+             mPlayPause.setImageResource(android.R.drawable.ic_btn_speak_now);
+             if (label != null) label.setText("Paused");
+        }
     }
 
     public boolean isStreamingEnabled() {
@@ -215,11 +230,53 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
         return playbackState == PlaybackStateCompat.STATE_PLAYING;
     }
 
+    private void initProfileSelector() {
+        Spinner spinner = view.findViewById(R.id.dashboard_profile_selector);
+        final ProfileManager pm = ProfileManager.getInstance(getContext());
+        final List<ProfileManager.Profile> profiles = pm.listProfiles();
+        final List<String> profileNames = new java.util.ArrayList<>();
+        
+        for (ProfileManager.Profile p : profiles) {
+            profileNames.add(p.getProfileName());
+        }
+        
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, profileNames);
+        spinner.setAdapter(adapter);
+        
+        ProfileManager.Profile activeProfile = pm.getCurrentlyActiveProfile();
+        if (activeProfile != null) {
+            int idx = -1;
+            for (int i = 0; i < profiles.size(); i++) {
+                if (profiles.get(i).equals(activeProfile)) {
+                    idx = i;
+                    break;
+                }
+            }
+            if (idx >= 0) spinner.setSelection(idx);
+        }
+        
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                 if (position < 0 || position >= profiles.size()) return;
+                 
+                 ProfileManager.Profile selectedProfile = profiles.get(position);
+                 ProfileManager.Profile current = pm.getCurrentlyActiveProfile();
+                 
+                 if (current == null || !current.equals(selectedProfile)) {
+                     pm.applyProfile(selectedProfile);
+                 }
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_streaming, container, false);
+        view = inflater.inflate(R.layout.fragment_streaming, container, false);
+        return view;
     }
 
     @Override
@@ -227,35 +284,62 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
         super.onViewCreated(view, savedInstanceState);
 
         // Grab the view for the play/pause button
-        mPlayPause = findViewById(R.id.mainToggleButton);
+        mPlayPause = view.findViewById(R.id.mainToggleButton);
 
         initButtonHandlers();
+        initProfileSelector();
 
-        View diagnosticDataBottomSheet = findViewById(R.id.diagnostic_data_bottom_Sheet);
+        // Custom Drawer Toggle
+        View toggle = view.findViewById(R.id.custom_drawer_toggle);
+        if (toggle != null) {
+            toggle.setOnClickListener(v -> {
+                DrawerLayout drawer = getActivity().findViewById(R.id.drawer_layout);
+                if (drawer != null) {
+                    drawer.openDrawer(GravityCompat.START);
+                }
+            });
+        }
+
+        // Initialize Volume Slider
+        android.widget.SeekBar volumeSlider = view.findViewById(R.id.volume_slider);
+        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        int maxVol = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        int currentVol = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        volumeSlider.setMax(maxVol);
+        volumeSlider.setProgress(currentVol);
+        TextView volumeText = view.findViewById(R.id.volume_text);
+        volumeText.setText((int)((currentVol / (float)maxVol) * 100) + "%");
+
+        volumeSlider.setOnSeekBarChangeListener(new android.widget.SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(android.widget.SeekBar seekBar, int progress, boolean fromUser) {
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+                volumeText.setText((int)((progress / (float)maxVol) * 100) + "%");
+            }
+            @Override public void onStartTrackingTouch(android.widget.SeekBar seekBar) {}
+            @Override public void onStopTrackingTouch(android.widget.SeekBar seekBar) {}
+        });
+
+        View diagnosticDataBottomSheet = view.findViewById(R.id.diagnostic_data_bottom_Sheet);
         mDiagnosticDataBottomSheetBehavior = BottomSheetBehavior.from(diagnosticDataBottomSheet);
         mDiagnosticDataBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-        View lowLatencyBottomSheet = findViewById(R.id.low_latency_bottom_sheet);
+        View lowLatencyBottomSheet = view.findViewById(R.id.low_latency_bottom_sheet);
         mLatencyBottomSheetBehavior = BottomSheetBehavior.from(lowLatencyBottomSheet);
         mLatencyBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-        View wiredHeadphonesBottomSheet = findViewById(R.id.connect_headphones_bottom_sheet);
+        View wiredHeadphonesBottomSheet = view.findViewById(R.id.connect_headphones_bottom_sheet);
         mWiredHeadphonesBottomSheetBehavior = BottomSheetBehavior.from(wiredHeadphonesBottomSheet);
         mWiredHeadphonesBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-        View motdBottomSheet = findViewById(R.id.motd_bottom_sheet);
-        mMOTDBottomSheetBehavior = BottomSheetBehavior.from(motdBottomSheet);
-        mMOTDBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        mMOTDBottomSheetBehavior.setPeekHeight(790);
-
-        showMOTDIfApplicable();
         showLatencyBottomSheetIfApplicable();
         showDiagnosticDataBottomSheetIfApplicable();
     }
 
     private void showDiagnosticDataBottomSheetIfApplicable() {
-        if (CustomApplication.hasUserMadeAChoiceForBugsnag(getContext())) return;
-        bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mDiagnosticDataBottomSheetBehavior, false, BottomSheetBehavior.STATE_EXPANDED, BottomSheetQueue.BottomSheetPriority.HIGHER_THAN_NORMAL));
+        // Disabled Bugsnag check
+        // if (CustomApplication.hasUserMadeAChoiceForBugsnag(getContext())) return;
+        // bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mDiagnosticDataBottomSheetBehavior, false, BottomSheetBehavior.STATE_EXPANDED, BottomSheetQueue.BottomSheetPriority.HIGHER_THAN_NORMAL));
     }
 
     private SharedPreferences getSharedPreferences() {
@@ -283,13 +367,13 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
             else
                 comparisonString = getString(R.string.fragment_streaming_more_than);
 
-            ((TextView) findViewById(R.id.tv_low_latency)).setText(getString(R.string.fragment_streaming_latency_message, comparisonString));
+            ((TextView) view.findViewById(R.id.tv_low_latency)).setText(getString(R.string.fragment_streaming_latency_message, comparisonString));
             bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mLatencyBottomSheetBehavior, false, BottomSheetBehavior.STATE_EXPANDED, BottomSheetQueue.BottomSheetPriority.LOW));
         }
     }
 
     public void initButtonHandlers() {
-        mPlayPause.setOnClickListener(view -> {
+        mPlayPause.setOnClickListener(v -> {
             if (permissionMissing()) {
                 requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 1);
             } else {
@@ -297,23 +381,23 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
             }
         });
 
-        findViewById(R.id.diagnostic_data_yes_button).setOnClickListener(view -> {
+        view.findViewById(R.id.diagnostic_data_yes_button).setOnClickListener(v -> {
             Toast.makeText(getContext(), R.string.fragment_streaming_diagnostic_data_change_later_in_settings_toast, Toast.LENGTH_LONG).show();
-            CustomApplication.setBugSnagEnabled(getContext(), true);
+            // CustomApplication.setBugSnagEnabled(getContext(), true);
             mDiagnosticDataBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         });
 
-        findViewById(R.id.diagnostic_data_no_button).setOnClickListener(view -> {
+        view.findViewById(R.id.diagnostic_data_no_button).setOnClickListener(v -> {
             Toast.makeText(getContext(), R.string.fragment_streaming_diagnostic_data_change_later_in_settings_toast, Toast.LENGTH_LONG).show();
-            CustomApplication.setBugSnagEnabled(getContext(), false);
+            // CustomApplication.setBugSnagEnabled(getContext(), false);
             mDiagnosticDataBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         });
 
-        findViewById(R.id.diagnostic_data_privacy_policy_button).setOnClickListener(view -> {
+        view.findViewById(R.id.diagnostic_data_privacy_policy_button).setOnClickListener(v -> {
             startActivity(new Intent(getContext(), FeedbackPrivacyActivity.class));
         });
 
-        findViewById(R.id.learn_more_button).setOnClickListener(view -> {
+        view.findViewById(R.id.learn_more_button).setOnClickListener(v -> {
             mLatencyBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
             String url = RemoteConfig.getConfig().getValue(RemoteConfig.Keys.LATENCY_MORE_INFO_URL);
@@ -322,7 +406,7 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
             startActivity(intent);
         });
 
-        findViewById(R.id.low_latency_dont_show_again_button).setOnClickListener(view -> {
+        view.findViewById(R.id.low_latency_dont_show_again_button).setOnClickListener(v -> {
             mLatencyBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
             SharedPreferences.Editor editor = getSharedPreferences().edit();
@@ -330,12 +414,12 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
             editor.apply();
         });
 
-        findViewById(R.id.wired_headphones_play_anyway_button).setOnClickListener(view -> {
+        view.findViewById(R.id.wired_headphones_play_anyway_button).setOnClickListener(v -> {
             mWiredHeadphonesBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             setStreaming(true, true);
         });
 
-        findViewById(R.id.wired_headphones_dont_show_again_button).setOnClickListener(view -> {
+        view.findViewById(R.id.wired_headphones_dont_show_again_button).setOnClickListener(v -> {
             mWiredHeadphonesBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
             SharedPreferences.Editor editor = getSharedPreferences().edit();
@@ -390,105 +474,6 @@ public class StreamingFragment extends CustomFragment implements ProfileManager.
         } else {
             return audioManager.isWiredHeadsetOn();
         }
-    }
-
-    private void showMOTDIfApplicable() {
-        // Show messages of the day
-        Thread motdThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final PlatformIndependentMOTD motd;
-                try {
-                    PlatformIndependentMOTD.setMotdFileOutputStreamProvider(new AndroidMOTDFileOutputStreamProvider(getActivity()));
-                    motd = PlatformIndependentMOTD.getLatestMOTD(new URL(RemoteConfig.getConfig().getValue(RemoteConfig.Keys.MOTD_URL)));
-                    if (motd == null) return;
-                    if (motd.isMarkedAsRead()) return;
-
-                    // Get the motd content
-                    StringBuilder content = new StringBuilder("<head><style>" + RemoteConfig.getConfig().getValue(RemoteConfig.Keys.MOTD_CSS) + "</style></head><body><div class=\"motdContent\" id=\"motdContent\">");
-                    content.append("<p><h3>").append(motd.getEntry().getTitle()).append("</h3></p>");
-                    for (SyndContent str : motd.getEntry().getContents()) {
-                        if (str.getValue() != null) {
-                            content.append(str.getValue());
-                        }
-                    }
-                    content.append("</div></body>");
-
-                    if (content.toString().contains("<span id=\"more")) {
-                        // We've got a read more link so stop parsing the message
-                        // and change the button caption to imply that there is more
-                        // to read
-                        content = new StringBuilder(content.substring(0, content.indexOf("<span id=\"more")));
-                        // openWebpageButton.setText(bundle.getString("readMoreLink"));
-                    }
-
-                    final String finalContent = content.toString();
-
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                WebView motdView = findViewById(R.id.motd_web_view);
-
-                                final BottomSheetQueue.BottomSheetCallbackList additionalCallbacks = new BottomSheetQueue.BottomSheetCallbackList();
-                                additionalCallbacks.add(new BottomSheetQueue.CustomBottomSheetCallback() {
-                                    @Override
-                                    public void onRescheduled() {
-
-                                    }
-
-                                    @Override
-                                    public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                                        if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                                            try {
-                                                motd.markAsRead();
-                                            } catch (IOException | ClassNotFoundException e) {
-                                                e.printStackTrace();
-                                                BugsnagWrapper.notify(e);
-                                            }
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-                                    }
-                                });
-
-                                motdView.setWebViewClient(new WebViewClient() {
-                                    @Override
-                                    public void onPageFinished(WebView view, String url) {
-                                        super.onPageFinished(view, url);
-                                        bottomSheetBehaviourQueue.add(new BottomSheetQueue.BottomSheetBehaviourWrapper(mMOTDBottomSheetBehavior, true, BottomSheetBehavior.STATE_COLLAPSED, BottomSheetQueue.BottomSheetPriority.NORMAL, additionalCallbacks));
-                                    }
-                                });
-
-                                motdView.loadData(finalContent, "text/html", "UTF-8");
-                            }
-                        });
-                    }
-
-                    Button readMoreButton = findViewById(R.id.motd_read_more);
-                    readMoreButton.setOnClickListener(view -> {
-                        mMOTDBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse(motd.getEntry().getUri()));
-                        startActivity(intent);
-                    });
-
-                    Button closeButton = findViewById(R.id.motd_close);
-                    closeButton.setOnClickListener(view -> {
-                        mMOTDBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    BugsnagWrapper.notify(e);
-                }
-            }
-        });
-        motdThread.setName("motdThread");
-        motdThread.start();
     }
 
     public void notifyEQEnabledSettingChanged() {

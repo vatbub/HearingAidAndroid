@@ -12,13 +12,16 @@
 #include <malloc.h>
 #include <SuperpoweredCPU.h>
 
+using namespace Superpowered;
+
 static HearingAidAudioProcessor *jniInstance = NULL;
 
-static SuperpoweredFrequencyDomain *frequencyDomain;
+static FrequencyDomain *frequencyDomain;
 static float *magnitudeLeft, *magnitudeRight, *phaseLeft, *phaseRight, *fifoOutput, *inputBufferFloat;
 static int fifoOutputFirstSample, fifoOutputLastSample, stepSize, fifoCapacity;
 
 #define FFT_LOG_SIZE 11 // 2^11 = 2048
+#define FFT_SIZE 2048
 
 static bool
 audioProcessing(void *clientdata, short int *audioIO, int numberOfSamples, int samplerate) {
@@ -28,16 +31,19 @@ audioProcessing(void *clientdata, short int *audioIO, int numberOfSamples, int s
 
 HearingAidAudioProcessor::HearingAidAudioProcessor(unsigned int samplerate,
                                                    unsigned int buffersize) {
-    frequencyDomain = new SuperpoweredFrequencyDomain(
+    // Force rebuild
+    frequencyDomain = new FrequencyDomain(
             FFT_LOG_SIZE); // This will do the main "magic".
-    stepSize = frequencyDomain->fftSize /
-               4; // The default overlap ratio is 4:1, so we will receive this amount of samples from the frequency domain in one step.
+
+    // In newer Superpowered versions, fftSize is not a member.
+    // We use the constant FFT_SIZE derived from FFT_LOG_SIZE.
+    stepSize = FFT_SIZE / 4; // The default overlap ratio is 4:1
 
     // Frequency domain data goes into these buffers:
-    magnitudeLeft = (float *) malloc(frequencyDomain->fftSize * sizeof(float));
-    magnitudeRight = (float *) malloc(frequencyDomain->fftSize * sizeof(float));
-    phaseLeft = (float *) malloc(frequencyDomain->fftSize * sizeof(float));
-    phaseRight = (float *) malloc(frequencyDomain->fftSize * sizeof(float));
+    magnitudeLeft = (float *) malloc(FFT_SIZE * sizeof(float));
+    magnitudeRight = (float *) malloc(FFT_SIZE * sizeof(float));
+    phaseLeft = (float *) malloc(FFT_SIZE * sizeof(float));
+    phaseRight = (float *) malloc(FFT_SIZE * sizeof(float));
 
     // Time domain result goes into a FIFO (first-in, first-out) buffer
     fifoOutputFirstSample = fifoOutputLastSample = 0;
@@ -49,10 +55,8 @@ HearingAidAudioProcessor::HearingAidAudioProcessor(unsigned int samplerate,
 
     audioSystem = new SuperpoweredAndroidAudioIO(samplerate, buffersize, true, true,
                                                  audioProcessing, this,
-            // SL_ANDROID_RECORDING_PRESET_GENERIC,
                                                  SL_ANDROID_RECORDING_PRESET_UNPROCESSED,
-            // SL_ANDROID_RECORDING_PRESET_VOICE_COMMUNICATION,
-                                                 SL_ANDROID_STREAM_MEDIA, 0);
+                                                 SL_ANDROID_STREAM_MEDIA);
     onPlayPause(false);
 }
 
@@ -65,7 +69,7 @@ bool HearingAidAudioProcessor::process(short int *output, unsigned int numberOfS
     if (!eqEnabled)
         return true;
 
-    SuperpoweredShortIntToFloat(output, inputBufferFloat,
+    ShortIntToFloat(output, inputBufferFloat,
                                 numberOfSamples); // Converting the 16-bit integer samples to 32-bit floating point.
     frequencyDomain->addInput(inputBufferFloat,
                               numberOfSamples); // Input goes to the frequency domain.
@@ -74,10 +78,6 @@ bool HearingAidAudioProcessor::process(short int *output, unsigned int numberOfS
     while (frequencyDomain->timeDomainToFrequencyDomain(magnitudeLeft, magnitudeRight, phaseLeft,
                                                         phaseRight)) {
         // You can work with frequency domain data from this point.
-
-        // This is just a quick example: we remove the magnitude of the first 20 bins, meaning total bass cut between 0-430 Hz.
-        // memset(magnitudeLeft, 0, 80);
-        // memset(magnitudeRight, 0, 80);
 
         // We are done working with frequency domain data. Let's go back to the time domain.
 
@@ -102,7 +102,7 @@ bool HearingAidAudioProcessor::process(short int *output, unsigned int numberOfS
 
     // If we have enough samples in the fifo output buffer, pass them to the audio output.
     if (fifoOutputLastSample - fifoOutputFirstSample >= numberOfSamples) {
-        SuperpoweredFloatToShortInt(fifoOutput + fifoOutputFirstSample * 2, output,
+        FloatToShortInt(fifoOutput + fifoOutputFirstSample * 2, output,
                                     numberOfSamples);
         fifoOutputFirstSample += numberOfSamples;
         return true;
@@ -125,12 +125,12 @@ void HearingAidAudioProcessor::onBackground() {
 }
 
 void HearingAidAudioProcessor::start() {
-    SuperpoweredCPU::setSustainedPerformanceMode(true);
+    CPU::setSustainedPerformanceMode(true);
     audioSystem->start();
 }
 
 void HearingAidAudioProcessor::stop() {
-    SuperpoweredCPU::setSustainedPerformanceMode(false);
+    CPU::setSustainedPerformanceMode(false);
     audioSystem->stop();
 }
 

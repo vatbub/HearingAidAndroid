@@ -7,19 +7,22 @@
 #include <stdlib.h>
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_AndroidConfiguration.h>
+#include <malloc.h>
 
-static void playerEventCallbackA(void *clientData, SuperpoweredAdvancedAudioPlayerEvent event, void * __unused value) {
-    if (event == SuperpoweredAdvancedAudioPlayerEvent_LoadSuccess) {
-    	SuperpoweredAdvancedAudioPlayer *playerA = *((SuperpoweredAdvancedAudioPlayer **)clientData);
+using namespace Superpowered;
+
+static void playerEventCallbackA(void *clientData, AdvancedAudioPlayer::PlayerEvent event, void * __unused value) {
+    if (event == AdvancedAudioPlayer::PlayerEvent_LoadSuccess) {
+    	AdvancedAudioPlayer *playerA = *((AdvancedAudioPlayer **)clientData);
         playerA->setBpm(126.0f);
         playerA->setFirstBeatMs(353);
         playerA->setPosition(playerA->firstBeatMs, false, false);
     };
 }
 
-static void playerEventCallbackB(void *clientData, SuperpoweredAdvancedAudioPlayerEvent event, void * __unused value) {
-    if (event == SuperpoweredAdvancedAudioPlayerEvent_LoadSuccess) {
-    	SuperpoweredAdvancedAudioPlayer *playerB = *((SuperpoweredAdvancedAudioPlayer **)clientData);
+static void playerEventCallbackB(void *clientData, AdvancedAudioPlayer::PlayerEvent event, void * __unused value) {
+    if (event == AdvancedAudioPlayer::PlayerEvent_LoadSuccess) {
+    	AdvancedAudioPlayer *playerB = *((AdvancedAudioPlayer **)clientData);
         playerB->setBpm(123.0f);
         playerB->setFirstBeatMs(40);
         playerB->setPosition(playerB->firstBeatMs, false, false);
@@ -33,18 +36,18 @@ static bool audioProcessing(void *clientdata, short int *audioIO, int numberOfSa
 SuperpoweredExample::SuperpoweredExample(unsigned int samplerate, unsigned int buffersize, const char *path, int fileAoffset, int fileAlength, int fileBoffset, int fileBlength) : activeFx(0), crossValue(0.0f), volB(0.0f), volA(1.0f * headroom) {
     stereoBuffer = (float *)memalign(16, (buffersize + 16) * sizeof(float) * 2);
 
-    playerA = new SuperpoweredAdvancedAudioPlayer(&playerA , playerEventCallbackA, samplerate, 0);
+    playerA = new AdvancedAudioPlayer(&playerA , playerEventCallbackA, samplerate, 0);
     playerA->open(path, fileAoffset, fileAlength);
-    playerB = new SuperpoweredAdvancedAudioPlayer(&playerB, playerEventCallbackB, samplerate, 0);
+    playerB = new AdvancedAudioPlayer(&playerB, playerEventCallbackB, samplerate, 0);
     playerB->open(path, fileBoffset, fileBlength);
 
-    playerA->syncMode = playerB->syncMode = SuperpoweredAdvancedAudioPlayerSyncMode_TempoAndBeat;
+    playerA->syncMode = playerB->syncMode = AdvancedAudioPlayer::SyncMode_TempoAndBeat;
 
-    roll = new SuperpoweredRoll(samplerate);
-    filter = new SuperpoweredFilter(SuperpoweredFilter_Resonant_Lowpass, samplerate);
-    flanger = new SuperpoweredFlanger(samplerate);
+    roll = new Roll(samplerate);
+    filter = new Filter(Filter::Resonant_Lowpass, samplerate);
+    flanger = new Flanger(samplerate);
 
-    audioSystem = new SuperpoweredAndroidAudioIO(samplerate, buffersize, false, true, audioProcessing, this, -1, SL_ANDROID_STREAM_MEDIA, buffersize * 2);
+    audioSystem = new SuperpoweredAndroidAudioIO(samplerate, buffersize, false, true, audioProcessing, this, -1, SL_ANDROID_STREAM_MEDIA);
 }
 
 SuperpoweredExample::~SuperpoweredExample() {
@@ -66,7 +69,7 @@ void SuperpoweredExample::onPlayPause(bool play) {
         playerA->play(!masterIsA);
         playerB->play(masterIsA);
     };
-    SuperpoweredCPU::setSustainedPerformanceMode(play); // <-- Important to prevent audio dropouts.
+    CPU::setSustainedPerformanceMode(play); // <-- Important to prevent audio dropouts.
 }
 
 void SuperpoweredExample::onCrossfader(int value) {
@@ -89,9 +92,9 @@ void SuperpoweredExample::onFxSelect(int value) {
 }
 
 void SuperpoweredExample::onFxOff() {
-    filter->enable(false);
-    roll->enable(false);
-    flanger->enable(false);
+    filter->enabled = false;
+    roll->enabled = false;
+    flanger->enabled = false;
 }
 
 #define MINFREQ 60.0f
@@ -108,10 +111,11 @@ void SuperpoweredExample::onFxValue(int ivalue) {
     float value = float(ivalue) * 0.01f;
     switch (activeFx) {
         case 1:
-            filter->setResonantParameters(floatToFrequency(1.0f - value), 0.2f);
-            filter->enable(true);
-            flanger->enable(false);
-            roll->enable(false);
+            filter->frequency = floatToFrequency(1.0f - value);
+            filter->resonance = 0.2f;
+            filter->enabled = true;
+            flanger->enabled = false;
+            roll->enabled = false;
             break;
         case 2:
             if (value > 0.8f) roll->beats = 0.0625f;
@@ -119,15 +123,15 @@ void SuperpoweredExample::onFxValue(int ivalue) {
             else if (value > 0.4f) roll->beats = 0.25f;
             else if (value > 0.2f) roll->beats = 0.5f;
             else roll->beats = 1.0f;
-            roll->enable(true);
-            filter->enable(false);
-            flanger->enable(false);
+            roll->enabled = true;
+            filter->enabled = false;
+            flanger->enabled = false;
             break;
         default:
-            flanger->setWet(value);
-            flanger->enable(true);
-            filter->enable(false);
-            roll->enable(false);
+            flanger->wet = value;
+            flanger->enabled = true;
+            filter->enabled = false;
+            roll->enabled = false;
     };
 }
 
@@ -148,7 +152,7 @@ bool SuperpoweredExample::process(short int *output, unsigned int numberOfSample
     };
 
     // The stereoBuffer is ready now, let's put the finished audio into the requested buffers.
-    if (!silence) SuperpoweredFloatToShortInt(stereoBuffer, output, numberOfSamples);
+    if (!silence) FloatToShortInt(stereoBuffer, output, numberOfSamples);
     return !silence;
 }
 
